@@ -26,7 +26,11 @@
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
     .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(250,241,255,.75);backdrop-filter:blur(8px);border-bottom:1px solid #ead6f2}
-    .brand{display:flex;align-items:center;justify-content:center;gap:14px;justify-self:center;padding:4px 8px;width:min(620px,100%)}.logo{width:94px;height:94px;border-radius:20px;object-fit:contain;background:#fff;border:1px solid #e5d3f3;box-shadow:0 10px 24px rgba(120,30,100,.14)}
+    .brand{display:flex;align-items:center;justify-content:center;gap:16px;justify-self:center;padding:4px 8px;width:min(760px,100%)}
+    .logo{width:140px;height:140px;object-fit:contain;background:transparent;border:none;box-shadow:none}
+    .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+    .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-weight:900;line-height:1;letter-spacing:.03em;background:linear-gradient(120deg,#ff7bca,#ff9de1 40%,#fff 55%,#ff95d5 70%,#ff6bbb);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 4px 0 rgba(255,255,255,.55),0 10px 24px rgba(195,53,140,.45),0 0 20px rgba(255,180,224,.9)}
+    .brand-subtitle{margin:0;font-size:1.03rem;font-weight:800;color:#7d2c63;text-shadow:0 2px 8px rgba(255,255,255,.55)}
     .menu-btn{justify-self:end;position:sticky;top:8px;z-index:35}
     .today-panel{justify-self:start;position:sticky;top:78px;z-index:28;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
@@ -78,6 +82,7 @@
     .half-night{background:rgba(142,119,161,.08)}
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
+    .half-empty{opacity:.45;color:#7a6b91}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
     .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
@@ -109,17 +114,20 @@
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:75px;height:75px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
+    @media(max-width:1024px){.logo{width:108px;height:108px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-title{font-size:clamp(1.8rem,5.8vw,2.8rem)}.brand-subtitle{font-size:.95rem}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:start}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.brand{gap:10px}.logo{width:84px;height:84px}.brand-subtitle{font-size:.84rem}}
   </style>
 </head>
 <body>
 <header class="topbar">
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
-    <img class="logo" src="logo.png" alt="לוגו" />
-    
+    <img class="logo" src="1.png" alt="לוגו" />
+    <div class="brand-title-wrap">
+      <h1 class="brand-title">לוח טהרה</h1>
+      <p class="brand-subtitle">ניהול ימי פרישה וטהרה</p>
+    </div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -492,12 +500,19 @@ function renderMonthCells(targetGrid,y,m){
     const phase=phaseMap[key]; cell.className=`cell${inMonth?"":" muted"}${key===ymd(today)?" today":""}${phase?` phase-${phase}`:""}`;
     const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();
     const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);
-    const halves=document.createElement("div");halves.className="day-halves";
-    const halfNight=document.createElement("div");halfNight.className="half half-night";halfNight.innerHTML="🌙 לילה";
-    const halfDay=document.createElement("div");halfDay.className="half half-day";halfDay.innerHTML="☀️ יום";
     const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: …`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
-    cell.append(greg,heb,halves,sunset);halves.append(halfNight,halfDay);
-    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};cell.appendChild(b);if(ev.ona==="night"&&/פרישה|אור זרוע/.test(ev.label)){halfNight.innerHTML=`🌙 ${ev.label}`;}if(ev.ona==="day"&&/פרישה|אור זרוע/.test(ev.label)){halfDay.innerHTML=`☀️ ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.innerHTML=`🌙 ${ev.label}`;halfDay.innerHTML=`☀️ ${ev.label}`;}if(ev.type==="mikveh"){halfNight.classList.add("mikveh-night");halfNight.innerHTML="🌙 לילה טבילה";}}
+    cell.append(greg,heb,sunset);
+    const markers=normalizeDay(dayEvents.get(key)).markers;
+    const shouldShowHalves=markers.some(ev=>ev.ona||ev.type==="mikveh");
+    let halfNight,halfDay;
+    if(shouldShowHalves){
+      const halves=document.createElement("div");halves.className="day-halves";
+      halfNight=document.createElement("div");halfNight.className="half half-night half-empty";halfNight.innerHTML="🌙";
+      halfDay=document.createElement("div");halfDay.className="half half-day half-empty";halfDay.innerHTML="☀️";
+      halves.append(halfNight,halfDay);
+      cell.insertBefore(halves,sunset);
+    }
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};cell.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=`🌙 ${ev.label}`;}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=`☀️ ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=`🌙 ${ev.label}`;halfDay.innerHTML=`☀️ ${ev.label}`;}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML="🌙 לילה טבילה";}}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
