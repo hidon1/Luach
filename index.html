@@ -64,8 +64,12 @@
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:10px;border:1px solid var(--line)}
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+    .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#ffe0ec,#ffd0e2);border:1px solid #f3b2cd;color:#931d53;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
+    body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}}
+    @media(max-width:1024px){.logo{width:68px;height:68px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}}
+    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.1rem}.subtitle{font-size:.74rem}}
   </style>
 </head>
 <body>
@@ -79,6 +83,7 @@
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
     <div class="small" id="todayDate"></div>
     <div class="small" id="todaySunset">שקיעה: טוען לפי מיקום…</div>
+    <div id="todayBanner" class="today-banner hidden"></div>
     <div id="todayChips" class="chip-wrap"></div>
   </section>
 </header>
@@ -123,8 +128,8 @@ const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(ap
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1);
-const STORAGE_KEY="calendar_events_v6",PREFS_KEY="calendar_prefs_v4",AUTH_PROMPT_KEY="auth_prompt_seen_v2";
-let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache={};
+const STORAGE_KEY="calendar_events_v6",PREFS_KEY="calendar_prefs_v4",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1";
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache={},locationPromise=null,lastCoords=null,reminderTimer=null;
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
 function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())} function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return startOfDay(x)}
@@ -169,24 +174,101 @@ function getPhaseMap(y,m){
   return map;
 }
 
+async function getCoordsWithRetry(){
+  if(lastCoords) return lastCoords;
+  if(locationPromise) return locationPromise;
+  locationPromise=(async()=>{
+    if(!navigator.geolocation) throw new Error("no-geo");
+    let lastErr=null;
+    for(let attempt=1;attempt<=4;attempt++){
+      try{
+        const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:9000,maximumAge:0}));
+        lastCoords={latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+        return lastCoords;
+      }catch(err){
+        lastErr=err;
+        await new Promise(r=>setTimeout(r,1200));
+      }
+    }
+    throw lastErr||new Error("geo-failed");
+  })();
+  try{return await locationPromise;}finally{locationPromise=null;}
+}
+
 async function resolveSunset(date){
   const key=ymd(date); if(sunsetCache[key]) return sunsetCache[key];
   try{
-    if(!navigator.geolocation) throw new Error("no-geo");
-    const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:7000}));
-    const {latitude,longitude}=pos.coords;
+    const {latitude,longitude}=await getCoordsWithRetry();
     const url=`https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&date=${key}&formatted=0`;
     const r=await fetch(url); const j=await r.json();
     const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
     sunsetCache[key]=t; return t;
-  }catch{sunsetCache[key]="לא זמין"; return "לא זמין";}
+  }catch{sunsetCache[key]="טוען מיקום…"; setTimeout(()=>{delete sunsetCache[key];renderTodayCard();},2500); return "טוען מיקום…";}
+}
+
+
+function hasMarkerOnDate(dateKey,type){return normalizeDay(dayEvents.get(dateKey)).markers.some(m=>m.type===type)}
+function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
+function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
+async function ensureNotificationPermission(){
+  if(!("Notification" in window)) return false;
+  if(Notification.permission==="granted") return true;
+  if(Notification.permission==="denied") return false;
+  const p=await Notification.requestPermission();
+  return p==="granted";
+}
+function playReminderSound(){
+  const Ctx=window.AudioContext||window.webkitAudioContext;
+  if(!Ctx) return;
+  const ctx=new Ctx();
+  const osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type="sine"; osc.frequency.value=880; gain.gain.value=.001;
+  osc.connect(gain); gain.connect(ctx.destination); osc.start();
+  gain.gain.exponentialRampToValueAtTime(.28,ctx.currentTime+.03);
+  gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.45);
+  osc.stop(ctx.currentTime+.5);
+}
+async function fireHefsekReminder(dateKey){
+  const log=getReminderLog();
+  const time=getPrefs().reminderTime||"15:00";
+  if(log[dateKey]===time) return;
+  playReminderSound();
+  const msg="היום צריך לבצע הפסק טהרה";
+  const hasPermission=await ensureNotificationPermission();
+  if(hasPermission){
+    new Notification("תזכורת לוח טהרה",{body:msg,icon:"1.png"});
+  }else{
+    showToast(msg);
+    alert(msg);
+  }
+  log[dateKey]=time;
+  setReminderLog(log);
+}
+function startReminderWatcher(){
+  if(reminderTimer) clearInterval(reminderTimer);
+  const tick=async()=>{
+    const prefs=getPrefs();
+    if(!prefs.reminderEnabled) return;
+    const dateKey=ymd(today);
+    if(!hasMarkerOnDate(dateKey,"hefsek")) return;
+    const now=new Date();
+    const hhmm=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    if(hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(dateKey);
+  };
+  tick();
+  reminderTimer=setInterval(tick,30000);
 }
 
 async function renderTodayCard(){
   el("todayDate").textContent=`${new Intl.DateTimeFormat("he",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(today)} | ${getHebrewDateDisplay(today)}`;
   const sunset=await resolveSunset(today); el("todaySunset").textContent=`שקיעה לפי מיקום: ${sunset}`;
+  const dateKey=ymd(today);
   const chips=el("todayChips"); chips.innerHTML="";
-  for(const m of normalizeDay(dayEvents.get(ymd(today))).markers){const c=document.createElement("span");c.className=`chip`;c.textContent=m.label;chips.appendChild(c)}
+  const todayMarkers=normalizeDay(dayEvents.get(dateKey)).markers;
+  for(const m of todayMarkers){const c=document.createElement("span");c.className=`chip`;c.textContent=m.label;chips.appendChild(c)}
+  const banner=el("todayBanner");
+  if(todayMarkers.some(m=>m.type==="hefsek")){banner.textContent="⚠️ היום לבצע הפסק טהרה";banner.classList.remove("hidden");}
+  else{banner.classList.add("hidden");}
 }
 function startClock(){const paint=()=>el("clock").textContent=new Date().toLocaleTimeString("he-IL",{hour12:false});paint();if(clockTimer)clearInterval(clockTimer);clockTimer=setInterval(paint,1000)}
 
@@ -236,14 +318,14 @@ const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!p
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
-reminderToggle.onchange=e=>{setPrefs({reminderEnabled:e.target.checked});showToast("התזכורת עודכנה")};
-reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});showToast("שעת התזכורת עודכנה")};
+reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
+reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
 
 el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
 el("signOutBtn").onclick=async()=>{await signOut(auth);el("authMsg").textContent="התנתקת"};
 
-startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); render();
+startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); startReminderWatcher(); render();
 </script>
 </body>
 </html>
