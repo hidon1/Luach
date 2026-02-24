@@ -5,24 +5,36 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>לוח טהרה</title>
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Heebo:wght@400;600;700;800&display=swap");
     :root{--bg:#f3f6ff;--card:#fff;--muted:#5b6b8c;--text:#1f2a44;--line:#dbe3f5;--accent:#4c7dff;--shadow:0 8px 24px rgba(67,95,160,.14);--radius:18px;--cell:96px;--shabbat:#ffc857;--shabbat-bg:rgba(255,200,87,.10);--holiday:#c7a6ff}
     body.dark{--bg:#0f1729;--card:#18243d;--muted:#9fb0d5;--text:#e7eeff;--line:#2a3b61;--accent:#8fb3ff;--shadow:0 10px 26px rgba(0,0,0,.30)}
-    body.or-zarua{--bg:#fff8ef;--card:#fff;--text:#412a1f;--muted:#8d6352;--line:#f0dccf;--accent:#f48c42;--shadow:0 8px 22px rgba(174,95,43,.18)}
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Hebrew",sans-serif;background:var(--bg);color:var(--text)} .hidden{display:none!important}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Assistant","Heebo",system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);animation:fadeIn .6s ease}
+    .hidden{display:none!important}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(6px)}
     .brand{display:flex;gap:10px;align-items:center}.logo{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;object-fit:cover}.title{font-size:19px;font-weight:900}.subtitle{font-size:12px;color:var(--muted)}
-    .container{max-width:1020px;margin:14px auto;padding:0 14px 36px;display:grid;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .btn{border:1px solid transparent;background:#eaf1ff;color:var(--text);padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:800}.btn-ghost{background:transparent;border-color:var(--line)}.btn-primary{background:var(--accent);color:#fff}
+    .container{max-width:1020px;margin:14px auto;padding:0 14px 36px;display:grid;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);transition:all .25s ease}
+    .card:hover{transform:translateY(-1px)}
+    .btn{border:1px solid transparent;background:#eaf1ff;color:var(--text);padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:800;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(76,125,255,.2)}
+    .btn:active{transform:scale(.98)}
+    .btn-ghost{background:transparent;border-color:var(--line)}.btn-primary{background:var(--accent);color:#fff}
     .controls{padding:12px 14px;display:flex;justify-content:center;align-items:center;gap:12px}.monthTitle{min-width:270px;text-align:center;font-weight:900;padding:8px 10px;border-radius:14px;background:#f5f8ff;border:1px solid var(--line)}
     .calendar{padding:12px}.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.dow{padding-bottom:12px;color:var(--muted);font-size:12px;font-weight:800}.dow div{text-align:center;padding:8px 0;border:1px solid var(--line);border-radius:12px;background:#f8faff}.dow .shabbat{border-color:rgba(255,200,87,.35);color:var(--shabbat);background:var(--shabbat-bg)}
-    .cell{min-height:var(--cell);border-radius:16px;border:1px solid var(--line);background:#f8faff;padding:8px;cursor:pointer;position:relative}.cell.muted{opacity:.45}.cell.today{border-color:rgba(76,125,255,.6);box-shadow:0 0 0 2px rgba(76,125,255,.15) inset}.cell.shabbat{background:linear-gradient(180deg,rgba(255,200,87,.12),rgba(255,255,255,.03))}
+    .cell{min-height:var(--cell);border-radius:16px;border:1px solid var(--line);background:#f8faff;padding:8px;cursor:pointer;position:relative;animation:cellIn .3s ease}.cell.muted{opacity:.45}.cell.today{border-color:rgba(76,125,255,.6);box-shadow:0 0 0 2px rgba(76,125,255,.15) inset}.cell.shabbat{background:linear-gradient(180deg,rgba(255,200,87,.12),rgba(255,255,255,.03))}
     .greg{font-size:18px;font-weight:950}.hebrew{font-size:12px;color:#4b5b7e;margin-top:4px}.holiday{font-size:11px;color:var(--holiday);font-weight:850;margin-top:4px}
-    .badge{display:inline-block;margin-top:6px;font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-weight:850}.badge.period,.badge.prisha{border-color:rgba(255,105,180,.35);background:rgba(255,105,180,.14);color:#8a2f61}.badge.hefsek{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.12);color:#166534}.badge.mikveh{border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.14);color:#1e3a8a}.badge.orzarua{border-color:rgba(244,140,66,.35);background:rgba(244,140,66,.12);color:#8b4513}
-    .drawer-backdrop{position:fixed;inset:0;background:rgba(8,16,35,.36);z-index:40}.drawer{position:fixed;top:0;right:0;width:min(360px,92vw);height:100vh;background:var(--card);border-left:1px solid var(--line);padding:14px;z-index:50;display:grid;align-content:start;gap:10px}.drawer h3{margin:0 0 4px}.switch{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px}
-    .modal-overlay{position:fixed;inset:0;background:rgba(35,45,75,.28);display:grid;place-items:center;padding:14px;z-index:60}.modal{width:min(560px,96vw);padding:14px}.modal-head{display:flex;justify-content:space-between;align-items:flex-start}.modal-title{font-size:16px;font-weight:950}.modal-sub{font-size:12px;color:var(--muted)}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .badge{display:inline-block;margin-top:6px;font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-weight:850}.badge.period,.badge.prisha{border-color:rgba(255,105,180,.35);background:rgba(255,105,180,.14);color:#8a2f61}.badge.hefsek{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.12);color:#166534}.badge.mikveh{border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.14);color:#1e3a8a}.badge.orzarua{border-color:rgba(244,140,66,.35);background:rgba(244,140,66,.12);color:#8b4513}.badge.hefsekReady{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.12);color:#065f46}
+    .drawer-backdrop{position:fixed;inset:0;background:rgba(8,16,35,.36);z-index:40}.drawer{position:fixed;top:0;right:0;width:min(360px,92vw);height:100vh;background:var(--card);border-left:1px solid var(--line);padding:14px;z-index:50;display:grid;align-content:start;gap:10px;transform:translateX(0);transition:transform .25s ease}.drawer h3{margin:0 0 4px}.switch{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;gap:8px}
+    .switch select{width:150px;padding:6px;border-radius:8px;border:1px solid var(--line)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(35,45,75,.28);display:grid;place-items:center;padding:14px;z-index:60;animation:fadeIn .2s ease}.modal{width:min(560px,96vw);padding:14px;animation:popIn .22s ease}.modal-head{display:flex;justify-content:space-between;align-items:flex-start}.modal-title{font-size:16px;font-weight:950}.modal-sub{font-size:12px;color:var(--muted)}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
     .auth-form{display:grid;gap:8px;margin-top:10px}input{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff}.tiny{font-size:12px;color:var(--muted)}
     .auth-switch{margin-top:8px;text-align:center}
     .seg{display:flex;gap:8px;margin-top:10px}.seg button{flex:1}
+    .footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:14px}
+    .footer a{color:var(--accent);font-weight:700}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+    @keyframes cellIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
@@ -45,14 +57,21 @@
       <div id="grid" class="grid"></div>
     </section>
   </main>
+  <footer class="footer">נבנה על ידי יזם אתרים (יזם יוד. ז. מ. אתרים) לפרטים <a href="#" id="detailsLink">יכנסו</a> | לתרומות לתחזוקת האתר</footer>
 
   <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
   <aside id="drawer" class="drawer hidden">
     <button id="closeDrawer" class="btn btn-ghost">✕ סגור</button>
     <h3>תפריט</h3>
     <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
-    <div class="switch"><span>עונת אור זרוע</span><input id="orZaruaToggle" type="checkbox"></div>
     <div class="switch"><span>יום פרישה אחרי 31 ימים (בנוסף ל-30)</span><input id="day31Toggle" type="checkbox"></div>
+    <div class="switch"><span>מנהג</span>
+      <select id="minhagSelect">
+        <option value="sephardi">ספרדים</option>
+        <option value="ashkenazi">אשכנזים</option>
+        <option value="ben_ish_hai">בן איש חי</option>
+      </select>
+    </div>
     <button id="openAuthFromMenu" class="btn btn-primary" style="margin-top:auto">התחברות / הרשמה</button>
     <div id="authState" class="tiny">לא מחובר</div>
   </aside>
@@ -73,13 +92,8 @@
 
   <div id="onaOverlay" class="modal-overlay hidden">
     <div class="modal card" style="width:min(360px,92vw)">
-      <div class="modal-head">
-        <div><div class="modal-title">בחירת עונה</div><div class="modal-sub">בחרי אם תחילת המחזור ביום או בלילה</div></div>
-      </div>
-      <div class="seg">
-        <button id="chooseDay" class="btn">☀️ יום</button>
-        <button id="chooseNight" class="btn">🌙 לילה</button>
-      </div>
+      <div class="modal-head"><div><div class="modal-title">בחירת עונה</div><div class="modal-sub">בחרי אם תחילת המחזור ביום או בלילה</div></div></div>
+      <div class="seg"><button id="chooseDay" class="btn">☀️ יום</button><button id="chooseNight" class="btn">🌙 לילה</button></div>
       <div class="modal-actions"><button id="onaCancel" class="btn btn-ghost">ביטול</button></div>
     </div>
   </div>
@@ -103,7 +117,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseConfig={apiKey:"AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",authDomain:"luach-48111.firebaseapp.com",projectId:"luach-48111",storageBucket:"luach-48111.firebasestorage.app",messagingSenderId:"418216623160",appId:"1:418216623160:web:56ebe2830458d6b12f3acd",measurementId:"G-BJ2LVM6WR6"};
 const app=initializeApp(firebaseConfig);if(await isSupported())getAnalytics(app);const auth=getAuth(app);const db=getFirestore(app);
 
@@ -112,9 +125,8 @@ const modalOverlay=document.getElementById("modalOverlay"),modalClose=document.g
 const onaOverlay=document.getElementById("onaOverlay");
 const authOverlay=document.getElementById("authOverlay"),authClose=document.getElementById("authClose"),emailInput=document.getElementById("email"),passInput=document.getElementById("password"),authMsg=document.getElementById("authMsg");
 const drawer=document.getElementById("drawer"),drawerBackdrop=document.getElementById("drawerBackdrop");
-
-const today=startOfDay(new Date());let view=new Date(today.getFullYear(),today.getMonth(),1);const STORAGE_KEY="calendar_events_v4",PREFS_KEY="calendar_prefs_v2",AUTH_PROMPT_KEY="auth_prompt_seen_v2";
-let dayEvents=loadLocalEvents(),selectedDate=null,currentUid=null,authMode="signin";
+const today=startOfDay(new Date());let view=new Date(today.getFullYear(),today.getMonth(),1);const STORAGE_KEY="calendar_events_v5",PREFS_KEY="calendar_prefs_v3",AUTH_PROMPT_KEY="auth_prompt_seen_v2";
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin";
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
 function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())} function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return startOfDay(x)}
@@ -122,19 +134,35 @@ function numberToHebrewDay(n){const ones=["","א׳","ב׳","ג׳","ד׳","ה׳",
 function getHebrewDateDisplay(d){const parts=new Intl.DateTimeFormat("he-u-ca-hebrew",{day:"numeric",month:"long"}).formatToParts(d);const day=Number(parts.find(p=>p.type==="day")?.value||1);const month=parts.find(p=>p.type==="month")?.value||"";return `${numberToHebrewDay(day)} ${month}`}
 function markerIcon(ona){return ona==="day"?"☀️":"🌙"}
 function markerLabel(base,ona){return ona?`${base} ${markerIcon(ona)}`:base}
-
-function loadLocalEvents(){try{const raw=localStorage.getItem(STORAGE_KEY);return new Map(Object.entries(raw?JSON.parse(raw):{}));}catch{return new Map();}}
 function normalizeDay(v){if(!v)return{markers:[]};if(Array.isArray(v.markers))return v;if(v.type)return{markers:[v]};return{markers:[]};}
+function loadLocalEvents(){try{const raw=localStorage.getItem(STORAGE_KEY);return new Map(Object.entries(raw?JSON.parse(raw):{}));}catch{return new Map();}}
 function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
 function clearDerived(){for(const [k,v]of dayEvents.entries()){const day=normalizeDay(v);const kept=day.markers.filter(m=>!m.source);if(kept.length)dayEvents.set(k,{markers:kept});else dayEvents.delete(k);}}
 function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}");}catch{return{}}}
-function setPrefs(next){const merged={...getPrefs(),...next};localStorage.setItem(PREFS_KEY,JSON.stringify(merged));if(currentUid)saveRemoteEvents(exportEvents(),merged)}
+async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));const prefs=getPrefs();if(currentUid)await setDoc(doc(db,"users",currentUid),{events,prefs,updatedAt:Date.now()},{merge:true});}
+function setPrefs(next){const merged={...getPrefs(),...next};localStorage.setItem(PREFS_KEY,JSON.stringify(merged));persistAll();}
 function exportEvents(){const o={};for(const[k,v]of dayEvents.entries())o[k]=normalizeDay(v);return o;}
-function saveLocalEvents(){const obj=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(obj));if(currentUid)saveRemoteEvents(obj,getPrefs())}
-async function saveRemoteEvents(events,prefs){await setDoc(doc(db,"users",currentUid),{events,prefs,updatedAt:Date.now()},{merge:true})}
 async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(snap.exists()){const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}}
-
 function getHolidayLabel(d){return d.getDay()===6?"שבת":""}
+function minhagDays(){const map={sephardi:4,ashkenazi:5,ben_ish_hai:6};return map[getPrefs().minhag||"sephardi"]||4}
+function findLatestPeriodBefore(date){const periods=[];for(const [k,v]of dayEvents.entries()){for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"});}}periods.sort((a,b)=>a.date-b.date);for(let i=periods.length-1;i>=0;i--){if(periods[i].date<=date)return periods[i];}return null;}
+function canSetHefsek(date){const latest=findLatestPeriodBefore(date);if(!latest)return true;const earliest=addDays(latest.date,minhagDays()-1);return date>=earliest;}
+
+function recalcDerived(){
+  clearDerived();const prefs=getPrefs();const periods=[],hefseks=[];
+  for(const [k,v]of dayEvents.entries())for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day",key:k});if(m.type==="hefsek")hefseks.push({date:new Date(k),key:k});}
+  periods.sort((a,b)=>a.date-b.date);
+  for(let i=0;i<periods.length;i++){
+    const p=periods[i],base30=addDays(p.date,29);addMarker(ymd(base30),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-30"});
+    const target=p.ona==="day"?base30:addDays(base30,-1);const targetOna=p.ona==="day"?"night":"day";
+    addMarker(ymd(target),{type:"orzarua",label:markerLabel("עונת אור זרוע",targetOna),ona:targetOna,source:"auto-30-orzarua"});
+    if(prefs.day31){const d31=addDays(p.date,30);addMarker(ymd(d31),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-31"});}
+    if(i>0){const gap=Math.round((p.date-periods[i-1].date)/(1000*60*60*24));if(gap>0&&gap<90){const custom=addDays(p.date,gap-1);addMarker(ymd(custom),{type:"prisha",label:markerLabel(`יום פרישה (${gap} ימים)`,p.ona),ona:p.ona,source:"auto-gap"});}}
+    const hefsekReady=addDays(p.date,minhagDays()-1);addMarker(ymd(hefsekReady),{type:"hefsekReady",label:"אפשר לעשות הפסק טהרה",source:"auto-hefsek-ready"});
+  }
+  for(const h of hefseks){addMarker(ymd(addDays(h.date,7)),{type:"mikveh",label:"ליל טבילה",source:"auto-hefsek",dependsOn:h.key});}
+}
+
 function render(){const y=view.getFullYear(),m=view.getMonth();monthTitle.textContent=new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));grid.innerHTML="";const first=new Date(y,m,1),gridStart=addDays(first,-first.getDay());
   for(let i=0;i<42;i++){const d=addDays(gridStart,i),inMonth=d.getMonth()===m,cell=document.createElement("div");cell.className=`cell${inMonth?"":" muted"}${d.getDay()===6?" shabbat":""}${ymd(d)===ymd(today)?" today":""}`;
     const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);cell.append(greg,heb);
@@ -143,22 +171,12 @@ function render(){const y=view.getFullYear(),m=view.getMonth();monthTitle.textCo
     cell.addEventListener("click",()=>openModal(d));grid.appendChild(cell);
   }}
 
-function openModal(d){selectedDate=d;modalDateTitle.textContent=`תאריך: ${ymd(d)}`;modalDateSub.textContent=`עברי: ${getHebrewDateDisplay(d)}`;modalOverlay.classList.remove("hidden");
-  btnEventA.onclick=()=>{addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});addMarker(ymd(addDays(d,6)),{type:"mikveh",label:"ליל טבילה"},{replaceType:true});saveLocalEvents();closeModal();render();};
+function openModal(d){modalDateTitle.textContent=`תאריך: ${ymd(d)}`;modalDateSub.textContent=`עברי: ${getHebrewDateDisplay(d)}`;modalOverlay.classList.remove("hidden");
+  btnEventA.onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה רק מהיום ה-${minhagDays()} מתחילת המחזור (${getPrefs().minhag==="ashkenazi"?"אשכנזים":getPrefs().minhag==="ben_ish_hai"?"בן איש חי":"ספרדים"}).`);return;}addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await persistAll();closeModal();render();};
   btnEventB.onclick=()=>openOnaPicker(d);
-  btnClear.onclick=()=>{dayEvents.delete(ymd(d));saveLocalEvents();closeModal();render();};}
-function closeModal(){modalOverlay.classList.add("hidden");selectedDate=null;}
-
-function findPreviousPeriod(date){const periods=[];for(const [k,v]of dayEvents.entries()){for(const m of normalizeDay(v).markers){if(m.type==="period"){periods.push({date:new Date(k),key:k});break;}}}periods.sort((a,b)=>a.date-b.date);return periods.filter(p=>p.date<date).pop();}
-function scheduleOrZarua(prishaDate,ona){const prefs=getPrefs();if(!prefs.orZarua)return;const target=ona==="day"?prishaDate:addDays(prishaDate,-1);const targetOna=ona==="day"?"night":"day";addMarker(ymd(target),{type:"orzarua",label:markerLabel("עונת אור זרוע",targetOna),ona:targetOna,source:"auto"});}
-function recalcDerived(){clearDerived();const prefs=getPrefs();const periods=[];for(const [k,v]of dayEvents.entries()){for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),key:k,ona:m.ona||"day"});}}
-  periods.sort((a,b)=>a.date-b.date);
-  for(let i=0;i<periods.length;i++){const p=periods[i];const base30=addDays(p.date,29);addMarker(ymd(base30),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-30"});scheduleOrZarua(base30,p.ona);
-    if(prefs.day31){const d31=addDays(p.date,30);addMarker(ymd(d31),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-31"});scheduleOrZarua(d31,p.ona);}
-    if(i>0){const gap=Math.round((p.date-periods[i-1].date)/(1000*60*60*24));if(gap>0&&gap<90){const custom=addDays(p.date,gap-1);addMarker(ymd(custom),{type:"prisha",label:markerLabel(`יום פרישה (${gap} ימים)`,p.ona),ona:p.ona,source:"auto-gap"});scheduleOrZarua(custom,p.ona);setPrefs({cycleGapDays:gap});}}
-  }}
-
-function openOnaPicker(date){onaOverlay.classList.remove("hidden");const apply=(ona)=>{onaOverlay.classList.add("hidden");addMarker(ymd(date),{type:"period",label:markerLabel("תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();saveLocalEvents();closeModal();render();};
+  btnClear.onclick=async()=>{dayEvents.delete(ymd(d));recalcDerived();await persistAll();closeModal();render();};}
+function closeModal(){modalOverlay.classList.add("hidden");}
+function openOnaPicker(date){onaOverlay.classList.remove("hidden");const apply=async(ona)=>{onaOverlay.classList.add("hidden");addMarker(ymd(date),{type:"period",label:markerLabel("תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await persistAll();closeModal();render();};
   document.getElementById("chooseDay").onclick=()=>apply("day");document.getElementById("chooseNight").onclick=()=>apply("night");}
 document.getElementById("onaCancel").addEventListener("click",()=>onaOverlay.classList.add("hidden"));onaOverlay.addEventListener("click",e=>{if(e.target===onaOverlay)onaOverlay.classList.add("hidden")});
 
@@ -168,7 +186,7 @@ function renderAuthMode(){const title=document.getElementById("authTitle"),sub=d
 async function doSignIn(){try{await signInWithEmailAndPassword(auth,emailInput.value,passInput.value);authMsg.textContent="התחברת בהצלחה";closeAuth();}catch(e){authMsg.textContent="שגיאת התחברות: "+e.message}}
 async function doSignUp(){try{await createUserWithEmailAndPassword(auth,emailInput.value,passInput.value);authMsg.textContent="נרשמת בהצלחה";closeAuth();}catch(e){authMsg.textContent="שגיאת רישום: "+e.message}}
 
-onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user)await loadRemoteEvents(user.uid);recalcDerived();render();});
+onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();render();});
 
 prevMonthBtn.addEventListener("click",()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()});
 nextMonthBtn.addEventListener("click",()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()});
@@ -177,10 +195,11 @@ function openDrawer(){drawer.classList.remove("hidden");drawerBackdrop.classList
 document.getElementById("menuBtn").addEventListener("click",openDrawer);document.getElementById("closeDrawer").addEventListener("click",closeDrawer);drawerBackdrop.addEventListener("click",closeDrawer);
 document.getElementById("openAuthFromMenu").addEventListener("click",()=>{openAuth();closeDrawer()});authClose.addEventListener("click",closeAuth);
 
-const darkToggle=document.getElementById("darkToggle"),orZaruaToggle=document.getElementById("orZaruaToggle"),day31Toggle=document.getElementById("day31Toggle");const prefs=getPrefs();darkToggle.checked=!!prefs.dark;orZaruaToggle.checked=!!prefs.orZarua;day31Toggle.checked=!!prefs.day31;if(prefs.dark)document.body.classList.add("dark");if(prefs.orZarua)document.body.classList.add("or-zarua");
+const darkToggle=document.getElementById("darkToggle"),day31Toggle=document.getElementById("day31Toggle"),minhagSelect=document.getElementById("minhagSelect");
+const prefs=getPrefs();darkToggle.checked=!!prefs.dark;day31Toggle.checked=!!prefs.day31;minhagSelect.value=prefs.minhag||"sephardi";if(prefs.dark)document.body.classList.add("dark");
 darkToggle.addEventListener("change",e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})});
-orZaruaToggle.addEventListener("change",e=>{document.body.classList.toggle("or-zarua",e.target.checked);setPrefs({orZarua:e.target.checked});recalcDerived();saveLocalEvents();render()});
-day31Toggle.addEventListener("change",e=>{setPrefs({day31:e.target.checked});recalcDerived();saveLocalEvents();render()});
+day31Toggle.addEventListener("change",e=>{setPrefs({day31:e.target.checked});recalcDerived();persistAll();render()});
+minhagSelect.addEventListener("change",e=>{setPrefs({minhag:e.target.value});recalcDerived();persistAll();render()});
 
 document.getElementById("authActionBtn").addEventListener("click",()=>authMode==="signin"?doSignIn():doSignUp());
 document.getElementById("authSwitchBtn").addEventListener("click",(e)=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()});
