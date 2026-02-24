@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>לוח שנה</title>
+  <title>לוח טהרה</title>
   <style>
     :root{
       --bg:#f3f6ff;
@@ -13,303 +12,184 @@
       --text:#1f2a44;
       --line:#dbe3f5;
       --accent:#4c7dff;
-      --danger:#ff4d4d;
-      --success:#2dd4bf;
       --shadow: 0 8px 24px rgba(67,95,160,.14);
       --radius: 18px;
-      --cell: 92px;
-
+      --cell: 96px;
       --shabbat:#ffc857;
       --shabbat-bg: rgba(255,200,87,.10);
       --holiday:#c7a6ff;
     }
-
+    body.dark{
+      --bg:#0f1729;
+      --card:#18243d;
+      --muted:#9fb0d5;
+      --text:#e7eeff;
+      --line:#2a3b61;
+      --accent:#8fb3ff;
+      --shadow: 0 10px 26px rgba(0,0,0,.30);
+      --shabbat:#ffd479;
+      --holiday:#d8beff;
+    }
+    body.or-zarua{
+      --bg:#fff8ef;
+      --card:#ffffff;
+      --text:#412a1f;
+      --muted:#8d6352;
+      --line:#f0dccf;
+      --accent:#f48c42;
+      --shadow: 0 8px 22px rgba(174,95,43,.18);
+    }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Hebrew", sans-serif;
-      background: radial-gradient(1200px 700px at 80% -20%, rgba(76,125,255,.10), transparent),
-                  radial-gradient(900px 600px at 10% 10%, rgba(45,212,191,.10), transparent),
-                  var(--bg);
-      color:var(--text);
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Hebrew",sans-serif;background:var(--bg);color:var(--text)}
+    .hidden{display:none!important}
 
-    .hidden{display:none !important}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;object-fit:cover}
+    .title{font-size:19px;font-weight:900}
+    .subtitle{font-size:12px;color:var(--muted)}
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      background: rgba(255,255,255,.84);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top:0;
-      z-index:10;
-    }
+    .container{max-width:1020px;margin:14px auto;padding:0 14px 36px;display:grid;gap:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
 
-    .brand{display:flex; gap:12px; align-items:center}
-    .logo{
-      width:44px; height:44px;
-      display:grid; place-items:center;
-      background: #eef3ff;
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow: var(--shadow);
-    }
-    .title{font-size:18px; font-weight:800}
-    .subtitle{font-size:12px; color:var(--muted); margin-top:2px}
+    .btn{border:1px solid transparent;background:#eaf1ff;color:var(--text);padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:800}
+    .btn-ghost{background:transparent;border-color:var(--line)}
+    .btn-primary{background:var(--accent);color:white}
 
-    .container{
-      max-width: 980px;
-      margin: 18px auto;
-      padding: 0 14px 40px;
-      display:grid;
-      gap:14px;
-    }
-
-    .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .controls{
-      padding:12px 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .nav{display:flex; align-items:center; gap:10px}
-    .monthTitle{
-      min-width: 260px;
-      text-align:center;
-      font-weight:900;
-      letter-spacing:.2px;
-      padding:8px 10px;
-      border-radius: 14px;
-      background: #f5f8ff;
-      border:1px solid var(--line);
-    }
-
-    .meta .hint{font-size:12px; color:var(--muted)}
-    .legend{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .pill{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: #f7f9ff;
-      color: var(--muted);
-    }
-    .pill.shabbat{border-color: rgba(255,200,87,.35); color: var(--shabbat)}
-    .pill.holiday{border-color: rgba(199,166,255,.35); color: var(--holiday)}
-
-    .btn{
-      border:1px solid transparent;
-      background: #eef3ff;
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight:800;
-      transition: transform .05s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
-      user-select:none;
-    }
-    .btn:active{transform: translateY(1px)}
-    .btn:hover{background: #e3ecff}
-    .btn-ghost{background: transparent; border-color: var(--line)}
-    .btn-ghost:hover{background: #eef3ff}
-    .btn-danger{background: rgba(255,77,77,.18); border-color: rgba(255,77,77,.35)}
-    .btn-danger:hover{background: rgba(255,77,77,.24)}
-    .btn-success{background: rgba(45,212,191,.16); border-color: rgba(45,212,191,.35)}
-    .btn-success:hover{background: rgba(45,212,191,.22)}
+    .controls{padding:12px 14px;display:flex;justify-content:center;align-items:center;gap:12px}
+    .monthTitle{min-width:270px;text-align:center;font-weight:900;padding:8px 10px;border-radius:14px;background:#f5f8ff;border:1px solid var(--line)}
 
     .calendar{padding:12px}
-    .dow{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-      padding:8px 6px 12px;
-      color: var(--muted);
-      font-size:12px;
-      font-weight:800;
-    }
-    .dow div{
-      padding:8px 0;
-      text-align:center;
-      border-radius: 12px;
-      border:1px solid var(--line);
-      background: #f8faff;
-    }
-    .dow .shabbat{
-      border-color: rgba(255,200,87,.35);
-      color: var(--shabbat);
-      background: var(--shabbat-bg);
-    }
+    .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .dow{padding-bottom:12px;color:var(--muted);font-size:12px;font-weight:800}
+    .dow div{text-align:center;padding:8px 0;border:1px solid var(--line);border-radius:12px;background:#f8faff}
+    .dow .shabbat{border-color:rgba(255,200,87,.35);color:var(--shabbat);background:var(--shabbat-bg)}
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:8px;
-    }
+    .cell{min-height:var(--cell);border-radius:16px;border:1px solid var(--line);background:#f8faff;padding:8px;cursor:pointer;position:relative}
+    .cell.muted{opacity:.45}
+    .cell.today{border-color:rgba(76,125,255,.6);box-shadow:0 0 0 2px rgba(76,125,255,.15) inset}
+    .cell.shabbat{background:linear-gradient(180deg, rgba(255,200,87,.12), rgba(255,255,255,.03))}
+    .greg{font-size:18px;font-weight:950}
+    .hebrew{font-size:12px;color:#4b5b7e;margin-top:4px}
+    .holiday{font-size:11px;color:var(--holiday);font-weight:850;margin-top:4px}
 
-    .cell{
-      min-height: var(--cell);
-      border-radius: 16px;
-      border:1px solid var(--line);
-      background: #f8faff;
-      padding:10px 10px 8px;
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-    }
-    .cell:hover{background: #edf4ff}
-    .cell.muted{opacity:.35; cursor:default}
-    .cell.today{border-color: rgba(76,125,255,.55); box-shadow: 0 0 0 2px rgba(76,125,255,.12) inset}
+    .badge{display:inline-block;margin-top:6px;font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-weight:850}
+    .badge.period,.badge.prisha{border-color:rgba(255,105,180,.35);background:rgba(255,105,180,.14);color:#8a2f61}
+    .badge.hefsek{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.12);color:#166534}
+    .badge.mikveh{border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.14);color:#1e3a8a}
 
-    .cell.shabbat{
-      border-color: rgba(255,200,87,.35);
-      background: linear-gradient(180deg, rgba(255,200,87,.12), rgba(255,255,255,.03));
-    }
+    .drawer-backdrop{position:fixed;inset:0;background:rgba(8,16,35,.36);z-index:40}
+    .drawer{position:fixed;top:0;right:0;width:min(360px,92vw);height:100vh;background:var(--card);border-left:1px solid var(--line);padding:14px;z-index:50;display:grid;align-content:start;gap:10px}
+    .drawer h3{margin:0 0 4px}
+    .switch{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px}
 
-    .greg{
-      font-weight:950;
-      font-size:16px;
-      line-height:1.1;
-    }
-    .hebrew{
-      margin-top:6px;
-      font-size:12px;
-      color: #4b5b7e;
-    }
-    .holiday{
-      margin-top:6px;
-      font-size:11px;
-      color: var(--holiday);
-      font-weight:850;
-      letter-spacing:.1px;
-    }
+    .modal-overlay{position:fixed;inset:0;background:rgba(35,45,75,.28);display:grid;place-items:center;padding:14px;z-index:60}
+    .modal{width:min(560px,96vw);padding:14px}
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
+    .modal-title{font-size:16px;font-weight:950}.modal-sub{font-size:12px;color:var(--muted)}
+    .modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 
-    .badge{
-      position:absolute;
-      left:10px;
-      bottom:10px;
-      font-size:11px;
-      padding:4px 8px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: #eef3ff;
-      font-weight:850;
-    }
-    .badge.period, .badge.prisha{border-color: rgba(255,105,180,.35); background: rgba(255,105,180,.14); color:#8a2f61}
-    .badge.hefsek{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12); color:#166534}
-    .badge.mikveh{border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.14); color:#1e3a8a}
-
-    .modal-overlay{
-      position:fixed; inset:0;
-      background: rgba(35,45,75,.24);
-      display:grid;
-      place-items:center;
-      padding:14px;
-      z-index:50;
-    }
-    .modal{
-      width:min(560px, 96vw);
-      padding:14px;
-    }
-    .modal-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-    }
-    .modal-title{font-size:16px; font-weight:950}
-    .modal-sub{font-size:12px; color:var(--muted); margin-top:2px}
-    .modal-body{margin-top:12px}
-    .modal-actions{display:flex; flex-wrap:wrap; gap:10px}
-    .small{margin-top:10px; color:var(--muted); font-size:12px}
+    .auth-form{display:grid;gap:8px;margin-top:10px}
+    input{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+    .tiny{font-size:12px;color:var(--muted)}
   </style>
 </head>
-
 <body>
   <header class="topbar">
+    <button id="menuBtn" class="btn btn-ghost">☰</button>
     <div class="brand">
-      <div class="logo">📅</div>
+      <img class="logo" src="1.png" alt="לוגו"/>
       <div>
-        <div class="title">לוח שנה</div>
-        <div class="subtitle">לועזי + עברי, שבת מודגשת, וחגים</div>
+        <div class="title">לוח טהרה</div>
+        <div class="subtitle">חישוב ימי נידה ופרישה</div>
       </div>
     </div>
+    <div id="authState" class="tiny">לא מחובר</div>
   </header>
 
   <main class="container">
     <section class="controls card">
-      <div class="nav">
-        <button id="prevMonth" class="btn btn-ghost">◀ חודש קודם</button>
-        <div class="monthTitle" id="monthTitle"></div>
-        <button id="nextMonth" class="btn btn-ghost">חודש הבא ▶</button>
-      </div>
-
-      <div class="meta">
-        <div class="hint">
-          ניווט קדימה מוגבל ל־<b>5 שנים</b> מהיום.
-        </div>
-        <div class="legend" style="margin-top:10px">
-          <span class="pill shabbat">שבת</span>
-          <span class="pill holiday">חג</span>
-        </div>
-      </div>
+      <button id="prevMonth" class="btn btn-ghost">◀ חודש קודם</button>
+      <div class="monthTitle" id="monthTitle"></div>
+      <button id="nextMonth" class="btn btn-ghost">חודש הבא ▶</button>
     </section>
 
     <section class="calendar card">
-      <!-- Sunday-first; Shabbat last -->
-      <div class="dow">
-        <div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div class="shabbat">ש׳</div>
-      </div>
-      <div id="grid" class="grid" aria-label="Calendar grid"></div>
+      <div class="dow"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div class="shabbat">ש׳</div></div>
+      <div id="grid" class="grid"></div>
     </section>
   </main>
 
-  <!-- Modal -->
-  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+  <aside id="drawer" class="drawer hidden">
+    <button id="closeDrawer" class="btn btn-ghost">✕ סגור</button>
+    <h3>תפריט</h3>
+    <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
+    <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
+    <div class="switch"><span>מצב אור זרוע</span><input id="orZaruaToggle" type="checkbox"></div>
+    <div class="switch"><span>יום פרישה אחרי 31 ימים</span><input id="day31Toggle" type="checkbox"></div>
+    <button id="remindersBtn" class="btn btn-ghost">תזכורות במייל (בקרוב)</button>
+  </aside>
+
+  <div id="modalOverlay" class="modal-overlay hidden">
     <div class="modal card">
       <div class="modal-head">
-        <div>
-          <div id="modalDateTitle" class="modal-title"></div>
-          <div id="modalDateSub" class="modal-sub"></div>
-        </div>
+        <div><div id="modalDateTitle" class="modal-title"></div><div id="modalDateSub" class="modal-sub"></div></div>
         <button id="modalClose" class="btn btn-ghost">✕</button>
       </div>
-
-      <div class="modal-body">
-        <div class="modal-actions">
-          <button id="btnEventA" class="btn btn-success">הפסק טהרה</button>
-          <button id="btnEventB" class="btn btn-danger">תחילת מחזור</button>
-          <button id="btnClear" class="btn btn-ghost">נקה סימון</button>
-        </div>
-
-        <div class="small">
-          הסימונים נשמרים מקומית (localStorage). אפשר להחליף מאוחר יותר לשמירה ב־Firebase.
-        </div>
+      <div class="modal-actions">
+        <button id="btnEventA" class="btn">הפסק טהרה</button>
+        <button id="btnEventB" class="btn">תחילת מחזור</button>
+        <button id="btnClear" class="btn btn-ghost">נקה סימון</button>
       </div>
     </div>
   </div>
 
-  <script>
-    /********************
-     * 1) State & DOM
-     ********************/
+  <div id="authOverlay" class="modal-overlay hidden">
+    <div class="modal card">
+      <div class="modal-head">
+        <div><div class="modal-title">התחברות לחשבון</div><div class="modal-sub">אפשר להתחבר או להירשם עם אימייל וסיסמה</div></div>
+        <button id="authClose" class="btn btn-ghost">✕</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <input id="email" type="email" placeholder="אימייל" required>
+        <input id="password" type="password" placeholder="סיסמה" required>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="signInBtn" type="button" class="btn btn-primary">התחברות</button>
+          <button id="signUpBtn" type="button" class="btn">רישום</button>
+          <button id="signOutBtn" type="button" class="btn btn-ghost">התנתקות</button>
+        </div>
+      </form>
+      <div id="authMsg" class="tiny"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",
+      authDomain: "luach-48111.firebaseapp.com",
+      projectId: "luach-48111",
+      storageBucket: "luach-48111.firebasestorage.app",
+      messagingSenderId: "418216623160",
+      appId: "1:418216623160:web:56ebe2830458d6b12f3acd",
+      measurementId: "G-BJ2LVM6WR6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    if (await isSupported()) getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
     const grid = document.getElementById("grid");
     const monthTitle = document.getElementById("monthTitle");
     const prevMonthBtn = document.getElementById("prevMonth");
     const nextMonthBtn = document.getElementById("nextMonth");
+    const authState = document.getElementById("authState");
 
     const modalOverlay = document.getElementById("modalOverlay");
     const modalClose = document.getElementById("modalClose");
@@ -319,320 +199,163 @@
     const btnEventB = document.getElementById("btnEventB");
     const btnClear  = document.getElementById("btnClear");
 
+    const authOverlay = document.getElementById("authOverlay");
+    const authClose = document.getElementById("authClose");
+    const emailInput = document.getElementById("email");
+    const passInput = document.getElementById("password");
+    const authMsg = document.getElementById("authMsg");
+
+    const drawer = document.getElementById("drawer");
+    const drawerBackdrop = document.getElementById("drawerBackdrop");
+
     const today = startOfDay(new Date());
-    const maxForward = addYears(today, 5); // inclusive-ish month limit
     let view = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    // events: YYYY-MM-DD -> { type: "period"|"prisha"|"hefsek"|"mikveh", label: string }
-    const STORAGE_KEY = "calendar_events_v2";
-    let dayEvents = loadLocalEvents(); // Map
-
+    const STORAGE_KEY = "calendar_events_v3";
+    const PREFS_KEY = "calendar_prefs_v1";
+    const AUTH_PROMPT_KEY = "auth_prompt_seen";
+    let dayEvents = loadLocalEvents();
     let selectedDate = null;
+    let currentUid = null;
 
-    /********************
-     * 2) Date helpers
-     ********************/
     function pad2(n){ return String(n).padStart(2, "0"); }
-    function ymd(d){
-      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-    }
+    function ymd(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
     function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
-    function addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
-    function addYears(d, n){ const x=new Date(d); x.setFullYear(x.getFullYear()+n); return x; }
-    function isSameDay(a,b){
-      return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+    function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+    function getHebrewDate(d){
+      return new Intl.DateTimeFormat("he-u-ca-hebrew", { day:"numeric", month:"long", year:"numeric" }).format(d);
     }
 
-    function clampViewToForwardLimit(nextView){
-      const lastAllowed = new Date(maxForward.getFullYear(), maxForward.getMonth(), 1);
-      if (nextView > lastAllowed) return lastAllowed;
-      return nextView;
-    }
-
-    /********************
-     * 3) Hebrew date via Intl (no API)
-     ********************/
-    const hebPartsFmt = new Intl.DateTimeFormat("he-u-ca-hebrew", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-
-    const gregDayMonthFmt = new Intl.DateTimeFormat("he", { day: "numeric", month: "long" });
-
-    function getHebrewParts(d){
-      // Returns { dayNum: number, monthHe: string, yearHe: string, full: string }
-      const parts = hebPartsFmt.formatToParts(d);
-      const dayStr = (parts.find(p => p.type === "day")?.value || "").trim();
-      const monthHe = (parts.find(p => p.type === "month")?.value || "").trim();
-      const yearHe  = (parts.find(p => p.type === "year")?.value || "").trim();
-      const dayNum  = parseInt(dayStr, 10); // in 'he' locale this is usually ASCII digits; if not, NaN
-      const full = hebPartsFmt.format(d);
-      return { dayNum, monthHe, yearHe, full };
-    }
-
-    // Normalize Hebrew month names from Intl output
-    function normalizeHebMonthName(raw){
-      const s = (raw || "").replace(/\s+/g, " ").trim();
-
-      // Common variants:
-      // "תשרי","חשוון","כסלו","טבת","שבט","אדר","אדר א׳","אדר ב׳","ניסן","אייר","סיוון","תמוז","אב","אלול"
-      // Some engines output "חשון" vs "חשוון", "טבת" vs "טבת" etc.
-      if (s.includes("חש")) return "חשוון";
-      if (s.includes("כסל")) return "כסלו";
-      if (s.includes("טבת") || s.includes("טבת")) return "טבת";
-      if (s.includes("סיון") || s.includes("סיוון")) return "סיוון";
-      if (s.includes("אדר") && (s.includes("ב") || s.includes("ב׳") || s.includes("שני"))) return "אדר ב";
-      if (s.includes("אדר") && (s.includes("א") || s.includes("א׳") || s.includes("ראשון"))) return "אדר א";
-      if (s.includes("אדר")) return "אדר";
-      if (s.includes("תשר")) return "תשרי";
-      if (s.includes("ניס")) return "ניסן";
-      if (s.includes("איי")) return "אייר";
-      if (s.includes("תמ")) return "תמוז";
-      if (s === "אב" || s.includes("אב")) return "אב";
-      if (s.includes("אלו")) return "אלול";
-      if (s.includes("שבט")) return "שבט";
-      return s;
-    }
-
-    function toHebrewDayLetters(num){
-      if (!Number.isFinite(num) || num < 1 || num > 30) return String(num || "");
-      const ones = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"];
-      const tens = ["", "י", "כ", "ל"];
-      if (num === 15) return "ט״ו";
-      if (num === 16) return "ט״ז";
-      if (num < 10) return `${ones[num]}׳`;
-      if (num % 10 === 0) return `${tens[Math.floor(num / 10)]}׳`;
-      const t = tens[Math.floor(num / 10)];
-      const o = ones[num % 10];
-      return `${t}״${o}`;
-    }
-
-    function formatHebrewCellDate(d){
-      const hp = getHebrewParts(d);
-      const month = normalizeHebMonthName(hp.monthHe);
-      const day = toHebrewDayLetters(hp.dayNum);
-      return `${day} ב${month}`;
-    }
-
-    /********************
-     * 4) Holiday rules (core set)
-     *    Note: חנוכה spans כסלו→טבת; handled explicitly.
-     ********************/
-    function getHolidayLabel(d){
-      const hp = getHebrewParts(d);
-      const day = hp.dayNum;
-      const month = normalizeHebMonthName(hp.monthHe);
-
-      if (!Number.isFinite(day) || !month) return "";
-
-      // Rosh Hashana
-      if (month === "תשרי" && (day === 1 || day === 2)) return "ראש השנה";
-      // Yom Kippur
-      if (month === "תשרי" && day === 10) return "יום כיפור";
-      // Sukkot (15-21)
-      if (month === "תשרי" && day >= 15 && day <= 21) return "סוכות";
-      // Simchat Torah (Israel: 22 Tishrei)
-      if (month === "תשרי" && day === 22) return "שמחת תורה";
-
-      // Hanukkah: 25 Kislev .. (Tevet 2/3). We label all those days "חנוכה"
-      // Kislev: day>=25
-      if (month === "כסלו" && day >= 25) return "חנוכה";
-      // Tevet: day<=3 (covers Kislev 29/30 differences safely for label only)
-      if (month === "טבת" && day <= 3) return "חנוכה";
-
-      // Purim: 14 Adar; leap year -> Adar II. We treat "אדר ב" as Adar II; else "אדר".
-      if ((month === "אדר" || month === "אדר ב") && day === 14) return "פורים";
-
-      // Pesach: 15-21 Nisan (Israel)
-      if (month === "ניסן" && day >= 15 && day <= 21) return "פסח";
-
-      // Shavuot: 6 Sivan
-      if (month === "סיוון" && day === 6) return "שבועות";
-
-      // Tisha B'Av: 9 Av
-      if (month === "אב" && day === 9) return "תשעה באב";
-
-      return "";
-    }
-
-    /********************
-     * 5) LocalStorage persistence
-     ********************/
     function loadLocalEvents(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return new Map();
-        const obj = JSON.parse(raw);
-        const m = new Map();
-        for (const [k,v] of Object.entries(obj)){
-          if (v && ["period", "prisha", "hefsek", "mikveh"].includes(v.type)) m.set(k, v);
-        }
-        return m;
-      } catch {
-        return new Map();
-      }
+      try{ const raw=localStorage.getItem(STORAGE_KEY); return new Map(Object.entries(raw?JSON.parse(raw):{})); }
+      catch{return new Map();}
     }
-
-    function saveLocalEvents(map){
-      const obj = {};
-      for (const [k,v] of map.entries()) obj[k] = v;
+    function saveLocalEvents(){
+      const obj={}; for(const [k,v] of dayEvents.entries()) obj[k]=v;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+      if (currentUid) saveRemoteEvents(obj);
+    }
+    async function saveRemoteEvents(obj){
+      await setDoc(doc(db, "users", currentUid), { events: obj, updatedAt: Date.now() }, { merge:true });
+    }
+    async function loadRemoteEvents(uid){
+      const snap = await getDoc(doc(db, "users", uid));
+      if (snap.exists() && snap.data().events){ dayEvents = new Map(Object.entries(snap.data().events)); saveLocalEvents(); }
     }
 
-    function setEvent(dayKey, type, label){
-      dayEvents.set(dayKey, { type, label });
-      saveLocalEvents(dayEvents);
+    function getPrefs(){
+      try{return JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");}catch{return {}};
     }
+    function setPrefs(next){ localStorage.setItem(PREFS_KEY, JSON.stringify({ ...getPrefs(), ...next })); }
 
-    function clearEvent(dayKey){
-      dayEvents.delete(dayKey);
-      saveLocalEvents(dayEvents);
-    }
+    function getHolidayLabel(d){ return d.getDay()===6 ? "שבת" : ""; }
 
-    /********************
-     * 6) UI
-     ********************/
     function render(){
-      const y = view.getFullYear();
-      const m = view.getMonth();
-
-      monthTitle.textContent = new Intl.DateTimeFormat("he", { month: "long", year: "numeric" })
-        .format(new Date(y, m, 1));
-
+      const y = view.getFullYear(), m = view.getMonth();
+      monthTitle.textContent = new Intl.DateTimeFormat("he", { month:"long", year:"numeric" }).format(new Date(y,m,1));
       grid.innerHTML = "";
+      const first = new Date(y,m,1), gridStart = addDays(first, -first.getDay());
 
-      // Sunday-first grid start
-      const firstOfMonth = new Date(y, m, 1);
-      const startDay = firstOfMonth.getDay(); // 0=Sun
-      const gridStart = addDays(firstOfMonth, -startDay);
-
-      for (let i=0; i<42; i++){
-        const d = startOfDay(addDays(gridStart, i));
-        const inMonth = d.getMonth() === m;
-
+      for (let i=0;i<42;i++){
+        const d = startOfDay(addDays(gridStart,i));
+        const inMonth = d.getMonth()===m;
         const cell = document.createElement("div");
-        cell.className = "cell" + (inMonth ? "" : " muted") + (isSameDay(d,today) ? " today" : "");
-        const isShabbat = d.getDay() === 6; // Saturday
-        if (isShabbat) cell.classList.add("shabbat");
+        cell.className = `cell${inMonth?"":" muted"}${d.getDay()===6?" shabbat":""}${ymd(d)===ymd(today)?" today":""}`;
 
-        const key = ymd(d);
-
-        // Date content
-        const greg = document.createElement("div");
-        greg.className = "greg";
-        greg.textContent = gregDayMonthFmt.format(d);
-
-        const hp = getHebrewParts(d);
-        const heb = document.createElement("div");
-        heb.className = "hebrew";
-        heb.textContent = formatHebrewCellDate(d);
+        const greg = document.createElement("div"); greg.className="greg"; greg.textContent = d.getDate();
+        const heb = document.createElement("div"); heb.className="hebrew"; heb.textContent=getHebrewDate(d);
+        cell.append(greg, heb);
 
         const hol = getHolidayLabel(d);
-        if (hol){
-          const holiday = document.createElement("div");
-          holiday.className = "holiday";
-          holiday.textContent = hol;
-          cell.appendChild(holiday);
-        }
+        if (hol){ const h=document.createElement("div"); h.className="holiday"; h.textContent=hol; cell.appendChild(h); }
 
-        // Event badge
-        const ev = dayEvents.get(key);
-        if (ev){
-          const badge = document.createElement("div");
-          badge.className = `badge ${ev.type}`;
-          badge.textContent = ev.label;
-          cell.appendChild(badge);
-        }
+        const ev = dayEvents.get(ymd(d));
+        if (ev){ const b=document.createElement("div"); b.className=`badge ${ev.type}`; b.textContent=ev.label; cell.appendChild(b); }
 
-        cell.prepend(heb);
-        cell.prepend(greg);
-
-        // Forward limit: disable clicks beyond maxForward
-        const withinForward = d <= maxForward;
-
-        if (!withinForward){
-          cell.classList.add("muted");
-          cell.style.cursor = "default";
-        } else {
-          cell.addEventListener("click", () => openModal(d));
-        }
-
+        cell.addEventListener("click", () => openModal(d));
         grid.appendChild(cell);
       }
-
-      // Navigation forward limited by 5 years
-      const nextCandidate = new Date(view.getFullYear(), view.getMonth()+1, 1);
-      const clampedNext = clampViewToForwardLimit(nextCandidate);
-      const lastAllowed = new Date(maxForward.getFullYear(), maxForward.getMonth(), 1);
-      nextMonthBtn.disabled = (view.getTime() === lastAllowed.getTime());
-      nextMonthBtn.style.opacity = nextMonthBtn.disabled ? .45 : 1;
-
-      // Backward navigation unlimited
-      prevMonthBtn.disabled = false;
-      prevMonthBtn.style.opacity = 1;
     }
 
     function openModal(d){
       selectedDate = d;
-      const key = ymd(d);
-      const hp = getHebrewParts(d);
-      const hol = getHolidayLabel(d);
-
-      modalDateTitle.textContent = `תאריך: ${key}`;
-      modalDateSub.textContent =
-        `עברי: ${formatHebrewCellDate(d)}` +
-        (hol ? ` • ${hol}` : "") +
-        (d.getDay() === 6 ? " • שבת" : "");
-
+      modalDateTitle.textContent = `תאריך: ${ymd(d)}`;
+      modalDateSub.textContent = `עברי: ${getHebrewDate(d)}`;
       modalOverlay.classList.remove("hidden");
 
       btnEventA.onclick = () => {
-        setEvent(key, "hefsek", "הפסק טהרה");
-        const mikvehDate = ymd(addDays(d, 6));
-        setEvent(mikvehDate, "mikveh", "ליל טבילה");
-        closeModal();
-        render();
+        const key = ymd(d);
+        dayEvents.set(key, { type:"hefsek", label:"הפסק טהרה" });
+        dayEvents.set(ymd(addDays(d,6)), { type:"mikveh", label:"ליל טבילה" });
+        saveLocalEvents(); closeModal(); render();
       };
       btnEventB.onclick = () => {
-        setEvent(key, "period", "תחילת מחזור");
-        const prishaDate = ymd(addDays(d, 29));
-        setEvent(prishaDate, "prisha", "יום פרישה");
-        closeModal();
-        render();
+        const key = ymd(d);
+        const prishaDays = getPrefs().day31 ? 30 : 29;
+        dayEvents.set(key, { type:"period", label:"תחילת מחזור" });
+        dayEvents.set(ymd(addDays(d,prishaDays)), { type:"prisha", label:"יום פרישה" });
+        saveLocalEvents(); closeModal(); render();
       };
-      btnClear.onclick  = () => { clearEvent(key); closeModal(); render(); };
+      btnClear.onclick = () => { dayEvents.delete(ymd(d)); saveLocalEvents(); closeModal(); render(); };
+    }
+    function closeModal(){ modalOverlay.classList.add("hidden"); selectedDate = null; }
+
+    function openAuth(){ authOverlay.classList.remove("hidden"); }
+    function closeAuth(){ authOverlay.classList.add("hidden"); }
+
+    async function doSignIn(){
+      try{ await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); authMsg.textContent="התחברת בהצלחה"; closeAuth(); }
+      catch(e){ authMsg.textContent = "שגיאת התחברות: " + e.message; }
+    }
+    async function doSignUp(){
+      try{ await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); authMsg.textContent="נרשמת בהצלחה"; closeAuth(); }
+      catch(e){ authMsg.textContent = "שגיאת רישום: " + e.message; }
     }
 
-    function closeModal(){
-      modalOverlay.classList.add("hidden");
-      selectedDate = null;
-    }
+    document.getElementById("signInBtn").addEventListener("click", doSignIn);
+    document.getElementById("signUpBtn").addEventListener("click", doSignUp);
+    document.getElementById("signOutBtn").addEventListener("click", async()=>{ await signOut(auth); authMsg.textContent="התנתקת"; });
+    authClose.addEventListener("click", closeAuth);
+
+    onAuthStateChanged(auth, async user => {
+      currentUid = user?.uid || null;
+      authState.textContent = user ? `מחובר: ${user.email}` : "לא מחובר";
+      if (user) await loadRemoteEvents(user.uid);
+      render();
+    });
+
+    prevMonthBtn.addEventListener("click", ()=>{ view = new Date(view.getFullYear(), view.getMonth()-1, 1); render(); });
+    nextMonthBtn.addEventListener("click", ()=>{ view = new Date(view.getFullYear(), view.getMonth()+1, 1); render(); });
 
     modalClose.addEventListener("click", closeModal);
-    modalOverlay.addEventListener("click", (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
+    modalOverlay.addEventListener("click", e=>{ if(e.target===modalOverlay) closeModal(); });
 
-    /********************
-     * 7) Navigation
-     ********************/
-    prevMonthBtn.addEventListener("click", () => {
-      view = new Date(view.getFullYear(), view.getMonth()-1, 1);
-      render();
-    });
+    function openDrawer(){ drawer.classList.remove("hidden"); drawerBackdrop.classList.remove("hidden"); }
+    function closeDrawer(){ drawer.classList.add("hidden"); drawerBackdrop.classList.add("hidden"); }
+    document.getElementById("menuBtn").addEventListener("click", openDrawer);
+    document.getElementById("closeDrawer").addEventListener("click", closeDrawer);
+    drawerBackdrop.addEventListener("click", closeDrawer);
 
-    nextMonthBtn.addEventListener("click", () => {
-      if (nextMonthBtn.disabled) return;
-      const next = new Date(view.getFullYear(), view.getMonth()+1, 1);
-      view = clampViewToForwardLimit(next);
-      render();
-    });
+    document.getElementById("openAuthFromMenu").addEventListener("click", ()=>{ openAuth(); closeDrawer(); });
+    document.getElementById("remindersBtn").addEventListener("click", ()=> alert("תזכורות במייל יתווספו בהמשך."));
 
-    /********************
-     * 8) Init
-     ********************/
+    const darkToggle = document.getElementById("darkToggle");
+    const orZaruaToggle = document.getElementById("orZaruaToggle");
+    const day31Toggle = document.getElementById("day31Toggle");
+
+    const prefs = getPrefs();
+    darkToggle.checked = !!prefs.dark;
+    orZaruaToggle.checked = !!prefs.orZarua;
+    day31Toggle.checked = !!prefs.day31;
+    if (prefs.dark) document.body.classList.add("dark");
+    if (prefs.orZarua) document.body.classList.add("or-zarua");
+
+    darkToggle.addEventListener("change", e=>{ document.body.classList.toggle("dark", e.target.checked); setPrefs({ dark:e.target.checked }); });
+    orZaruaToggle.addEventListener("change", e=>{ document.body.classList.toggle("or-zarua", e.target.checked); setPrefs({ orZarua:e.target.checked }); });
+    day31Toggle.addEventListener("change", e=>{ setPrefs({ day31:e.target.checked }); });
+
+    if (!localStorage.getItem(AUTH_PROMPT_KEY)){ openAuth(); localStorage.setItem(AUTH_PROMPT_KEY, "1"); }
+
     render();
   </script>
 </body>
-</html> 
+</html>
