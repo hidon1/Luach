@@ -6,6 +6,7 @@
   <title>לוח טהרה</title>
   <link rel="icon" type="image/png" href="1.png" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@500;700;800&family=David+Libre:wght@500;700&display=swap');
     :root {
       --bg:#eedff8;
       --bg-2:#f5d0ee;
@@ -21,20 +22,20 @@
     }
     body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
-    body{margin:0;font-family:"Segoe UI","Noto Sans Hebrew","Arial",sans-serif;font-weight:650;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:#201735;background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
+    body{margin:0;font-family:"Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-weight:650;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:#201735;background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
-    .topbar{position:relative;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:transparent;border-bottom:none}
-    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:4px 8px;width:min(620px,100%)}.logo{width:90px;height:90px;border-radius:0;object-fit:contain}.title{font-family:"Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-size:2rem;font-weight:900;letter-spacing:.03em}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:.95rem;color:#7b3a8a;font-weight:700;letter-spacing:.01em}
-    .menu-btn{justify-self:end}
-    .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#e8fff0);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
+    .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(250,241,255,.75);backdrop-filter:blur(8px);border-bottom:1px solid #ead6f2}
+    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:4px 8px;width:min(620px,100%)}.logo{width:90px;height:90px;border-radius:0;object-fit:contain}.title{font-family:"David Libre","Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-size:2.08rem;font-weight:700;letter-spacing:.04em;text-shadow:0 2px 9px rgba(120,30,100,.12)}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:.95rem;color:#7b3a8a;font-weight:700;letter-spacing:.01em}
+    .menu-btn{justify-self:end;position:sticky;top:8px;z-index:35}
+    .today-panel{justify-self:start;position:sticky;top:78px;z-index:28;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
     .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.1rem;font-weight:900;color:#fff;background:linear-gradient(145deg,#6a2a58,var(--accent));padding:6px 12px;border-radius:999px;letter-spacing:.04em;box-shadow:0 5px 14px rgba(110,44,90,.28)}.small{font-size:.82rem;color:#4d406f;font-weight:700}
     .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
     .chip{padding:4px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);background:#fff}
     .container{max-width:1100px;margin:14px auto;padding:0 14px 30px;display:grid;gap:12px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.month-scroll-hint{font-size:.78rem;color:var(--muted);font-weight:700}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.month-scroll-hint{display:none}
     .monthTitle{font-weight:900;min-width:260px;text-align:center;padding:10px 12px;border-radius:12px;background:#ffffffd9;border:1px solid var(--line);color:#1f1632}
     .btn{border:1px solid var(--line);background:#ffffffd9;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;color:#23193a}
     .controls{flex-wrap:wrap}
@@ -65,7 +66,7 @@
     .sunset{font-size:.72rem;color:#9f4f73;margin-top:5px}
     .badge{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;font-size:.72rem;background:#fff;border:1px solid var(--line);cursor:pointer}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
-    .time-input{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:800;color:#24183c;min-width:120px}
+    .time-input{padding:10px 14px;border:1px solid #d8b4f1;border-radius:999px;background:linear-gradient(120deg,#fff,#ffeefe);font-weight:800;color:#24183c;min-width:140px;box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(182,90,155,.12)}
     .switch.reminder-card{display:block;background:linear-gradient(150deg,#fff6fd,#ffe8f5);border:1px solid #f1bdd9;border-radius:14px;padding:10px}
     .reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
     .reminder-grid .switch{margin:0}
@@ -79,10 +80,10 @@
     .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
     .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08)}
-    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
-    .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s ease}
+    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:56px;height:30px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
+    .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
     .switch input[type="checkbox"]:checked{background:#2f8cff}
-    .switch input[type="checkbox"]:checked::after{transform:translateX(-20px)}
+    .switch input[type="checkbox"]:checked::after{transform:translateX(-26px)}
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
@@ -92,13 +93,14 @@
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     #btnEventA{background:#fff;color:#23193a}
     #btnEventB{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
-    .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:10px;border:1px solid var(--line)}
+    .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:12px;border:1px solid var(--line)}
+    .drawer select,#day30Mode,#day31Mode,#minhagSelect{border-radius:999px;padding:10px 14px;background:linear-gradient(120deg,#fff,#f6ebff);border:1px solid #d4b8f0;font-weight:800}
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1024px){.logo{width:75px;height:75px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
-    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
+    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:start}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
     @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.35rem}.subtitle{font-size:.8rem}}
   </style>
 </head>
@@ -125,9 +127,6 @@
       <button id="nextMonth" class="btn">חודש הבא ◀</button>
       <button id="toggleContinuous" class="btn">תצוגת גלילה רציפה</button>
     </div>
-    <div class="month-extra">
-      <div class="month-scroll-hint" id="modeHint">מצב רגיל: מעבר חודש-חודש בלחצנים בלבד.</div>
-    </div>
   </section>
   <section id="calendar" class="calendar card">
     <div class="dow"><div>יום א׳</div><div>יום ב׳</div><div>יום ג׳</div><div>יום ד׳</div><div>יום ה׳</div><div>יום ו׳</div><div>שבת</div></div>
@@ -140,7 +139,7 @@
 <footer style="text-align:center;padding:22px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ׳ — לפרטים ועדכונים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">חתכן</a>.</footer>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="drawer" class="drawer hidden">
-  <div class="drawer-head"><h3>תפריט חכם</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
+  <div class="drawer-head"><h3>תפריט</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
   <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
   <div class="switch"><span>יום 31</span><input id="day31Toggle" type="checkbox"></div>
   <div class="switch"><span>אופן עונה בינונית (30)</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
@@ -460,7 +459,6 @@ function renderMonthCells(targetGrid,y,m){
 async function render(){
   const y=view.getFullYear(),m=view.getMonth();
   monthTitle.textContent=continuousMode?`שנה ${y} — גלילה רציפה` : new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));
-  el("modeHint").textContent=continuousMode?"מצב גלילה רציפה פעיל: כל חודשי השנה בדף אחד ארוך." : "מצב רגיל: מעבר חודש-חודש בלחצנים בלבד.";
   renderMonthCells(grid,y,m);
   await renderTodayCard();
 }
