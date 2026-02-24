@@ -40,7 +40,7 @@
     .calendar{padding:12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
     .dow div{text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;color:var(--muted);font-weight:700}
-    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s}
+    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s;position:relative}
     .cell:hover{transform:translateY(-2px)}
     .muted{opacity:.45}
     .today{outline:2px solid var(--accent)}
@@ -48,12 +48,18 @@
     .phase-period{background:var(--pink)}
     .phase-wait{background:#fff}
     .phase-clean{background:var(--green)}
+    .phase-mikveh{background:#d7f3ff}
     .phase-prisha{background:var(--warn)}
     .greg{font-size:1.2rem;font-weight:800}
     .hebrew{font-size:.8rem;color:var(--muted)}
     .sunset{font-size:.72rem;color:#9f4f73;margin-top:5px}
     .badge{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;font-size:.72rem;background:#fff;border:1px solid var(--line)}
-    .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#e2f0ff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
+    .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
+    .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid #eaddea;margin-bottom:4px}
+    .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
+    .half{padding:2px 4px;min-height:18px;font-size:.62rem;display:flex;gap:3px;align-items:center;justify-content:center}
+    .half-night{background:rgba(142,119,161,.08)}
+    .half-day{background:rgba(255,202,94,.12)}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
     .drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);z-index:41;background:linear-gradient(180deg,#fff,#ffeef8);border-left:1px solid var(--line);padding:16px;display:grid;gap:10px;align-content:start}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
@@ -104,10 +110,12 @@
   <button id="closeDrawer" class="btn">✕ סגור</button>
   <h3>תפריט חכם</h3>
   <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
-  <div class="switch"><span>יום פרישה אחרי 31 ימים</span><input id="day31Toggle" type="checkbox"></div>
+  <div class="switch"><span>יום פרישה 31</span><input id="day31Toggle" type="checkbox"></div>
+  <div class="switch"><span>אופן יום 30</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
+  <div class="switch"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
   <div class="switch"><span>שעת תזכורת</span><input id="reminderTime" type="time" value="15:00"></div>
-  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option><option value="ben_ish_hai">בן איש חי</option></select></div>
+  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small">לא מחובר</div>
 </aside>
@@ -128,7 +136,7 @@ const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(ap
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1);
-const STORAGE_KEY="calendar_events_v6",PREFS_KEY="calendar_prefs_v4",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1";
+const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v5",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache={},locationPromise=null,lastCoords=null,reminderTimer=null;
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
@@ -147,18 +155,57 @@ function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPre
 async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(!snap.exists())return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
-function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:m==="ben_ish_hai"?5:4}
+function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
 function canSetHefsek(d){const periods=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period").map(()=>new Date(k))).sort((a,b)=>a-b);const last=periods.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
+function getPrishaOnotForMode(baseOna,mode){return mode==="full"?["night","day"]:[baseOna];}
+function addPrishaMarkers(date,onot,label,source){for(const ona of onot){addMarker(ymd(date),{type:"prisha",label:markerLabel(label,ona),ona,source});}}
+function calculateKavuah(patterns){
+  const byGap=new Map(),byHebrew=new Map();
+  if(patterns.length<3) return {byGap,byHebrew};
+  for(let i=0;i<=patterns.length-3;i++){
+    const a=patterns[i],b=patterns[i+1],c=patterns[i+2];
+    const gap1=Math.round((b.date-a.date)/86400000),gap2=Math.round((c.date-b.date)/86400000);
+    if(gap1===gap2){const key=`gap-${gap1}-${c.ona}`;if(!byGap.has(key))byGap.set(key,{gap:gap1,ona:c.ona,start:c.date});}
+    const h1=getHebrewDateParts(a.date),h2=getHebrewDateParts(b.date),h3=getHebrewDateParts(c.date);
+    const d1=h1.day,d2=h2.day,d3=h3.day;
+    if((d1===d2&&d2===d3)||((d2-d1+30)%30===1&&(d3-d2+30)%30===1)){
+      const key=`heb-${d3}-${c.ona}-${h3.month}`;
+      if(!byHebrew.has(key))byHebrew.set(key,{day:d3,ona:c.ona,start:c.date,increment:(d1===d2&&d2===d3)?0:1});
+    }
+  }
+  return {byGap,byHebrew};
+}
+function getHebrewDateParts(d){
+  const parts=new Intl.DateTimeFormat("he-u-ca-hebrew",{day:"numeric",month:"long"}).formatToParts(d);
+  return {day:Number(parts.find(p=>p.type==="day")?.value||1),month:parts.find(p=>p.type==="month")?.value||""};
+}
+function hasKavuahForPeriod(period,kavuah){
+  for(const v of kavuah.byGap.values()) if(v.ona===period.ona && period.date>=v.start) return true;
+  for(const v of kavuah.byHebrew.values()) if(v.ona===period.ona && period.date>=v.start) return true;
+  return false;
+}
 function recalcDerived(){
   clearDerived();
   const periods=[],hefseks=[];
   for(const [k,v] of dayEvents.entries()) for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"}); if(m.type==="hefsek")hefseks.push(new Date(k));}
   periods.sort((a,b)=>a.date-b.date); hefseks.sort((a,b)=>a-b);
+  const prefs=getPrefs();
+  const day30Mode=prefs.day30Mode||"ona",day31Mode=prefs.day31Mode||"ona";
+  const kavuah=calculateKavuah(periods);
   for(const p of periods){
-    const d30=addDays(p.date,29); addMarker(ymd(d30),{type:"prisha",label:markerLabel("יום פרישה",p.ona),source:"auto-30"});
-    const ozDate=p.ona==="day"?d30:addDays(d30,-1); addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),source:"auto-oz"});
-    if(getPrefs().day31){const d31=addDays(p.date,30);addMarker(ymd(d31),{type:"prisha",label:markerLabel("יום פרישה 31",p.ona),source:"auto-31"});}
+    const d30=addDays(p.date,29);
+    if(!hasKavuahForPeriod(p,kavuah)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"יום פרישה","auto-30");}
+    const ozDate=p.ona==="day"?d30:addDays(d30,-1); addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
+    if(prefs.day31){const d31=addDays(p.date,30);addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום פרישה 31","auto-31");}
     const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"אפשר הפסק טהרה",source:"auto-ready"});
+  }
+  for(const v of kavuah.byGap.values()){
+    const d=addDays(v.start,v.gap);
+    addMarker(ymd(d),{type:"prisha",label:markerLabel(`וסת קבוע ${v.gap} יום`,v.ona),ona:v.ona,source:`auto-kavuah-gap-${v.gap}`});
+  }
+  for(const v of kavuah.byHebrew.values()){
+    const d=addDays(v.start,29);
+    addMarker(ymd(d),{type:"prisha",label:markerLabel("וסת תאריך קבוע",v.ona),ona:v.ona,source:"auto-kavuah-heb"});
   }
   for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
 }
@@ -168,7 +215,7 @@ function getPhaseMap(y,m){
   const hefseks=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="hefsek").map(()=>new Date(k))).sort((a,b)=>a-b);
   const mikvehs=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="mikveh").map(()=>new Date(k))).sort((a,b)=>a-b);
   for(let i=0;i<42;i++){const d=addDays(start,i);const p=periods.filter(x=>x<=d).at(-1);const nextP=periods.find(x=>x>d);const h=hefseks.find(x=>p&&x>=p&&x<=d);const mk=mikvehs.find(x=>p&&x>=p&&x<=d);
-    if(p&&!h)map[ymd(d)]="period";else if(h&&!mk)map[ymd(d)]="wait";else if(mk&&(!nextP||d<nextP))map[ymd(d)]="clean";
+    if(p&&!h)map[ymd(d)]="period";else if(h&&!mk)map[ymd(d)]="wait";else if(mk&&ymd(d)===ymd(mk))map[ymd(d)]="mikveh";else if(mk&&(!nextP||d<nextP))map[ymd(d)]="clean";
   }
   for(const [k,v] of dayEvents.entries()) if(normalizeDay(v).markers.some(x=>x.type==="prisha")) map[k]="prisha";
   return map;
@@ -280,9 +327,12 @@ async function render(){
     const phase=phaseMap[key]; cell.className=`cell${inMonth?"":" muted"}${key===ymd(today)?" today":""}${phase?` phase-${phase}`:""}`;
     const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();
     const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);
+    const halves=document.createElement("div");halves.className="day-halves";
+    const halfNight=document.createElement("div");halfNight.className="half half-night";halfNight.innerHTML="🌙 לילה";
+    const halfDay=document.createElement("div");halfDay.className="half half-day";halfDay.innerHTML="☀️ יום";
     const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: ${sunsetCache[key]||"…"}`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
-    cell.append(greg,heb,sunset);
-    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b)}
+    cell.append(greg,heb,halves,sunset);halves.append(halfNight,halfDay);
+    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b);if(ev.ona==="night"&&/פרישה|אור זרוע/.test(ev.label)){halfNight.innerHTML=`🌙 ${ev.label}`;}if(ev.ona==="day"&&/פרישה|אור זרוע/.test(ev.label)){halfDay.innerHTML=`☀️ ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.innerHTML=`🌙 ${ev.label}`;halfDay.innerHTML=`☀️ ${ev.label}`;}}
     cell.onclick=()=>openModal(d); grid.appendChild(cell);
   }
   await renderTodayCard();
@@ -313,10 +363,12 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),reminderTime=el("reminderTime");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; reminderTime.value=prefs.reminderTime||"15:00"; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),reminderTime=el("reminderTime");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; reminderTime.value=prefs.reminderTime||"15:00"; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
+day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
+day31Mode.onchange=async e=>{setPrefs({day31Mode:e.target.value});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
 reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
 reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
