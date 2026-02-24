@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>לוח טהרה</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@400;600;700;800&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@500;600;700;800&family=Heebo:wght@500;700;800;900&family=Rubik:wght@500;700;800&display=swap");
     :root {
       --bg:#fff4fa;
       --bg-2:#ffeaf6;
@@ -21,11 +21,11 @@
     }
     body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
-    body{margin:0;font-family:"Assistant","Rubik",sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
+    body{margin:0;font-family:"Assistant","Rubik",sans-serif;font-weight:600;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(230,102,173,.08) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:.8;z-index:-1}
     .hidden{display:none!important}
     .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:var(--card);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-    .brand{display:flex;align-items:center;gap:10px;justify-self:center}.logo{width:54px;height:54px;border-radius:50%}.title{font-size:1.25rem;font-weight:800}.subtitle{font-size:.82rem;color:var(--muted)}
+    .brand{display:flex;align-items:center;gap:12px;justify-self:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:8px 12px;width:min(620px,100%)}.logo{width:120px;height:74px;border-radius:12px;object-fit:cover}.title{font-family:"Heebo","Assistant",sans-serif;font-size:1.65rem;font-weight:900}.subtitle{font-size:.92rem;color:var(--muted);font-weight:700}.brand-symbol{font-size:1.4rem;color:#8a5a3f}
     .menu-btn{justify-self:end}
     .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#ffeefe);border:1px solid var(--line);box-shadow:var(--shadow)}
     .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.25rem;font-weight:800;color:var(--accent)}.small{font-size:.82rem;color:var(--muted)}
@@ -39,7 +39,7 @@
     .btn-primary{background:var(--accent);color:#fff;border-color:transparent}
     .calendar{padding:12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-    .dow div{text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;color:var(--muted);font-weight:700}
+    .dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
     .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s;position:relative}
     .cell:hover{transform:translateY(-2px)}
     .muted{opacity:.45}
@@ -59,11 +59,18 @@
     .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
     .half{padding:2px 4px;min-height:18px;font-size:.62rem;display:flex;gap:3px;align-items:center;justify-content:center}
     .half-night{background:rgba(142,119,161,.08)}
+    .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);z-index:41;background:linear-gradient(180deg,#fff,#ffeef8);border-left:1px solid var(--line);padding:16px;display:grid;gap:10px;align-content:start}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fff,#ffeef8);border-left:1px solid var(--line);padding:14px;display:grid;gap:10px;align-content:start;box-shadow:-12px 0 30px rgba(0,0,0,.15)}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
-    .switch{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:#ffffff99}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:#ffffffcc;gap:8px}
+    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
+    .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s ease}
+    .switch input[type="checkbox"]:checked{background:#2f8cff}
+    .switch input[type="checkbox"]:checked::after{transform:translateX(-20px)}
+    .drawer-head{display:flex;justify-content:space-between;align-items:center}
+    .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
     .modal-overlay{position:fixed;inset:0;background:#0004;display:grid;place-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:14px}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -73,7 +80,7 @@
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#ffe0ec,#ffd0e2);border:1px solid #f3b2cd;color:#931d53;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:68px;height:68px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}}
+    @media(max-width:1024px){.logo{width:90px;height:62px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
     @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.1rem}.subtitle{font-size:.74rem}}
   </style>
@@ -83,7 +90,7 @@
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
     <img class="logo" src="1.png" alt="לוגו" />
-    <div><div class="title">לוח טהרה</div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
+    <div><div class="title">לוח טהרה <span class="brand-symbol">✡</span></div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -100,21 +107,23 @@
     <button id="nextMonth" class="btn">חודש הבא ▶</button>
   </section>
   <section class="calendar card">
-    <div class="dow"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div>ש׳</div></div>
+    <div class="dow"><div>יום א׳</div><div>יום ב׳</div><div>יום ג׳</div><div>יום ד׳</div><div>יום ה׳</div><div>יום ו׳</div><div>שבת</div></div>
     <div id="grid" class="grid"></div>
   </section>
 </main>
-<footer style="text-align:center;padding:20px;color:var(--muted)">נבנה על ידי יזם אתרים</footer>
+<footer style="text-align:center;padding:22px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ׳. אתרים לפרטים היכנסו ל<a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">קישור</a>.</footer>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="drawer" class="drawer hidden">
-  <button id="closeDrawer" class="btn">✕ סגור</button>
-  <h3>תפריט חכם</h3>
+  <div class="drawer-head"><h3>תפריט חכם</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
   <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
   <div class="switch"><span>יום פרישה 31</span><input id="day31Toggle" type="checkbox"></div>
   <div class="switch"><span>אופן יום 30</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
+  <div class="switch"><span>תזכורת לימי פגישה</span><input id="meetingToggle" type="checkbox"></div>
   <div class="switch"><span>שעת תזכורת</span><input id="reminderTime" type="time" value="15:00"></div>
+  <div class="switch"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
+  <div class="switch"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Beersheba">באר שבע</option></select></div>
   <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small">לא מחובר</div>
@@ -136,8 +145,9 @@ const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(ap
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1);
-const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v5",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1";
-let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache={},locationPromise=null,lastCoords=null,reminderTimer=null;
+const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1";
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
+const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"}};
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
 function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())} function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return startOfDay(x)}
@@ -152,6 +162,9 @@ function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay
 function clearDerived(){for(const [k,v]of dayEvents.entries()){const keep=normalizeDay(v).markers.filter(m=>!m.source);keep.length?dayEvents.set(k,{markers:keep}):dayEvents.delete(k)}}
 async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await setDoc(doc(db,"users",currentUid),{events,prefs:getPrefs(),updatedAt:Date.now()},{merge:true})}
 function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
+function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
+function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
+
 async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(!snap.exists())return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
@@ -243,14 +256,27 @@ async function getCoordsWithRetry(){
 }
 
 async function resolveSunset(date){
-  const key=ymd(date); if(sunsetCache[key]) return sunsetCache[key];
+  const key=ymd(date);
+  const prefs=getPrefs();
+  const mode=prefs.sunsetMode||"location";
+  const cityKey=prefs.sunsetCity||"Jerusalem";
+  const cacheKey=mode==="city"?`city-${cityKey}-${key}`:`loc-${key}`;
+  if(sunsetCache[cacheKey]) return sunsetCache[cacheKey];
   try{
-    const {latitude,longitude}=await getCoordsWithRetry();
-    const url=`https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&date=${key}&formatted=0`;
+    let coords;
+    if(mode==="city") coords=CITY_COORDS[cityKey]||CITY_COORDS.Jerusalem;
+    else coords=await getCoordsWithRetry();
+    const url=`https://api.sunrise-sunset.org/json?lat=${coords.latitude}&lng=${coords.longitude}&date=${key}&formatted=0`;
     const r=await fetch(url); const j=await r.json();
     const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
-    sunsetCache[key]=t; return t;
-  }catch{sunsetCache[key]="טוען מיקום…"; setTimeout(()=>{delete sunsetCache[key];renderTodayCard();},2500); return "טוען מיקום…";}
+    sunsetCache[cacheKey]=t;
+    if(mode==="city") saveSunsetCache();
+    return t;
+  }catch{
+    sunsetCache[cacheKey]="טוען מיקום…";
+    setTimeout(()=>{delete sunsetCache[cacheKey];renderTodayCard();},2500);
+    return "טוען מיקום…";
+  }
 }
 
 
@@ -308,7 +334,7 @@ function startReminderWatcher(){
 
 async function renderTodayCard(){
   el("todayDate").textContent=`${new Intl.DateTimeFormat("he",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(today)} | ${getHebrewDateDisplay(today)}`;
-  const sunset=await resolveSunset(today); el("todaySunset").textContent=`שקיעה לפי מיקום: ${sunset}`;
+  const sunset=await resolveSunset(today); const prefs=getPrefs(); el("todaySunset").textContent=`שקיעה לפי ${prefs.sunsetMode==="city"?(CITY_COORDS[prefs.sunsetCity||"Jerusalem"]?.label||"עיר"):"מיקום"}: ${sunset}`;
   const dateKey=ymd(today);
   const chips=el("todayChips"); chips.innerHTML="";
   const todayMarkers=normalizeDay(dayEvents.get(dateKey)).markers;
@@ -330,9 +356,9 @@ async function render(){
     const halves=document.createElement("div");halves.className="day-halves";
     const halfNight=document.createElement("div");halfNight.className="half half-night";halfNight.innerHTML="🌙 לילה";
     const halfDay=document.createElement("div");halfDay.className="half half-day";halfDay.innerHTML="☀️ יום";
-    const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: ${sunsetCache[key]||"…"}`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
+    const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: …`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
     cell.append(greg,heb,halves,sunset);halves.append(halfNight,halfDay);
-    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b);if(ev.ona==="night"&&/פרישה|אור זרוע/.test(ev.label)){halfNight.innerHTML=`🌙 ${ev.label}`;}if(ev.ona==="day"&&/פרישה|אור זרוע/.test(ev.label)){halfDay.innerHTML=`☀️ ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.innerHTML=`🌙 ${ev.label}`;halfDay.innerHTML=`☀️ ${ev.label}`;}}
+    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b);if(ev.ona==="night"&&/פרישה|אור זרוע/.test(ev.label)){halfNight.innerHTML=`🌙 ${ev.label}`;}if(ev.ona==="day"&&/פרישה|אור זרוע/.test(ev.label)){halfDay.innerHTML=`☀️ ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.innerHTML=`🌙 ${ev.label}`;halfDay.innerHTML=`☀️ ${ev.label}`;}if(ev.type==="mikveh"){halfNight.classList.add("mikveh-night");halfNight.innerHTML="🌙 לילה טבילה";}}
     cell.onclick=()=>openModal(d); grid.appendChild(cell);
   }
   await renderTodayCard();
@@ -363,15 +389,18 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),reminderTime=el("reminderTime");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; reminderTime.value=prefs.reminderTime||"15:00"; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
 day31Mode.onchange=async e=>{setPrefs({day31Mode:e.target.value});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
 reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
+meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פגישה עודכנה")};
 reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
+sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
+sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
 
 el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
