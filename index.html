@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>לוח טהרה</title>
+  <link rel="icon" type="image/png" href="1.png" />
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@500;600;700;800&family=Heebo:wght@500;700;800;900&family=Rubik:wght@500;700;800&display=swap");
     :root {
@@ -24,22 +25,22 @@
     body{margin:0;font-family:"Assistant","Rubik",sans-serif;font-weight:600;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(230,102,173,.08) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:.8;z-index:-1}
     .hidden{display:none!important}
-    .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:var(--card);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-    .brand{display:flex;align-items:center;gap:12px;justify-self:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:8px 12px;width:min(620px,100%)}.logo{width:120px;height:74px;border-radius:12px;object-fit:cover}.title{font-family:"Heebo","Assistant",sans-serif;font-size:1.65rem;font-weight:900}.subtitle{font-size:.92rem;color:var(--muted);font-weight:700}.brand-symbol{font-size:1.4rem;color:#8a5a3f}
+    .topbar{position:sticky;top:0;z-index:30;padding:12px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:linear-gradient(120deg,#fff9ff,#fff2fa);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:2px 4px;width:min(620px,100%)}.logo{width:120px;height:74px;border-radius:18px;object-fit:cover;box-shadow:0 10px 24px rgba(33,73,145,.2)}.title{font-family:"Heebo","Assistant",sans-serif;font-size:2rem;font-weight:900;letter-spacing:.03em}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:1rem;color:#b68b1f;font-weight:800}
     .menu-btn{justify-self:end}
-    .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#ffeefe);border:1px solid var(--line);box-shadow:var(--shadow)}
+    .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#e8fff0);border:1px solid #cdeedb;box-shadow:var(--shadow)}
     .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.25rem;font-weight:800;color:var(--accent)}.small{font-size:.82rem;color:var(--muted)}
     .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
     .chip{padding:4px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);background:#fff}
     .container{max-width:1100px;margin:14px auto;padding:0 14px 30px;display:grid;gap:12px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.month-scroll-hint{font-size:.78rem;color:var(--muted);font-weight:700}
     .monthTitle{font-weight:800;min-width:260px;text-align:center;padding:8px;border-radius:12px;background:#ffffff88;border:1px solid var(--line)}
     .btn{border:1px solid var(--line);background:#ffffffcc;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;color:var(--text)}
     .btn-primary{background:var(--accent);color:#fff;border-color:transparent}
-    .calendar{padding:12px}
+    .calendar{padding:18px 12px 12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-    .dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
+    .dow{margin-bottom:10px}.dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
     .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s;position:relative}
     .cell:hover{transform:translateY(-2px)}
     .muted{opacity:.45}
@@ -50,8 +51,8 @@
     .phase-clean{background:var(--green)}
     .phase-mikveh{background:#d7f3ff}
     .phase-prisha{background:var(--warn)}
-    .greg{font-size:1.2rem;font-weight:800}
-    .hebrew{font-size:.8rem;color:var(--muted)}
+    .greg{font-size:1.2rem;font-weight:800;margin-bottom:3px}
+    .hebrew{font-size:.8rem;color:var(--muted);margin-bottom:7px}
     .sunset{font-size:.72rem;color:#9f4f73;margin-top:5px}
     .badge{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;font-size:.72rem;background:#fff;border:1px solid var(--line)}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
@@ -62,9 +63,9 @@
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fff,#ffeef8);border-left:1px solid var(--line);padding:14px;display:grid;gap:10px;align-content:start;box-shadow:-12px 0 30px rgba(0,0,0,.15)}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#ffffff,#f4ecff);border-left:1px solid var(--line);padding:14px;display:grid;gap:10px;align-content:start;box-shadow:-12px 0 30px rgba(0,0,0,.15);overflow-y:auto}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
-    .switch{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:#ffffffcc;gap:8px}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:14px;border:1px solid #e2d3f4;background:linear-gradient(145deg,#ffffffee,#f7f1ff);gap:8px}
     .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
     .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s ease}
     .switch input[type="checkbox"]:checked{background:#2f8cff}
@@ -77,12 +78,12 @@
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:10px;border:1px solid var(--line)}
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
-    .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#ffe0ec,#ffd0e2);border:1px solid #f3b2cd;color:#931d53;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
+    .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1024px){.logo{width:90px;height:62px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.1rem}.subtitle{font-size:.74rem}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.35rem}.subtitle{font-size:.78rem}}
   </style>
 </head>
 <body>
@@ -90,7 +91,7 @@
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
     <img class="logo" src="1.png" alt="לוגו" />
-    <div><div class="title">לוח טהרה <span class="brand-symbol">✡</span></div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
+    <div><div class="title"><span class="title-blue">לוח</span> <span class="title-green">טהרה</span></div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -102,11 +103,12 @@
 </header>
 <main class="container">
   <section class="controls card">
-    <button id="prevMonth" class="btn">◀ חודש קודם</button>
+    <button id="prevMonth" class="btn">▶ חודש קודם</button>
     <div id="monthTitle" class="monthTitle"></div>
-    <button id="nextMonth" class="btn">חודש הבא ▶</button>
+    <button id="nextMonth" class="btn">חודש הבא ◀</button>
+    <div class="month-scroll-hint">גלילה למעלה: חודשים קודמים | גלילה למטה: חודשים הבאים</div>
   </section>
-  <section class="calendar card">
+  <section id="calendar" class="calendar card">
     <div class="dow"><div>יום א׳</div><div>יום ב׳</div><div>יום ג׳</div><div>יום ד׳</div><div>יום ה׳</div><div>יום ו׳</div><div>שבת</div></div>
     <div id="grid" class="grid"></div>
   </section>
@@ -115,16 +117,16 @@
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="drawer" class="drawer hidden">
   <div class="drawer-head"><h3>תפריט חכם</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
-  <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
-  <div class="switch"><span>יום פרישה 31</span><input id="day31Toggle" type="checkbox"></div>
-  <div class="switch"><span>אופן יום 30</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
+  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
+  <div class="switch"><span>יום 31</span><input id="day31Toggle" type="checkbox"></div>
+  <div class="switch"><span>אופן עונה בינונית (30)</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
-  <div class="switch"><span>תזכורת לימי פגישה</span><input id="meetingToggle" type="checkbox"></div>
+  <div class="switch"><span>תזכורת לימי פרישה</span><input id="meetingToggle" type="checkbox"></div>
   <div class="switch"><span>שעת תזכורת</span><input id="reminderTime" type="time" value="15:00"></div>
   <div class="switch"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
-  <div class="switch"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Beersheba">באר שבע</option></select></div>
-  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
+  <div class="switch"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
+  <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small">לא מחובר</div>
 </aside>
@@ -147,7 +149,7 @@ const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toas
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1);
 const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
-const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"}};
+const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
 function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())} function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return startOfDay(x)}
@@ -207,9 +209,9 @@ function recalcDerived(){
   const kavuah=calculateKavuah(periods);
   for(const p of periods){
     const d30=addDays(p.date,29);
-    if(!hasKavuahForPeriod(p,kavuah)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"יום פרישה","auto-30");}
+    if(!hasKavuahForPeriod(p,kavuah)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
     const ozDate=p.ona==="day"?d30:addDays(d30,-1); addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
-    if(prefs.day31){const d31=addDays(p.date,30);addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום פרישה 31","auto-31");}
+    if(prefs.day31){const d31=addDays(p.date,30);addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");}
     const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"אפשר הפסק טהרה",source:"auto-ready"});
   }
   for(const v of kavuah.byGap.values()){
@@ -383,6 +385,9 @@ onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textCo
 
 el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
 el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
+let monthScrollLock=false;
+const onMonthScroll=e=>{if(monthScrollLock) return;const dy=e.deltaY||0;if(Math.abs(dy)<12) return;e.preventDefault();monthScrollLock=true;view=new Date(view.getFullYear(),view.getMonth()+(dy>0?1:-1),1);render();setTimeout(()=>monthScrollLock=false,240);};
+el("calendar").addEventListener("wheel",onMonthScroll,{passive:false});
 el("modalClose").onclick=closeModal; el("modalOverlay").onclick=e=>{if(e.target===el("modalOverlay"))closeModal()};
 el("onaCancel").onclick=()=>el("onaOverlay").classList.add("hidden"); el("onaOverlay").onclick=e=>{if(e.target===el("onaOverlay"))el("onaOverlay").classList.add("hidden")};
 const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop").classList.remove("hidden")}; const closeDrawer=()=>{el("drawer").classList.add("hidden");el("drawerBackdrop").classList.add("hidden")};
@@ -397,7 +402,7 @@ day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived(
 day31Mode.onchange=async e=>{setPrefs({day31Mode:e.target.value});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
 reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
-meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פגישה עודכנה")};
+meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פרישה עודכנה")};
 reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
 sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
