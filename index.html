@@ -5,229 +5,245 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>לוח טהרה</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Heebo:wght@400;600;700;800&display=swap");
-    :root{--bg:#f3f6ff;--card:#fff;--muted:#5b6b8c;--text:#1f2a44;--line:#dbe3f5;--accent:#4c7dff;--shadow:0 8px 24px rgba(67,95,160,.14);--radius:18px;--cell:96px;--shabbat:#ffc857;--shabbat-bg:rgba(255,200,87,.10);--holiday:#c7a6ff}
-    body.dark{--bg:#0f1729;--card:#18243d;--muted:#9fb0d5;--text:#e7eeff;--line:#2a3b61;--accent:#8fb3ff;--shadow:0 10px 26px rgba(0,0,0,.30)}
+    @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@400;600;700;800&display=swap");
+    :root {
+      --bg:#fff4fa;
+      --bg-2:#ffeaf6;
+      --card:#ffffffde;
+      --text:#2a2042;
+      --muted:#6f628f;
+      --line:#e8d8eb;
+      --accent:#c64d88;
+      --shadow:0 10px 30px rgba(160,74,126,.15);
+      --pink:#ffddeb;
+      --green:#e9f9ee;
+      --warn:#fff7d7;
+    }
+    body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
-    body{margin:0;font-family:"Assistant","Heebo",system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);animation:fadeIn .6s ease}
+    body{margin:0;font-family:"Assistant","Rubik",sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(230,102,173,.08) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:.8;z-index:-1}
     .hidden{display:none!important}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(6px)}
-    .brand{display:flex;gap:10px;align-items:center}.logo{width:62px;height:62px;border-radius:50%;border:none;background:transparent;object-fit:cover}.title{font-size:19px;font-weight:900}.subtitle{font-size:12px;color:var(--muted)}
-    .container{max-width:1020px;margin:14px auto;padding:0 14px 36px;display:grid;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);transition:all .25s ease}
-    .card:hover{transform:translateY(-1px)}
-    .btn{border:1px solid transparent;background:#eaf1ff;color:var(--text);padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:800;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(76,125,255,.2)}
-    .btn:active{transform:scale(.98)}
-    .btn-ghost{background:transparent;border-color:var(--line)}.btn-primary{background:var(--accent);color:#fff}
-    .controls{padding:12px 14px;display:flex;justify-content:center;align-items:center;gap:12px}.monthTitle{min-width:270px;text-align:center;font-weight:900;padding:8px 10px;border-radius:14px;background:#f5f8ff;border:1px solid var(--line)}
-    .calendar{padding:12px}.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.dow{padding-bottom:12px;color:var(--muted);font-size:12px;font-weight:800}.dow div{text-align:center;padding:8px 0;border:1px solid var(--line);border-radius:12px;background:#f8faff}.dow .shabbat{border-color:rgba(255,200,87,.35);color:var(--shabbat);background:var(--shabbat-bg)}
-    .cell{min-height:var(--cell);border-radius:16px;border:1px solid var(--line);background:#f8faff;padding:8px;cursor:pointer;position:relative;animation:cellIn .3s ease}.cell.muted{opacity:.45}.cell.today{border-color:rgba(76,125,255,.6);box-shadow:0 0 0 2px rgba(76,125,255,.15) inset}.cell.shabbat{background:linear-gradient(180deg,rgba(255,200,87,.12),rgba(255,255,255,.03))}
-    .greg{font-size:18px;font-weight:950}.hebrew{font-size:12px;color:#4b5b7e;margin-top:4px}.holiday{font-size:11px;color:var(--holiday);font-weight:850;margin-top:4px}
-    .badge{display:inline-block;margin-top:6px;font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-weight:850}.badge.period,.badge.prisha{border-color:rgba(255,105,180,.35);background:rgba(255,105,180,.14);color:#8a2f61}.badge.hefsek{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.12);color:#166534}.badge.mikveh{border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.14);color:#1e3a8a}.badge.orzarua{border-color:rgba(244,140,66,.35);background:rgba(244,140,66,.12);color:#8b4513}.badge.hefsekReady{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.12);color:#065f46}
-    .drawer-backdrop{position:fixed;inset:0;background:rgba(8,16,35,.36);z-index:40}.drawer{position:fixed;top:0;right:0;width:min(360px,92vw);height:100vh;background:var(--card);border-left:1px solid var(--line);padding:14px;z-index:50;display:grid;align-content:start;gap:10px;transform:translateX(0);transition:transform .25s ease}.drawer h3{margin:0 0 4px}.switch{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;gap:8px}
-    .switch select{width:150px;padding:6px;border-radius:8px;border:1px solid var(--line)}
-    .modal-overlay{position:fixed;inset:0;background:rgba(35,45,75,.28);display:grid;place-items:center;padding:14px;z-index:60;animation:fadeIn .2s ease}.modal{width:min(560px,96vw);padding:14px;animation:popIn .22s ease}.modal-head{display:flex;justify-content:space-between;align-items:flex-start}.modal-title{font-size:16px;font-weight:950}.modal-sub{font-size:12px;color:var(--muted)}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .auth-form{display:grid;gap:8px;margin-top:10px}input{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff}.tiny{font-size:12px;color:var(--muted)}
-    .auth-switch{margin-top:8px;text-align:center}
-    .seg{display:flex;gap:8px;margin-top:10px}.seg button{flex:1}
-    .toast{position:fixed;left:16px;bottom:16px;background:var(--card);border:1px solid var(--line);padding:10px 12px;border-radius:12px;box-shadow:var(--shadow);font-weight:800;z-index:100;animation:fadeIn .2s ease}
-    .footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:14px}
-    .footer a{color:var(--accent);font-weight:700}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
-    @keyframes cellIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:var(--card);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:10px;justify-self:center}.logo{width:54px;height:54px;border-radius:50%}.title{font-size:1.25rem;font-weight:800}.subtitle{font-size:.82rem;color:var(--muted)}
+    .menu-btn{justify-self:end}
+    .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#ffeefe);border:1px solid var(--line);box-shadow:var(--shadow)}
+    .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.25rem;font-weight:800;color:var(--accent)}.small{font-size:.82rem;color:var(--muted)}
+    .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .chip{padding:4px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);background:#fff}
+    .container{max-width:1100px;margin:14px auto;padding:0 14px 30px;display:grid;gap:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}
+    .monthTitle{font-weight:800;min-width:260px;text-align:center;padding:8px;border-radius:12px;background:#ffffff88;border:1px solid var(--line)}
+    .btn{border:1px solid var(--line);background:#ffffffcc;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;color:var(--text)}
+    .btn-primary{background:var(--accent);color:#fff;border-color:transparent}
+    .calendar{padding:12px}
+    .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .dow div{text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;color:var(--muted);font-weight:700}
+    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s}
+    .cell:hover{transform:translateY(-2px)}
+    .muted{opacity:.45}
+    .today{outline:2px solid var(--accent)}
+    .today .greg,.today .hebrew{font-weight:900;color:#9a205f}
+    .phase-period{background:var(--pink)}
+    .phase-wait{background:#fff}
+    .phase-clean{background:var(--green)}
+    .phase-prisha{background:var(--warn)}
+    .greg{font-size:1.2rem;font-weight:800}
+    .hebrew{font-size:.8rem;color:var(--muted)}
+    .sunset{font-size:.72rem;color:#9f4f73;margin-top:5px}
+    .badge{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;font-size:.72rem;background:#fff;border:1px solid var(--line)}
+    .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#e2f0ff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
+    .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);z-index:41;background:linear-gradient(180deg,#fff,#ffeef8);border-left:1px solid var(--line);padding:16px;display:grid;gap:10px;align-content:start}
+    body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:#ffffff99}
+    .modal-overlay{position:fixed;inset:0;background:#0004;display:grid;place-items:center;z-index:60;padding:12px}
+    .modal{width:min(560px,95vw);padding:14px}
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
+    .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:10px;border:1px solid var(--line)}
+    .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+    @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
+    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <button id="menuBtn" class="btn btn-ghost">☰</button>
-    <div class="brand">
-      <img class="logo" src="1.png" alt="לוגו"/>
-      <div><div class="title">לוח טהרה</div><div class="subtitle">חישוב ימי נידה טהרה ופרישה</div></div>
-    </div>
-    <div></div>
-  </header>
-  <main class="container">
-    <section class="controls card">
-      <button id="prevMonth" class="btn btn-ghost">◀ חודש קודם</button>
-      <div class="monthTitle" id="monthTitle"></div>
-      <button id="nextMonth" class="btn btn-ghost">חודש הבא ▶</button>
-    </section>
-    <section class="calendar card">
-      <div class="dow"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div class="shabbat">ש׳</div></div>
-      <div id="grid" class="grid"></div>
-    </section>
-  </main>
-  <footer class="footer">נבנה על ידי יזם אתרים (יזם יוד. ז. מ. אתרים) לפרטים <a href="#" id="detailsLink">יכנסו</a> | לתרומות לתחזוקת האתר</footer>
-
-  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
-  <aside id="drawer" class="drawer hidden">
-    <button id="closeDrawer" class="btn btn-ghost">✕ סגור</button>
-    <h3>תפריט</h3>
-    <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
-    <div class="switch"><span>יום פרישה אחרי 31 ימים (בנוסף ל-30)</span><input id="day31Toggle" type="checkbox"></div>
-    <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
-    <div class="switch"><span>שעת תזכורת</span><input id="reminderTime" type="time" value="15:00"></div>
-    <div class="switch"><span>מנהג</span>
-      <select id="minhagSelect">
-        <option value="sephardi">ספרדים</option>
-        <option value="ashkenazi">אשכנזים</option>
-        <option value="ben_ish_hai">בן איש חי</option>
-      </select>
-    </div>
-    <button id="openAuthFromMenu" class="btn btn-primary" style="margin-top:auto">התחברות / הרשמה</button>
-    <div id="authState" class="tiny">לא מחובר</div>
-  </aside>
-
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div class="modal card">
-      <div class="modal-head">
-        <div><div id="modalDateTitle" class="modal-title"></div><div id="modalDateSub" class="modal-sub"></div></div>
-        <button id="modalClose" class="btn btn-ghost">✕</button>
-      </div>
-      <div class="modal-actions">
-        <button id="btnEventA" class="btn">הפסק טהרה</button>
-        <button id="btnEventB" class="btn">תחילת מחזור</button>
-        <button id="btnClear" class="btn btn-ghost">נקה סימונים</button>
-      </div>
-    </div>
+<header class="topbar">
+  <button id="menuBtn" class="btn menu-btn">☰</button>
+  <div class="brand">
+    <img class="logo" src="1.png" alt="לוגו" />
+    <div><div class="title">לוח טהרה</div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
   </div>
-
-  <div id="onaOverlay" class="modal-overlay hidden">
-    <div class="modal card" style="width:min(360px,92vw)">
-      <div class="modal-head"><div><div class="modal-title">בחירת עונה</div><div class="modal-sub">בחרי אם תחילת המחזור ביום או בלילה</div></div></div>
-      <div class="seg"><button id="chooseDay" class="btn">☀️ יום</button><button id="chooseNight" class="btn">🌙 לילה</button></div>
-      <div class="modal-actions"><button id="onaCancel" class="btn btn-ghost">ביטול</button></div>
-    </div>
-  </div>
-
-  <div id="authOverlay" class="modal-overlay hidden">
-    <div class="modal card" style="width:min(430px,96vw)">
-      <div class="modal-head"><div><div id="authTitle" class="modal-title">התחברות</div><div id="authSub" class="modal-sub"></div></div><button id="authClose" class="btn btn-ghost">✕</button></div>
-      <form id="authForm" class="auth-form">
-        <input id="email" type="email" placeholder="אימייל" required>
-        <input id="password" type="password" placeholder="סיסמה" required>
-        <button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button>
-        <button id="signOutBtn" type="button" class="btn btn-ghost">התנתקות</button>
-      </form>
-      <div class="auth-switch tiny"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn btn-ghost" style="padding:4px 8px">לחץ כאן</button></div>
-      <div id="authMsg" class="tiny"></div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast hidden">הנתונים עודכנו</div>
+  <section class="today-panel" id="todayPanel">
+    <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
+    <div class="small" id="todayDate"></div>
+    <div class="small" id="todaySunset">שקיעה: טוען לפי מיקום…</div>
+    <div id="todayChips" class="chip-wrap"></div>
+  </section>
+</header>
+<main class="container">
+  <section class="controls card">
+    <button id="prevMonth" class="btn">◀ חודש קודם</button>
+    <div id="monthTitle" class="monthTitle"></div>
+    <button id="nextMonth" class="btn">חודש הבא ▶</button>
+  </section>
+  <section class="calendar card">
+    <div class="dow"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div>ש׳</div></div>
+    <div id="grid" class="grid"></div>
+  </section>
+</main>
+<footer style="text-align:center;padding:20px;color:var(--muted)">נבנה על ידי יזם אתרים</footer>
+<div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+<aside id="drawer" class="drawer hidden">
+  <button id="closeDrawer" class="btn">✕ סגור</button>
+  <h3>תפריט חכם</h3>
+  <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
+  <div class="switch"><span>יום פרישה אחרי 31 ימים</span><input id="day31Toggle" type="checkbox"></div>
+  <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
+  <div class="switch"><span>שעת תזכורת</span><input id="reminderTime" type="time" value="15:00"></div>
+  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option><option value="ben_ish_hai">בן איש חי</option></select></div>
+  <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
+  <div id="authState" class="small">לא מחובר</div>
+</aside>
+<div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div></div></div>
+<div id="onaOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:340px"><div>בחרי עונה:</div><div class="modal-actions"><button id="chooseDay" class="btn">☀️ יום</button><button id="chooseNight" class="btn">🌙 לילה</button><button id="onaCancel" class="btn">ביטול</button></div></div></div>
+<div id="authOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:420px"><div class="modal-head"><div><div id="authTitle">התחברות</div><div id="authSub" class="small"></div></div><button id="authClose" class="btn">✕</button></div><form class="auth-form"><input id="email" type="email" placeholder="אימייל" required><input id="password" type="password" placeholder="סיסמה" required><button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button><button id="signOutBtn" type="button" class="btn">התנתקות</button></form><div class="small"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn">לחץ כאן</button></div><div id="authMsg" class="small"></div></div></div>
+<div id="toast" class="toast hidden"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",authDomain:"luach-48111.firebaseapp.com",projectId:"luach-48111",storageBucket:"luach-48111.firebasestorage.app",messagingSenderId:"418216623160",appId:"1:418216623160:web:56ebe2830458d6b12f3acd",measurementId:"G-BJ2LVM6WR6"};
-const app=initializeApp(firebaseConfig);if(await isSupported())getAnalytics(app);const auth=getAuth(app);const db=getFirestore(app);
 
-const grid=document.getElementById("grid"),monthTitle=document.getElementById("monthTitle"),prevMonthBtn=document.getElementById("prevMonth"),nextMonthBtn=document.getElementById("nextMonth"),authState=document.getElementById("authState");
-const modalOverlay=document.getElementById("modalOverlay"),modalClose=document.getElementById("modalClose"),modalDateTitle=document.getElementById("modalDateTitle"),modalDateSub=document.getElementById("modalDateSub"),btnEventA=document.getElementById("btnEventA"),btnEventB=document.getElementById("btnEventB"),btnClear=document.getElementById("btnClear");
-const onaOverlay=document.getElementById("onaOverlay");
-const authOverlay=document.getElementById("authOverlay"),authClose=document.getElementById("authClose"),emailInput=document.getElementById("email"),passInput=document.getElementById("password"),authMsg=document.getElementById("authMsg");
-const drawer=document.getElementById("drawer"),drawerBackdrop=document.getElementById("drawerBackdrop");
-const today=startOfDay(new Date());let view=new Date(today.getFullYear(),today.getMonth(),1);const STORAGE_KEY="calendar_events_v5",PREFS_KEY="calendar_prefs_v3",AUTH_PROMPT_KEY="auth_prompt_seen_v2";
-const toast=document.getElementById("toast");
-let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin";
-let toastTimer=null,scheduledReminderTimer=null,scheduledReminderKey=null;
+const firebaseConfig={apiKey:"AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",authDomain:"luach-48111.firebaseapp.com",projectId:"luach-48111",storageBucket:"luach-48111.firebasestorage.app",messagingSenderId:"418216623160",appId:"1:418216623160:web:56ebe2830458d6b12f3acd",measurementId:"G-BJ2LVM6WR6"};
+const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(app); const auth=getAuth(app); const db=getFirestore(app);
+
+const el=id=>document.getElementById(id);
+const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
+const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1);
+const STORAGE_KEY="calendar_events_v6",PREFS_KEY="calendar_prefs_v4",AUTH_PROMPT_KEY="auth_prompt_seen_v2";
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache={};
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
 function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())} function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return startOfDay(x)}
-function numberToHebrewDay(n){const ones=["","א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ז׳","ח׳","ט׳"],tens=["","י׳","כ׳","ל׳"];if(n===15)return"ט״ו";if(n===16)return"ט״ז";if(n<10)return ones[n];if(n%10===0)return tens[n/10];return `${tens[Math.floor(n/10)]} ${ones[n%10]}`;}
+function numberToHebrewDay(n){const ones=["","א","ב","ג","ד","ה","ו","ז","ח","ט"],tens=["","י","כ","ל"];if(n===15)return"ט״ו";if(n===16)return"ט״ז";if(n<10)return `${ones[n]}׳`;if(n%10===0)return `${tens[n/10]}׳`;return `${tens[Math.floor(n/10)]}״${ones[n%10]}`}
 function getHebrewDateDisplay(d){const parts=new Intl.DateTimeFormat("he-u-ca-hebrew",{day:"numeric",month:"long"}).formatToParts(d);const day=Number(parts.find(p=>p.type==="day")?.value||1);const month=parts.find(p=>p.type==="month")?.value||"";return `${numberToHebrewDay(day)} ${month}`}
-function markerIcon(ona){return ona==="day"?"☀️":"🌙"}
-function markerLabel(base,ona){return ona?`${base} ${markerIcon(ona)}`:base}
-function normalizeDay(v){if(!v)return{markers:[]};if(Array.isArray(v.markers))return v;if(v.type)return{markers:[v]};return{markers:[]};}
-function loadLocalEvents(){try{const raw=localStorage.getItem(STORAGE_KEY);return new Map(Object.entries(raw?JSON.parse(raw):{}));}catch{return new Map();}}
-function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
-function clearDerived(){for(const [k,v]of dayEvents.entries()){const day=normalizeDay(v);const kept=day.markers.filter(m=>!m.source);if(kept.length)dayEvents.set(k,{markers:kept});else dayEvents.delete(k);}}
-function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}");}catch{return{}}}
-async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));const prefs=getPrefs();if(currentUid)await setDoc(doc(db,"users",currentUid),{events,prefs,updatedAt:Date.now()},{merge:true});}
-function setPrefs(next){const merged={...getPrefs(),...next};localStorage.setItem(PREFS_KEY,JSON.stringify(merged));persistAll();}
+const markerIcon=o=>o==="day"?"☀️":"🌙"; const markerLabel=(b,o)=>o?`${b} ${markerIcon(o)}`:b;
+const normalizeDay=v=>!v?{markers:[]}:Array.isArray(v.markers)?v:v.type?{markers:[v]}:{markers:[]};
+function loadLocalEvents(){try{return new Map(Object.entries(JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")));}catch{return new Map();}}
+function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}");}catch{return {};}}
 function exportEvents(){const o={};for(const[k,v]of dayEvents.entries())o[k]=normalizeDay(v);return o;}
-async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(snap.exists()){const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}}
-function showToast(message="הנתונים עודכנו"){toast.textContent=message;toast.classList.remove("hidden");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.add("hidden"),1500)}
-async function maybeRequestNotificationPermission(){if(!("Notification" in window))return false;if(Notification.permission==="granted")return true;if(Notification.permission!=="denied"){const p=await Notification.requestPermission();return p==="granted"}return false}
-function nextHefsekReminder(){const prefs=getPrefs();if(!prefs.reminderEnabled)return null;const [hour,minute]=(prefs.reminderTime||"15:00").split(":").map(Number);const now=new Date();const candidates=[];
-  for(const [k,v] of dayEvents.entries()){for(const m of normalizeDay(v).markers){if(m.type!=="hefsekReady")continue;const d=new Date(k);d.setHours(hour||15,minute||0,0,0);if(d>now)candidates.push({date:d,key:`${k}-${hour||15}-${minute||0}`});}}
-  candidates.sort((a,b)=>a.date-b.date);return candidates[0]||null;
-}
-function scheduleNextReminder(){if(scheduledReminderTimer){clearTimeout(scheduledReminderTimer);scheduledReminderTimer=null;}const next=nextHefsekReminder();if(!next)return;
-  const ms=next.date.getTime()-Date.now();if(ms<=0||ms>2147483647)return;scheduledReminderKey=next.key;
-  scheduledReminderTimer=setTimeout(async()=>{const ok=await maybeRequestNotificationPermission();if(ok){new Notification("לוח טהרה",{body:"היום אפשר לעשות הפסק טהרה"});}else{showToast("היום אפשר לעשות הפסק טהרה");}
-    scheduleNextReminder();
-  },ms);
-}
-async function commitAndSync(){render();showToast();scheduleNextReminder();await persistAll();}
-function getHolidayLabel(d){return d.getDay()===6?"שבת":""}
-function minhagDays(){const map={sephardi:4,ashkenazi:5,ben_ish_hai:6};return map[getPrefs().minhag||"sephardi"]||4}
-function findLatestPeriodBefore(date){const periods=[];for(const [k,v]of dayEvents.entries()){for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"});}}periods.sort((a,b)=>a.date-b.date);for(let i=periods.length-1;i>=0;i--){if(periods[i].date<=date)return periods[i];}return null;}
-function canSetHefsek(date){const latest=findLatestPeriodBefore(date);if(!latest)return true;const earliest=addDays(latest.date,minhagDays()-1);return date>=earliest;}
+function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
+function clearDerived(){for(const [k,v]of dayEvents.entries()){const keep=normalizeDay(v).markers.filter(m=>!m.source);keep.length?dayEvents.set(k,{markers:keep}):dayEvents.delete(k)}}
+async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await setDoc(doc(db,"users",currentUid),{events,prefs:getPrefs(),updatedAt:Date.now()},{merge:true})}
+function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
+async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(!snap.exists())return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
+function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
+function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:m==="ben_ish_hai"?5:4}
+function canSetHefsek(d){const periods=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period").map(()=>new Date(k))).sort((a,b)=>a-b);const last=periods.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
 function recalcDerived(){
-  clearDerived();const prefs=getPrefs();const periods=[],hefseks=[];
-  for(const [k,v]of dayEvents.entries())for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day",key:k});if(m.type==="hefsek")hefseks.push({date:new Date(k),key:k});}
-  periods.sort((a,b)=>a.date-b.date);
-  for(let i=0;i<periods.length;i++){
-    const p=periods[i],base30=addDays(p.date,29);addMarker(ymd(base30),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-30"});
-    const target=p.ona==="day"?base30:addDays(base30,-1);const targetOna=p.ona==="day"?"night":"day";
-    addMarker(ymd(target),{type:"orzarua",label:markerLabel("עונת אור זרוע",targetOna),ona:targetOna,source:"auto-30-orzarua"});
-    if(prefs.day31){const d31=addDays(p.date,30);addMarker(ymd(d31),{type:"prisha",label:markerLabel("יום פרישה",p.ona),ona:p.ona,source:"auto-31"});}
-    if(i>0){const gap=Math.round((p.date-periods[i-1].date)/(1000*60*60*24));if(gap>0&&gap<90){const custom=addDays(p.date,gap-1);addMarker(ymd(custom),{type:"prisha",label:markerLabel(`יום פרישה (${gap} ימים)`,p.ona),ona:p.ona,source:"auto-gap"});}}
-    const hefsekReady=addDays(p.date,minhagDays()-1);addMarker(ymd(hefsekReady),{type:"hefsekReady",label:"אפשר לעשות הפסק טהרה",source:"auto-hefsek-ready"});
+  clearDerived();
+  const periods=[],hefseks=[];
+  for(const [k,v] of dayEvents.entries()) for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"}); if(m.type==="hefsek")hefseks.push(new Date(k));}
+  periods.sort((a,b)=>a.date-b.date); hefseks.sort((a,b)=>a-b);
+  for(const p of periods){
+    const d30=addDays(p.date,29); addMarker(ymd(d30),{type:"prisha",label:markerLabel("יום פרישה",p.ona),source:"auto-30"});
+    const ozDate=p.ona==="day"?d30:addDays(d30,-1); addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),source:"auto-oz"});
+    if(getPrefs().day31){const d31=addDays(p.date,30);addMarker(ymd(d31),{type:"prisha",label:markerLabel("יום פרישה 31",p.ona),source:"auto-31"});}
+    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"אפשר הפסק טהרה",source:"auto-ready"});
   }
-  for(const h of hefseks){addMarker(ymd(addDays(h.date,7)),{type:"mikveh",label:"ליל טבילה",source:"auto-hefsek",dependsOn:h.key});}
+  for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
+}
+function getPhaseMap(y,m){
+  const map={}; const first=new Date(y,m,1),start=addDays(first,-first.getDay());
+  const periods=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="period").map(()=>new Date(k))).sort((a,b)=>a-b);
+  const hefseks=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="hefsek").map(()=>new Date(k))).sort((a,b)=>a-b);
+  const mikvehs=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="mikveh").map(()=>new Date(k))).sort((a,b)=>a-b);
+  for(let i=0;i<42;i++){const d=addDays(start,i);const p=periods.filter(x=>x<=d).at(-1);const nextP=periods.find(x=>x>d);const h=hefseks.find(x=>p&&x>=p&&x<=d);const mk=mikvehs.find(x=>p&&x>=p&&x<=d);
+    if(p&&!h)map[ymd(d)]="period";else if(h&&!mk)map[ymd(d)]="wait";else if(mk&&(!nextP||d<nextP))map[ymd(d)]="clean";
+  }
+  for(const [k,v] of dayEvents.entries()) if(normalizeDay(v).markers.some(x=>x.type==="prisha")) map[k]="prisha";
+  return map;
 }
 
-function render(){const y=view.getFullYear(),m=view.getMonth();monthTitle.textContent=new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));grid.innerHTML="";const first=new Date(y,m,1),gridStart=addDays(first,-first.getDay());
-  for(let i=0;i<42;i++){const d=addDays(gridStart,i),inMonth=d.getMonth()===m,cell=document.createElement("div");cell.className=`cell${inMonth?"":" muted"}${d.getDay()===6?" shabbat":""}${ymd(d)===ymd(today)?" today":""}`;
-    const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);cell.append(greg,heb);
-    const hol=getHolidayLabel(d);if(hol){const h=document.createElement("div");h.className="holiday";h.textContent=hol;cell.appendChild(h)}
-    const day=normalizeDay(dayEvents.get(ymd(d)));for(const ev of day.markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b)}
-    cell.addEventListener("click",()=>openModal(d));grid.appendChild(cell);
-  }}
+async function resolveSunset(date){
+  const key=ymd(date); if(sunsetCache[key]) return sunsetCache[key];
+  try{
+    if(!navigator.geolocation) throw new Error("no-geo");
+    const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:7000}));
+    const {latitude,longitude}=pos.coords;
+    const url=`https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&date=${key}&formatted=0`;
+    const r=await fetch(url); const j=await r.json();
+    const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
+    sunsetCache[key]=t; return t;
+  }catch{sunsetCache[key]="לא זמין"; return "לא זמין";}
+}
 
-function openModal(d){modalDateTitle.textContent=`תאריך: ${ymd(d)}`;modalDateSub.textContent=`עברי: ${getHebrewDateDisplay(d)}`;modalOverlay.classList.remove("hidden");
-  btnEventA.onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה רק מהיום ה-${minhagDays()} מתחילת המחזור (${getPrefs().minhag==="ashkenazi"?"אשכנזים":getPrefs().minhag==="ben_ish_hai"?"בן איש חי":"ספרדים"}).`);return;}closeModal();addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await commitAndSync();};
-  btnEventB.onclick=()=>openOnaPicker(d);
-  btnClear.onclick=async()=>{closeModal();dayEvents.delete(ymd(d));recalcDerived();await commitAndSync();};}
-function closeModal(){modalOverlay.classList.add("hidden");}
-function openOnaPicker(date){onaOverlay.classList.remove("hidden");const apply=async(ona)=>{onaOverlay.classList.add("hidden");closeModal();addMarker(ymd(date),{type:"period",label:markerLabel("תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await commitAndSync();};
-  document.getElementById("chooseDay").onclick=()=>apply("day");document.getElementById("chooseNight").onclick=()=>apply("night");}
-document.getElementById("onaCancel").addEventListener("click",()=>onaOverlay.classList.add("hidden"));onaOverlay.addEventListener("click",e=>{if(e.target===onaOverlay)onaOverlay.classList.add("hidden")});
+async function renderTodayCard(){
+  el("todayDate").textContent=`${new Intl.DateTimeFormat("he",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(today)} | ${getHebrewDateDisplay(today)}`;
+  const sunset=await resolveSunset(today); el("todaySunset").textContent=`שקיעה לפי מיקום: ${sunset}`;
+  const chips=el("todayChips"); chips.innerHTML="";
+  for(const m of normalizeDay(dayEvents.get(ymd(today))).markers){const c=document.createElement("span");c.className=`chip`;c.textContent=m.label;chips.appendChild(c)}
+}
+function startClock(){const paint=()=>el("clock").textContent=new Date().toLocaleTimeString("he-IL",{hour12:false});paint();if(clockTimer)clearInterval(clockTimer);clockTimer=setInterval(paint,1000)}
 
-function openAuth(){authOverlay.classList.remove("hidden")} function closeAuth(){authOverlay.classList.add("hidden")}
-function renderAuthMode(){const title=document.getElementById("authTitle"),sub=document.getElementById("authSub"),switchTxt=document.getElementById("authSwitchText"),action=document.getElementById("authActionBtn");
-  if(authMode==="signin"){title.textContent="התחברות";sub.textContent="התחברי עם אימייל וסיסמה";action.textContent="התחברות";switchTxt.textContent="אין לך חשבון?";}else{title.textContent="רישום";sub.textContent="צרי חשבון חדש";action.textContent="רישום";switchTxt.textContent="יש לך כבר חשבון?";}}
-async function doSignIn(){try{await signInWithEmailAndPassword(auth,emailInput.value,passInput.value);authMsg.textContent="התחברת בהצלחה";closeAuth();}catch(e){authMsg.textContent="שגיאת התחברות: "+e.message}}
-async function doSignUp(){try{await createUserWithEmailAndPassword(auth,emailInput.value,passInput.value);authMsg.textContent="נרשמת בהצלחה";closeAuth();}catch(e){authMsg.textContent="שגיאת רישום: "+e.message}}
+async function render(){
+  const y=view.getFullYear(),m=view.getMonth(); monthTitle.textContent=new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));
+  grid.innerHTML=""; const first=new Date(y,m,1),gridStart=addDays(first,-first.getDay()); const phaseMap=getPhaseMap(y,m);
+  for(let i=0;i<42;i++){
+    const d=addDays(gridStart,i),key=ymd(d),inMonth=d.getMonth()===m; const cell=document.createElement("div");
+    const phase=phaseMap[key]; cell.className=`cell${inMonth?"":" muted"}${key===ymd(today)?" today":""}${phase?` phase-${phase}`:""}`;
+    const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();
+    const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);
+    const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: ${sunsetCache[key]||"…"}`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
+    cell.append(greg,heb,sunset);
+    for(const ev of normalizeDay(dayEvents.get(key)).markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.textContent=ev.label;cell.appendChild(b)}
+    cell.onclick=()=>openModal(d); grid.appendChild(cell);
+  }
+  await renderTodayCard();
+}
 
-onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();render();});
+function openModal(d){el("modalDateTitle").textContent=`תאריך: ${ymd(d)}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
+  el("btnEventA").onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור.`);return;}closeModal();addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await commitAndSync();};
+  el("btnEventB").onclick=()=>openOnaPicker(d);
+  el("btnClear").onclick=async()=>{closeModal();dayEvents.delete(ymd(d));recalcDerived();await commitAndSync();};
+}
+const closeModal=()=>el("modalOverlay").classList.add("hidden");
+function openOnaPicker(date){el("onaOverlay").classList.remove("hidden");const apply=async ona=>{el("onaOverlay").classList.add("hidden");closeModal();addMarker(ymd(date),{type:"period",label:markerLabel("תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await commitAndSync();};el("chooseDay").onclick=()=>apply("day");el("chooseNight").onclick=()=>apply("night")}
 
-prevMonthBtn.addEventListener("click",()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()});
-nextMonthBtn.addEventListener("click",()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()});
-modalClose.addEventListener("click",closeModal);modalOverlay.addEventListener("click",e=>{if(e.target===modalOverlay)closeModal()});
-function openDrawer(){drawer.classList.remove("hidden");drawerBackdrop.classList.remove("hidden")} function closeDrawer(){drawer.classList.add("hidden");drawerBackdrop.classList.add("hidden")}
-document.getElementById("menuBtn").addEventListener("click",openDrawer);document.getElementById("closeDrawer").addEventListener("click",closeDrawer);drawerBackdrop.addEventListener("click",closeDrawer);
-document.getElementById("openAuthFromMenu").addEventListener("click",()=>{openAuth();closeDrawer()});authClose.addEventListener("click",closeAuth);
+async function commitAndSync(){await persistAll();await render();showToast("הנתונים עודכנו")}
 
-const darkToggle=document.getElementById("darkToggle"),day31Toggle=document.getElementById("day31Toggle"),minhagSelect=document.getElementById("minhagSelect");
-const reminderToggle=document.getElementById("reminderToggle"),reminderTime=document.getElementById("reminderTime");
-const prefs=getPrefs();darkToggle.checked=!!prefs.dark;day31Toggle.checked=!!prefs.day31;minhagSelect.value=prefs.minhag||"sephardi";reminderToggle.checked=!!prefs.reminderEnabled;reminderTime.value=prefs.reminderTime||"15:00";if(prefs.dark)document.body.classList.add("dark");
-darkToggle.addEventListener("change",e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})});
-day31Toggle.addEventListener("change",async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()});
-minhagSelect.addEventListener("change",async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()});
-reminderToggle.addEventListener("change",async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await maybeRequestNotificationPermission();scheduleNextReminder();showToast("התזכורת עודכנה")});
-reminderTime.addEventListener("change",e=>{setPrefs({reminderTime:e.target.value||"15:00"});scheduleNextReminder();showToast("שעת התזכורת עודכנה")});
+function openAuth(){el("authOverlay").classList.remove("hidden")} function closeAuth(){el("authOverlay").classList.add("hidden")}
+function renderAuthMode(){const t=el("authTitle"),s=el("authSub"),sw=el("authSwitchText"),a=el("authActionBtn");if(authMode==="signin"){t.textContent="התחברות";s.textContent="התחברי עם אימייל וסיסמה";a.textContent="התחברות";sw.textContent="אין לך חשבון?";}else{t.textContent="רישום";s.textContent="צרי חשבון חדש";a.textContent="רישום";sw.textContent="יש לך כבר חשבון?";}}
+async function doSignIn(){try{await signInWithEmailAndPassword(auth,el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת התחברות: "+e.message}}
+async function doSignUp(){try{await createUserWithEmailAndPassword(auth,el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת רישום: "+e.message}}
 
-document.getElementById("authActionBtn").addEventListener("click",()=>authMode==="signin"?doSignIn():doSignUp());
-document.getElementById("authSwitchBtn").addEventListener("click",(e)=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()});
-document.getElementById("signOutBtn").addEventListener("click",async()=>{await signOut(auth);authMsg.textContent="התנתקת"});
-renderAuthMode();if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")}recalcDerived();render();scheduleNextReminder();
+onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
+
+el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
+el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
+el("modalClose").onclick=closeModal; el("modalOverlay").onclick=e=>{if(e.target===el("modalOverlay"))closeModal()};
+el("onaCancel").onclick=()=>el("onaOverlay").classList.add("hidden"); el("onaOverlay").onclick=e=>{if(e.target===el("onaOverlay"))el("onaOverlay").classList.add("hidden")};
+const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop").classList.remove("hidden")}; const closeDrawer=()=>{el("drawer").classList.add("hidden");el("drawerBackdrop").classList.add("hidden")};
+el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
+el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
+
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),reminderTime=el("reminderTime");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; reminderTime.value=prefs.reminderTime||"15:00"; if(prefs.dark)document.body.classList.add("dark");
+darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
+day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
+minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
+reminderToggle.onchange=e=>{setPrefs({reminderEnabled:e.target.checked});showToast("התזכורת עודכנה")};
+reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});showToast("שעת התזכורת עודכנה")};
+
+el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
+el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
+el("signOutBtn").onclick=async()=>{await signOut(auth);el("authMsg").textContent="התנתקת"};
+
+startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); render();
 </script>
 </body>
 </html>
