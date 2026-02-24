@@ -7,25 +7,25 @@
   <link rel="icon" type="image/png" href="1.png" />
   <style>
     :root {
-      --bg:#fff4fa;
-      --bg-2:#ffeaf6;
+      --bg:#eedff8;
+      --bg-2:#f5d0ee;
       --card:#ffffffde;
       --text:#2a2042;
       --muted:#6f628f;
       --line:#e8d8eb;
       --accent:#c64d88;
       --shadow:0 10px 30px rgba(160,74,126,.15);
-      --pink:#ffddeb;
-      --green:#e9f9ee;
-      --warn:#fff7d7;
+      --pink:#ffc0d4;
+      --green:#beefd0;
+      --warn:#fff3a8;
     }
     body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
     body{margin:0;font-family:"Segoe UI","Noto Sans Hebrew","Arial",sans-serif;font-weight:650;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:#201735;background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
-    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(230,102,173,.08) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:.8;z-index:-1}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
-    .topbar{position:sticky;top:0;z-index:30;padding:12px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:linear-gradient(120deg,#fff9ff,#fff2fa);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:2px 4px;width:min(620px,100%)}.logo{width:120px;height:74px;border-radius:18px;object-fit:cover;box-shadow:0 10px 24px rgba(33,73,145,.2)}.title{font-family:inherit;font-size:2rem;font-weight:900;letter-spacing:.03em}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:1rem;color:#b68b1f;font-weight:800}
+    .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:transparent;border-bottom:none}
+    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:4px 8px;width:min(620px,100%)}.logo{width:90px;height:90px;border-radius:0;object-fit:contain}.title{font-family:"Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-size:2rem;font-weight:900;letter-spacing:.03em}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:.95rem;color:#7b3a8a;font-weight:700;letter-spacing:.01em}
     .menu-btn{justify-self:end}
     .today-panel{justify-self:start;min-width:240px;padding:10px 12px;border-radius:16px;background:linear-gradient(160deg,#fff,#e8fff0);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
@@ -46,19 +46,19 @@
     .continuous-track{display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto;padding:4px}
     .continuous-month{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}
     .continuous-month-title{font-weight:900;text-align:center;margin-bottom:10px;color:#2f1f48}
-    .btn-primary{background:var(--accent);color:#fff;border-color:transparent}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
     .calendar{padding:18px 12px 12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
     .dow{margin-bottom:10px}.dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
-    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fffefe;cursor:pointer;transition:.2s;position:relative}
+    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:.2s;position:relative}
     .cell:hover{transform:translateY(-2px)}
     .muted{opacity:.45}
     .today{outline:2px solid var(--accent)}
     .today .greg,.today .hebrew{font-weight:900;color:#9a205f}
     .phase-period{background:var(--pink)}
-    .phase-wait{background:#fff}
+    .phase-wait{background:#ffffff}
     .phase-clean{background:var(--green)}
-    .phase-mikveh{background:#d7f3ff}
+    .phase-mikveh{background:#a8e4f5}
     .phase-prisha{background:var(--warn)}
     .greg{font-size:1.2rem;font-weight:800;margin-bottom:3px}
     .hebrew{font-size:.8rem;color:var(--muted);margin-bottom:7px}
@@ -76,14 +76,15 @@
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#ffffff,#f4ecff);border-left:1px solid var(--line);padding:14px;display:grid;gap:10px;align-content:start;box-shadow:-12px 0 30px rgba(0,0,0,.15);overflow-y:auto}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
-    .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:14px;border:1px solid #e2d3f4;background:linear-gradient(145deg,#ffffffee,#f7f1ff);gap:8px}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08)}
     .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
     .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s ease}
     .switch input[type="checkbox"]:checked{background:#2f8cff}
     .switch input[type="checkbox"]:checked::after{transform:translateX(-20px)}
-    .drawer-head{display:flex;justify-content:space-between;align-items:center}
+    .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
+    .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
     .modal-overlay{position:fixed;inset:0;background:#0004;display:grid;place-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:14px}
@@ -94,17 +95,17 @@
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:90px;height:62px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
+    @media(max-width:1024px){.logo{width:75px;height:75px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:stretch}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.35rem}.subtitle{font-size:.78rem}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.35rem}.subtitle{font-size:.8rem}}
   </style>
 </head>
 <body>
 <header class="topbar">
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
-    <img class="logo" src="1.png" alt="לוגו" />
-    <div><div class="title"><span class="title-blue">לוח</span> <span class="title-green">טהרה</span></div><div class="subtitle">ניהול מחזור, פרישה והפסק טהרה</div></div>
+    <img class="logo" src="logo.png" alt="לוגו" />
+    <div><div class="title"><span class="title-blue">לוח</span> <span class="title-green">טהרה</span></div><div class="subtitle">ניהול מחזור · ימי פרישה · ימי טהרה</div></div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -238,7 +239,7 @@ function recalcDerived(){
     if(!hasKavuahForPeriod(p,kavuah)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
     const ozDate=p.ona==="day"?d30:addDays(d30,-1); addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
     if(prefs.day31){const d31=addDays(p.date,30);addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");}
-    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"אפשר הפסק טהרה",source:"auto-ready"});
+    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
   for(const v of kavuah.byGap.values()){
     const d=addDays(v.start,v.gap);
@@ -255,8 +256,23 @@ function getPhaseMap(y,m){
   const periods=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="period").map(()=>new Date(k))).sort((a,b)=>a-b);
   const hefseks=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="hefsek").map(()=>new Date(k))).sort((a,b)=>a-b);
   const mikvehs=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="mikveh").map(()=>new Date(k))).sort((a,b)=>a-b);
-  for(let i=0;i<42;i++){const d=addDays(start,i);const p=periods.filter(x=>x<=d).at(-1);const nextP=periods.find(x=>x>d);const h=hefseks.find(x=>p&&x>=p&&x<=d);const mk=mikvehs.find(x=>p&&x>=p&&x<=d);
-    if(p&&!h)map[ymd(d)]="period";else if(h&&!mk)map[ymd(d)]="wait";else if(mk&&ymd(d)===ymd(mk))map[ymd(d)]="mikveh";else if(mk&&(!nextP||d<nextP))map[ymd(d)]="clean";
+  const hefsekReadys=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(x=>x.type==="hefsekReady").map(()=>new Date(k))).sort((a,b)=>a-b);
+  for(let i=0;i<42;i++){
+    const d=addDays(start,i),key=ymd(d);
+    const p=periods.filter(x=>x<=d).at(-1);
+    const nextP=periods.find(x=>x>d);
+    const h=hefseks.find(x=>p&&x>=p&&x<=d);
+    const mk=mikvehs.find(x=>p&&x>=p&&x<=d);
+    if(p&&!h){
+      const hr=hefsekReadys.find(x=>x>=p&&x<=d);
+      map[key]=hr?"wait":"period";
+    }else if(h&&!mk){
+      map[key]="wait";
+    }else if(mk&&key===ymd(mk)){
+      map[key]="mikveh";
+    }else if(mk&&(!nextP||d<nextP)){
+      map[key]="clean";
+    }
   }
   for(const [k,v] of dayEvents.entries()) if(normalizeDay(v).markers.some(x=>x.type==="prisha")) map[k]="prisha";
   return map;
