@@ -25,14 +25,14 @@
     body{margin:0;font-family:"Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-weight:650;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:#201735;background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
-    .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(250,241,255,.75);backdrop-filter:blur(8px);border-bottom:1px solid #ead6f2}
-    .brand{display:flex;align-items:center;justify-content:center;gap:16px;justify-self:center;padding:4px 8px;width:min(760px,100%)}
+    .topbar{position:sticky;top:0;z-index:30;padding:6px 16px 8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
+    .brand{display:flex;align-items:center;justify-content:center;gap:16px;justify-self:center;padding:0 8px 4px;width:min(760px,100%)}
     .logo{width:140px;height:140px;object-fit:contain;background:transparent;border:none;box-shadow:none}
     .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-    .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-weight:900;line-height:1;letter-spacing:.03em;background:linear-gradient(120deg,#ff7bca,#ff9de1 40%,#fff 55%,#ff95d5 70%,#ff6bbb);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 4px 0 rgba(255,255,255,.55),0 10px 24px rgba(195,53,140,.45),0 0 20px rgba(255,180,224,.9)}
-    .brand-subtitle{margin:0;font-size:1.03rem;font-weight:800;color:#7d2c63;text-shadow:0 2px 8px rgba(255,255,255,.55)}
-    .menu-btn{justify-self:end;position:sticky;top:8px;z-index:35}
-    .today-panel{justify-self:start;position:sticky;top:78px;z-index:28;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
+    .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"David Libre","Assistant","Noto Sans Hebrew",serif;font-weight:700;line-height:1;letter-spacing:.01em;color:#8d6a9c;text-shadow:0 2px 10px rgba(87,49,110,.2)}
+    .brand-subtitle{margin:0;font-size:1.03rem;font-weight:800;color:#7d2c63;text-shadow:0 2px 8px rgba(255,255,255,.45)}
+    .menu-btn{justify-self:end;position:sticky;top:4px;z-index:35}
+    .today-panel{justify-self:start;position:sticky;top:66px;z-index:28;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
     .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.1rem;font-weight:900;color:#fff;background:linear-gradient(145deg,#6a2a58,var(--accent));padding:6px 12px;border-radius:999px;letter-spacing:.04em;box-shadow:0 5px 14px rgba(110,44,90,.28)}.small{font-size:.82rem;color:#4d406f;font-weight:700}
     .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -114,7 +114,7 @@
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:108px;height:108px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-title{font-size:clamp(1.8rem,5.8vw,2.8rem)}.brand-subtitle{font-size:.95rem}}
+    @media(max-width:1024px){.logo{width:108px;height:108px}.topbar{padding:6px 12px 8px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-title{font-size:clamp(1.8rem,5.8vw,2.8rem)}.brand-subtitle{font-size:.95rem}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:start}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
     @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.brand{gap:10px}.logo{width:84px;height:84px}.brand-subtitle{font-size:.84rem}}
   </style>
@@ -126,7 +126,7 @@
     <img class="logo" src="1.png" alt="לוגו" />
     <div class="brand-title-wrap">
       <h1 class="brand-title">לוח טהרה</h1>
-      <p class="brand-subtitle">ניהול ימי פרישה וטהרה</p>
+      <p class="brand-subtitle">ניהול ימי טהרה בפרישה</p>
     </div>
   </div>
   <section class="today-panel" id="todayPanel">
