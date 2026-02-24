@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>לוח טהרה</title>
-  <link rel="icon" type="image/png" href="logo.png" />
-  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="icon" type="image/png" href="1.png" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@500;700;800&family=David+Libre:wght@500;700&display=swap');
     :root {
@@ -27,7 +26,7 @@
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
     .topbar{position:sticky;top:0;z-index:30;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(250,241,255,.75);backdrop-filter:blur(8px);border-bottom:1px solid #ead6f2}
-    .brand{display:flex;align-items:center;justify-content:center;justify-self:center;padding:2px 8px;width:min(620px,100%)}.logo{width:92px;height:92px;border-radius:18px;object-fit:cover;box-shadow:0 8px 22px rgba(120,30,100,.22)}
+    .brand{display:flex;align-items:center;gap:14px;justify-self:center;padding:4px 8px;width:min(620px,100%)}.logo{width:90px;height:90px;border-radius:0;object-fit:contain}.title{font-family:"David Libre","Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-size:2.08rem;font-weight:700;letter-spacing:.04em;text-shadow:0 2px 9px rgba(120,30,100,.12)}.title-blue{color:#2166d8}.title-green{color:#1f8f4d}.subtitle{font-size:.95rem;color:#7b3a8a;font-weight:700;letter-spacing:.01em}
     .menu-btn{justify-self:end;position:sticky;top:8px;z-index:35}
     .today-panel{justify-self:start;position:sticky;top:78px;z-index:28;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
@@ -67,6 +66,10 @@
     .sunset{font-size:.72rem;color:#9f4f73;margin-top:5px}
     .badge{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;font-size:.72rem;background:#fff;border:1px solid var(--line);cursor:pointer}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
+    .time-input{padding:10px 14px;border:1px solid #d8b4f1;border-radius:999px;background:linear-gradient(120deg,#fff,#ffeefe);font-weight:800;color:#24183c;min-width:140px;box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(182,90,155,.12)}
+    .switch.reminder-card{display:block;background:linear-gradient(150deg,#fff6fd,#ffe8f5);border:1px solid #f1bdd9;border-radius:14px;padding:10px}
+    .reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+    .reminder-grid .switch{margin:0}
     .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid #eaddea;margin-bottom:4px}
     .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
     .half{padding:2px 4px;min-height:18px;font-size:.62rem;display:flex;gap:3px;align-items:center;justify-content:center}
@@ -76,37 +79,37 @@
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
     .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
-    .switch{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:10px;box-shadow:0 4px 12px rgba(130,70,200,.1)}
-    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:56px;height:30px;padding:3px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease;overflow:hidden}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08)}
+    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:56px;height:30px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease}
     .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
     .switch input[type="checkbox"]:checked{background:#2f8cff}
-    .switch input[type="checkbox"]:checked::after{transform:translateX(calc(-100% + 6px))}
+    .switch input[type="checkbox"]:checked::after{transform:translateX(-26px)}
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
     .modal-overlay{position:fixed;inset:0;background:#0004;display:grid;place-items:center;z-index:60;padding:12px}
-    .modal{width:min(560px,95vw);padding:16px;border-radius:20px;background:linear-gradient(170deg,#fff,#f8edff)}
-    .modal-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:1px solid #ebd6ff;margin-bottom:12px}
-    .modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .modal{width:min(560px,95vw);padding:14px}
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
+    .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     #btnEventA{background:#fff;color:#23193a}
     #btnEventB{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
     .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:12px;border:1px solid var(--line)}
-    .drawer select,#day30Mode,#day31Mode,#minhagSelect{border-radius:999px;padding:10px 14px;background:linear-gradient(120deg,#fff,#f6ebff);border:1px solid #d4b8f0;font-weight:800;box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(182,90,155,.12)}
-    #requestLocationBtn{width:100%;border-radius:14px;padding:10px 12px;font-weight:900}
+    .drawer select,#day30Mode,#day31Mode,#minhagSelect{border-radius:999px;padding:10px 14px;background:linear-gradient(120deg,#fff,#f6ebff);border:1px solid #d4b8f0;font-weight:800}
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1024px){.logo{width:75px;height:75px}.topbar{padding:10px 12px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:start}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:62px;height:62px}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.74rem}.sunset{font-size:.68rem}.menu-btn{padding:10px 14px;font-size:1rem}.logo{width:56px;height:56px}.title{font-size:1.35rem}.subtitle{font-size:.8rem}}
   </style>
 </head>
 <body>
 <header class="topbar">
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
-    <img class="logo" src="logo.png" alt="לוגו לוח טהרה" />
+    <img class="logo" src="logo.png" alt="לוגו" />
+    <div><div class="title"><span class="title-blue">לוח</span> <span class="title-green">טהרה</span></div><div class="subtitle">ניהול מחזור · ימי פרישה · ימי טהרה</div></div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -141,8 +144,15 @@
   <div class="switch"><span>יום 31</span><input id="day31Toggle" type="checkbox"></div>
   <div class="switch"><span>אופן עונה בינונית (30)</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
   <div class="switch"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
-  <div class="switch"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מיקום נוכחי (לבקשת הרשאה)</option><option value="city">עיר קבועה</option></select></div>
-  <button id="requestLocationBtn" class="btn">בקשת הרשאת מיקום עכשיו</button>
+  <div class="switch reminder-card">
+    <span>תזכורות חכמות</span>
+    <div class="reminder-grid">
+      <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
+      <div class="switch"><span>תזכורת לימי פרישה</span><input id="meetingToggle" type="checkbox"></div>
+      <div class="switch" style="grid-column:1/-1"><span>שעת תזכורת</span><input id="reminderTime" class="time-input" type="time" value="15:00"></div>
+    </div>
+  </div>
+  <div class="switch"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
   <div class="switch"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
   <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
@@ -160,16 +170,13 @@ import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWith
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",authDomain:"luach-48111.firebaseapp.com",projectId:"luach-48111",storageBucket:"luach-48111.firebasestorage.app",messagingSenderId:"418216623160",appId:"1:418216623160:web:56ebe2830458d6b12f3acd",measurementId:"G-BJ2LVM6WR6"};
-const isAndroidWebView=/wv|Android.*Version\/\d+\.\d+/i.test(navigator.userAgent);
-const app=initializeApp(firebaseConfig);
-if(!isAndroidWebView && await isSupported()) getAnalytics(app);
-const auth=getAuth(app); const db=getFirestore(app);
+const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(app); const auth=getAuth(app); const db=getFirestore(app);
 
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
-const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1";
-let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null;
+const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1";
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
 const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
@@ -281,22 +288,20 @@ function getPhaseMap(y,m){
   return map;
 }
 
-async function getCoordsWithRetry({interactive=false}={}){
+async function getCoordsWithRetry(){
   if(lastCoords) return lastCoords;
   if(locationPromise) return locationPromise;
   locationPromise=(async()=>{
     if(!navigator.geolocation) throw new Error("no-geo");
-    if(isAndroidWebView && !interactive) throw new Error("webview-passive-geo-disabled");
     let lastErr=null;
-    const maxAttempts=isAndroidWebView?1:3;
-    for(let attempt=1;attempt<=maxAttempts;attempt++){
+    for(let attempt=1;attempt<=4;attempt++){
       try{
-        const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:!isAndroidWebView,timeout:isAndroidWebView?6500:8500,maximumAge:isAndroidWebView?300000:60000}));
+        const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:9000,maximumAge:0}));
         lastCoords={latitude:pos.coords.latitude,longitude:pos.coords.longitude};
         return lastCoords;
       }catch(err){
         lastErr=err;
-        await new Promise(r=>setTimeout(r,700));
+        await new Promise(r=>setTimeout(r,1200));
       }
     }
     throw lastErr||new Error("geo-failed");
@@ -304,21 +309,10 @@ async function getCoordsWithRetry({interactive=false}={}){
   try{return await locationPromise;}finally{locationPromise=null;}
 }
 
-async function requestLocationAccess(){
-  try{
-    await getCoordsWithRetry({interactive:true});
-    showToast("הרשאת מיקום התקבלה");
-    return true;
-  }catch{
-    showToast("לא התקבלה הרשאת מיקום, משתמשים בעיר קבועה");
-    return false;
-  }
-}
-
 async function resolveSunset(date){
   const key=ymd(date);
   const prefs=getPrefs();
-  const mode=prefs.sunsetMode||(isAndroidWebView?"city":"location");
+  const mode=prefs.sunsetMode||"location";
   const cityKey=prefs.sunsetCity||"Jerusalem";
   const cacheKey=mode==="city"?`city-${cityKey}-${key}`:`loc-${key}`;
   if(sunsetCache[cacheKey]) return sunsetCache[cacheKey];
@@ -333,16 +327,64 @@ async function resolveSunset(date){
     if(mode==="city") saveSunsetCache();
     return t;
   }catch{
-    const fallbackCity=CITY_COORDS[cityKey]||CITY_COORDS.Jerusalem;
-    const fallbackKey=`city-${cityKey}-${key}`;
-    const url=`https://api.sunrise-sunset.org/json?lat=${fallbackCity.latitude}&lng=${fallbackCity.longitude}&date=${key}&formatted=0`;
-    const r=await fetch(url); const j=await r.json();
-    const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
-    sunsetCache[fallbackKey]=t;
-    return t;
+    sunsetCache[cacheKey]="טוען מיקום…";
+    setTimeout(()=>{delete sunsetCache[cacheKey];renderTodayCard();},2500);
+    return "טוען מיקום…";
   }
 }
 
+
+function hasMarkerOnDate(dateKey,type){return normalizeDay(dayEvents.get(dateKey)).markers.some(m=>m.type===type)}
+function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
+function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
+async function ensureNotificationPermission(){
+  if(!("Notification" in window)) return false;
+  if(Notification.permission==="granted") return true;
+  if(Notification.permission==="denied") return false;
+  const p=await Notification.requestPermission();
+  return p==="granted";
+}
+function playReminderSound(){
+  const Ctx=window.AudioContext||window.webkitAudioContext;
+  if(!Ctx) return;
+  const ctx=new Ctx();
+  const osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type="sine"; osc.frequency.value=880; gain.gain.value=.001;
+  osc.connect(gain); gain.connect(ctx.destination); osc.start();
+  gain.gain.exponentialRampToValueAtTime(.28,ctx.currentTime+.03);
+  gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.45);
+  osc.stop(ctx.currentTime+.5);
+}
+async function fireHefsekReminder(dateKey){
+  const log=getReminderLog();
+  const time=getPrefs().reminderTime||"15:00";
+  if(log[dateKey]===time) return;
+  playReminderSound();
+  const msg="היום צריך לבצע הפסק טהרה";
+  const hasPermission=await ensureNotificationPermission();
+  if(hasPermission){
+    new Notification("תזכורת לוח טהרה",{body:msg,icon:"1.png"});
+  }else{
+    showToast(msg);
+    alert(msg);
+  }
+  log[dateKey]=time;
+  setReminderLog(log);
+}
+function startReminderWatcher(){
+  if(reminderTimer) clearInterval(reminderTimer);
+  const tick=async()=>{
+    const prefs=getPrefs();
+    if(!prefs.reminderEnabled) return;
+    const dateKey=ymd(today);
+    if(!hasMarkerOnDate(dateKey,"hefsek")) return;
+    const now=new Date();
+    const hhmm=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    if(hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(dateKey);
+  };
+  tick();
+  reminderTimer=setInterval(tick,30000);
+}
 
 async function renderTodayCard(){
   el("todayDate").textContent=`${new Intl.DateTimeFormat("he",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(today)} | ${getHebrewDateDisplay(today)}`;
@@ -448,32 +490,24 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),requestLocationBtn=el("requestLocationBtn");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; sunsetMode.value=prefs.sunsetMode||(isAndroidWebView?"city":"location"); sunsetCity.value=prefs.sunsetCity||"Jerusalem"; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
 day31Mode.onchange=async e=>{setPrefs({day31Mode:e.target.value});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
-sunsetMode.onchange=async e=>{
-  if(e.target.value==="location"){
-    const ok=await requestLocationAccess();
-    if(!ok){e.target.value="city";setPrefs({sunsetMode:"city"});await render();return;}
-  }
-  setPrefs({sunsetMode:e.target.value});
-  await render();
-};
+reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
+meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פרישה עודכנה")};
+reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
+sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
-requestLocationBtn.onclick=async()=>{
-  const ok=await requestLocationAccess();
-  if(ok){sunsetMode.value="location";setPrefs({sunsetMode:"location"});await render();}
-};
 
 el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
 el("signOutBtn").onclick=async()=>{await signOut(auth);el("authMsg").textContent="התנתקת"};
 
-applyMode(); startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); render();
+applyMode(); startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); startReminderWatcher(); render();
 </script>
 </body>
 </html>
