@@ -27,13 +27,13 @@
     .hidden{display:none!important}
     .topbar{position:relative;z-index:30;padding:6px 16px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
     .brand{display:flex;align-items:flex-start;justify-content:center;gap:16px;justify-self:center;padding:0 8px;width:min(980px,100%);margin-inline:auto;margin-top:0}
-    .logo{width:min(710px,70vw);height:176px;object-fit:cover;object-position:center 58%;background:transparent;border:none;box-shadow:none;display:block;pointer-events:none}
+    .logo{width:min(680px,64vw);height:168px;max-width:100%;object-fit:cover;object-position:center 56%;background:transparent;border:none;box-shadow:none;display:block;pointer-events:none}
     .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
     .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"David Libre","Assistant","Noto Sans Hebrew",serif;font-weight:700;line-height:1;letter-spacing:.01em;color:#8d6a9c;text-shadow:0 2px 10px rgba(87,49,110,.2)}
     .brand-subtitle{margin:0;font-size:1.05rem;font-weight:900;color:#5f1648;text-shadow:0 2px 10px rgba(255,255,255,.45)}
-    .menu-btn{justify-self:end;position:fixed;inset-inline-end:16px;top:10px;z-index:60;font-size:1.45rem;padding:11px 17px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f7f4ff);color:#2d1d49;border:1px solid #d7c7eb;box-shadow:0 6px 18px rgba(70,36,105,.18);font-weight:900}
+    .menu-btn{justify-self:end;position:fixed;right:16px;top:10px;z-index:60;font-size:1.45rem;padding:11px 17px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f7f4ff);color:#2d1d49;border:1px solid #d7c7eb;box-shadow:0 6px 18px rgba(70,36,105,.18);font-weight:900}
     .menu-btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(70,36,105,.22)}
-    .today-panel{justify-self:start;position:fixed;inset-inline-start:16px;top:52px;z-index:58;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
+    .today-panel{justify-self:start;position:fixed;left:16px;top:52px;z-index:58;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
     .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
     .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.1rem;font-weight:900;color:#fff;background:linear-gradient(145deg,#6a2a58,var(--accent));padding:6px 12px;border-radius:999px;letter-spacing:.04em;box-shadow:0 5px 14px rgba(110,44,90,.28)}.small{font-size:.82rem;color:#4d406f;font-weight:700}
     .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -122,9 +122,9 @@
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:min(590px,70vw);height:150px}.topbar{padding:4px 12px 0}.container{margin:8px auto 0}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-subtitle{font-size:.95rem}.menu-btn{inset-inline-end:12px}.today-panel{inset-inline-start:12px;top:50px}}
-    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px;margin:6px auto 0}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.78rem}.sunset{font-size:.7rem}.menu-btn{padding:10px 14px;font-size:1.2rem;border-radius:14px;inset-inline-end:10px;top:8px}.brand{gap:10px}.logo{width:min(92vw,430px);height:118px}.brand-subtitle{font-size:.84rem}.monthTitle{min-width:230px;padding:11px 14px}.today-panel{inset-inline-start:10px;top:44px;min-width:160px;max-width:172px;padding:10px 8px}}
+    @media(max-width:1024px) and (min-width:721px){.logo{width:min(520px,66vw);height:128px;object-position:center 56%}.topbar{padding:4px 12px 0}.container{margin:8px auto 0}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%;justify-self:center}.brand-subtitle{font-size:.95rem}.menu-btn{right:12px}.today-panel{left:12px;top:50px}}
+    @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
+    @media(max-width:720px){.container{padding:0 10px 22px;margin:6px auto 0}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.78rem}.sunset{font-size:.7rem}.menu-btn{padding:10px 14px;font-size:1.2rem;border-radius:14px;right:10px;top:8px}.brand{gap:10px;justify-self:center}.logo{width:min(82vw,300px);height:86px;object-position:center 55%}.brand-subtitle{font-size:.84rem}.monthTitle{min-width:230px;padding:11px 14px}.today-panel{left:10px;top:44px;min-width:160px;max-width:172px;padding:10px 8px}}
   </style>
 </head>
 <body>
