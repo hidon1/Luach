@@ -188,20 +188,24 @@
 <div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
 <div id="toast" class="toast hidden"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+<script>
 
 const firebaseConfig={apiKey:"AIzaSyDiN-q4MWmKLqMpjtbevW5sTGXgoFOyQ94",authDomain:"luach-48111.firebaseapp.com",projectId:"luach-48111",storageBucket:"luach-48111.firebasestorage.app",messagingSenderId:"418216623160",appId:"1:418216623160:web:56ebe2830458d6b12f3acd",measurementId:"G-BJ2LVM6WR6"};
-const app=initializeApp(firebaseConfig); if(await isSupported()) getAnalytics(app); const auth=getAuth(app); const db=getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+try{firebase.analytics();}catch{}
+const auth=firebase.auth();
+const db=firebase.firestore();
 
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
 const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
+let webViewSafeReady=false;
 const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
 
 function pad2(n){return String(n).padStart(2,"0")} function ymd(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
@@ -215,12 +219,12 @@ function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}")
 function exportEvents(){const o={};for(const[k,v]of dayEvents.entries())o[k]=normalizeDay(v);return o;}
 function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
 function clearDerived(){for(const [k,v]of dayEvents.entries()){const keep=normalizeDay(v).markers.filter(m=>!m.source);keep.length?dayEvents.set(k,{markers:keep}):dayEvents.delete(k)}}
-async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await setDoc(doc(db,"users",currentUid),{events,prefs:getPrefs(),updatedAt:Date.now()},{merge:true})}
+async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await db.collection("users").doc(currentUid).set({events,prefs:getPrefs(),updatedAt:Date.now()},{merge:true})}
 function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
 function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
 function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
 
-async function loadRemoteEvents(uid){const snap=await getDoc(doc(db,"users",uid));if(!snap.exists())return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
+async function loadRemoteEvents(uid){const snap=await db.collection("users").doc(uid).get();if(!snap.exists)return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
@@ -314,6 +318,7 @@ function getPhaseMap(y,m){
 }
 
 async function getCoordsWithRetry(){
+  if(!webViewSafeReady) throw new Error("geo-not-ready");
   if(lastCoords) return lastCoords;
   if(locationPromise) return locationPromise;
   locationPromise=(async()=>{
@@ -345,6 +350,10 @@ async function resolveSunset(date){
     let coords;
     if(mode==="city") coords=CITY_COORDS[cityKey]||CITY_COORDS.Jerusalem;
     else coords=await getCoordsWithRetry();
+    if(!webViewSafeReady){
+      setTimeout(()=>renderTodayCard(),400);
+      return "טוען מיקום…";
+    }
     const url=`https://api.sunrise-sunset.org/json?lat=${coords.latitude}&lng=${coords.longitude}&date=${key}&formatted=0`;
     const r=await fetch(url); const j=await r.json();
     const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
@@ -363,6 +372,7 @@ function hasMarkerOnDate(dateKey,type){return normalizeDay(dayEvents.get(dateKey
 function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
 function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
 async function ensureNotificationPermission(){
+  if(window.AndroidBridge) return false;
   if(!("Notification" in window)) return false;
   if(Notification.permission==="granted") return true;
   if(Notification.permission==="denied") return false;
@@ -387,7 +397,7 @@ async function fireHefsekReminder(dateKey){
   playReminderSound();
   const msg="היום צריך לבצע הפסק טהרה";
   const hasPermission=await ensureNotificationPermission();
-  if(hasPermission){
+  if(hasPermission && !window.AndroidBridge){
     new Notification("תזכורת לוח",{body:msg,icon:"1.png"});
   }else{
     showToast(msg);
@@ -570,10 +580,10 @@ async function commitAndSync(){await persistAll();await render();showToast("הנ
 
 function openAuth(){el("authOverlay").classList.remove("hidden")} function closeAuth(){el("authOverlay").classList.add("hidden")}
 function renderAuthMode(){const t=el("authTitle"),s=el("authSub"),sw=el("authSwitchText"),a=el("authActionBtn");if(authMode==="signin"){t.textContent="התחברות";s.textContent="התחברי עם אימייל וסיסמה";a.textContent="התחברות";sw.textContent="אין לך חשבון?";}else{t.textContent="רישום";s.textContent="צרי חשבון חדש";a.textContent="רישום";sw.textContent="יש לך כבר חשבון?";}}
-async function doSignIn(){try{await signInWithEmailAndPassword(auth,el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת התחברות: "+e.message}}
-async function doSignUp(){try{await createUserWithEmailAndPassword(auth,el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת רישום: "+e.message}}
+async function doSignIn(){try{await auth.signInWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת התחברות: "+e.message}}
+async function doSignUp(){try{await auth.createUserWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת רישום: "+e.message}}
 
-onAuthStateChanged(auth,async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
+auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
 
 el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
 el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
@@ -603,9 +613,18 @@ sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render
 
 el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
-el("signOutBtn").onclick=async()=>{await signOut(auth);el("authMsg").textContent="התנתקת"};
+el("signOutBtn").onclick=async()=>{await auth.signOut();el("authMsg").textContent="התנתקת"};
 
 applyMode(); startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); startReminderWatcher(); render();
+window.addEventListener("load",()=>{
+  setTimeout(()=>{
+    webViewSafeReady=true;
+    renderTodayCard();
+  },500);
+  setTimeout(()=>{
+    renderTodayCard();
+  },300);
+});
 </script>
 </body>
 </html>
