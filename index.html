@@ -26,7 +26,7 @@
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
     .topbar{position:relative;z-index:30;padding:6px 16px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
-    .brand{display:flex;align-items:flex-start;justify-content:center;gap:16px;justify-self:center;padding:0 8px;width:min(980px,100%);margin-inline:auto;margin-top:10px}
+    .brand{display:flex;align-items:flex-start;justify-content:center;gap:16px;justify-self:center;grid-column:1/-1;padding:0 8px;width:fit-content;max-width:100%;margin-inline:auto;margin-top:28px}
     .logo{width:min(560px,56vw);height:136px;max-width:100%;object-fit:cover;object-position:center 60%;background:transparent;border:none;box-shadow:none;display:block;pointer-events:none}
     .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
     .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"David Libre","Assistant","Noto Sans Hebrew",serif;font-weight:700;line-height:1;letter-spacing:.01em;color:#8d6a9c;text-shadow:0 2px 10px rgba(87,49,110,.2)}
@@ -122,10 +122,10 @@
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1280px) and (min-width:721px){.brand{width:100%;justify-self:center;align-items:center;margin-top:8px}.logo{width:min(480px,68vw);height:auto;max-height:116px;object-fit:contain;object-position:center center}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
+    @media(max-width:1280px) and (min-width:721px){.brand{width:fit-content;max-width:100%;justify-self:center;align-items:center;margin-top:18px}.logo{width:min(480px,68vw);height:auto;max-height:116px;object-fit:contain;object-position:center center}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
     @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{min-height:82px;padding:6px}.greg{font-size:.95rem}.hebrew{font-size:.76rem}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px;margin:6px auto 0}.calendar,.controls{padding:10px}.dow,.grid{gap:5px}.dow div{padding:7px 3px;font-size:.72rem}.cell{min-height:72px;padding:5px}.greg{font-size:.9rem}.hebrew{font-size:.7rem}.sunset{font-size:.64rem}.menu-btn{padding:10px 14px;font-size:1.2rem;border-radius:14px;right:10px;top:8px}.brand{gap:10px;justify-self:center;align-items:center}.logo{width:min(50vw,140px);height:auto;max-height:46px;object-fit:contain;object-position:center center}.brand-subtitle{font-size:.84rem}.monthTitle{min-width:230px;padding:11px 14px}.today-panel{left:10px;top:44px;min-width:160px;max-width:172px;padding:10px 8px}}
+    @media(max-width:720px){.container{padding:0 10px 22px;margin:6px auto 0}.calendar,.controls{padding:10px}.dow,.grid{gap:5px}.dow div{padding:7px 3px;font-size:.72rem}.cell{min-height:72px;padding:5px}.greg{font-size:.9rem}.hebrew{font-size:.7rem}.sunset{font-size:.64rem}.menu-btn{padding:10px 14px;font-size:1.2rem;border-radius:14px;right:10px;top:8px}.brand{gap:10px;justify-self:center;align-items:center;margin-top:16px}.logo{width:min(50vw,140px);height:auto;max-height:46px;object-fit:contain;object-position:center center}.brand-subtitle{font-size:.84rem}.monthTitle{min-width:230px;padding:11px 14px}.today-panel{left:10px;top:44px;min-width:160px;max-width:172px;padding:10px 8px}}
   </style>
 </head>
 <body>
