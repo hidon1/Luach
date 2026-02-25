@@ -26,8 +26,8 @@
     body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
     .hidden{display:none!important}
     .topbar{position:relative;z-index:30;padding:6px 16px 8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
-    .brand{display:flex;align-items:center;justify-content:center;gap:16px;justify-self:center;padding:0 8px 4px;width:min(760px,100%)}
-    .logo{width:210px;height:210px;object-fit:contain;background:transparent;border:none;box-shadow:none;transition:transform .2s ease}
+    .brand{display:flex;align-items:center;justify-content:center;gap:16px;justify-self:center;padding:0 8px 4px;width:min(760px,100%);margin-inline:auto}
+    .logo{width:300px;height:300px;object-fit:contain;background:transparent;border:none;box-shadow:none;transition:transform .2s ease}
     .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
     .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"David Libre","Assistant","Noto Sans Hebrew",serif;font-weight:700;line-height:1;letter-spacing:.01em;color:#8d6a9c;text-shadow:0 2px 10px rgba(87,49,110,.2)}
     .brand-subtitle{margin:0;font-size:1.05rem;font-weight:900;color:#5f1648;text-shadow:0 2px 10px rgba(255,255,255,.45)}
@@ -122,9 +122,9 @@
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
-    @media(max-width:1024px){.logo{width:160px;height:160px}.topbar{padding:6px 12px 8px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-subtitle{font-size:.95rem}}
+    @media(max-width:1024px){.logo{width:220px;height:220px}.topbar{padding:6px 12px 8px}.cell{min-height:105px}.drawer{width:min(420px,94vw)}.brand{width:100%}.brand-subtitle{font-size:.95rem}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{grid-column:1/-1;justify-self:start}.brand{justify-self:start}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.78rem}.sunset{font-size:.7rem}.menu-btn{padding:11px 14px;font-size:1.2rem}.brand{gap:10px}.logo{width:124px;height:124px}.brand-subtitle{font-size:.84rem}}
+    @media(max-width:720px){.container{padding:0 10px 22px}.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.cell{min-height:88px;padding:6px}.greg{font-size:1rem}.hebrew{font-size:.78rem}.sunset{font-size:.7rem}.menu-btn{padding:11px 14px;font-size:1.2rem}.brand{gap:10px}.logo{width:170px;height:170px}.brand-subtitle{font-size:.84rem}}
   </style>
 </head>
 <body>
@@ -132,9 +132,6 @@
   <button id="menuBtn" class="btn menu-btn">☰</button>
   <div class="brand">
     <img class="logo" src="logo.png" alt="לוגו לוח טהרה" />
-    <div class="brand-title-wrap">
-      <p class="brand-subtitle">ניהול ימי טהרה בפרישה</p>
-    </div>
   </div>
   <section class="today-panel" id="todayPanel">
     <div class="today-head"><span>היום</span><span id="clock" class="clock">--:--:--</span></div>
@@ -161,7 +158,7 @@
     <div id="continuousTrack" class="continuous-track"></div>
   </section>
 </main>
-<footer style="text-align:center;padding:22px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ׳ — לפרטים ועדכונים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">חתכן</a>.</footer>
+<footer style="text-align:center;padding:22px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ׳ — לפרטים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">לחץ כאן</a>.</footer>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="drawer" class="drawer hidden">
   <div class="drawer-head"><h3>תפריט</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
