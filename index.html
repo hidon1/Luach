@@ -82,6 +82,9 @@
     .switch.reminder-card{display:block;background:linear-gradient(150deg,#fff6fd,#ffe8f5);border:1px solid #f1bdd9;border-radius:14px;padding:10px}
     .reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
     .reminder-grid .switch{margin:0}
+    .manual-reminder-card{display:grid;gap:8px;background:linear-gradient(150deg,#f5fbff,#e8f3ff);border:1px solid #b9d7f7;border-radius:14px;padding:10px}
+    .manual-reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .manual-reminder-grid .switch{margin:0}
     .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid #eaddea;margin-bottom:4px}
     .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
     .half{padding:2px 4px;min-height:18px;font-size:.62rem;display:flex;gap:3px;align-items:center;justify-content:center}
@@ -106,7 +109,7 @@
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
-    .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:60;padding:12px}
+    .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -128,9 +131,9 @@
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1280px) and (min-width:721px){.brand{width:100%;max-width:100%;display:flex;justify-content:center;align-items:center;justify-self:center;margin-top:18px;padding:0}.logo{width:min(560px,74vw);height:auto;max-height:132px;object-fit:contain;object-position:center center;margin-inline:auto}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
-    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{min-height:82px;padding:6px}.greg{font-size:.95rem}.hebrew{font-size:.76rem}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}}
+    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{min-height:76px;padding:5px}.greg{font-size:.92rem}.hebrew{font-size:.74rem}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){.container{padding:0 10px 22px;margin:6px auto 0}.calendar,.controls{padding:10px}.dow,.grid{gap:5px}.dow div{padding:7px 3px;font-size:.72rem}.cell{min-height:72px;padding:5px}.greg{font-size:.9rem}.hebrew{font-size:.7rem}.sunset{font-size:.64rem}.menu-btn{padding:10px 14px;font-size:1.2rem;border-radius:14px;right:10px;top:8px}.brand{gap:10px;justify-self:center;align-items:center;margin-top:16px}.logo{width:min(50vw,140px);height:auto;max-height:46px;object-fit:contain;object-position:center center}.brand-subtitle{font-size:.84rem}.monthTitle{min-width:230px;padding:11px 14px}.today-panel{left:10px;top:44px;min-width:160px;max-width:172px;padding:10px 8px}}
+    @media(max-width:720px){body{overflow-x:hidden}.topbar{padding:6px 10px 0}.container{padding:0 8px 18px;margin:2px auto 0;max-width:100vw}.calendar,.controls{padding:8px}.dow,.grid{gap:3px}.dow div{padding:6px 2px;font-size:.66rem}.cell{min-height:56px;padding:3px;border-radius:10px}.greg{font-size:.78rem}.hebrew{font-size:.64rem}.sunset{font-size:.58rem}.badge{font-size:.58rem;padding:2px 4px}.half-cell{padding:3px 2px;font-size:.56rem;min-height:24px}.menu-btn{padding:9px 12px;font-size:1.05rem;border-radius:12px;right:8px;top:8px}.brand{gap:6px;justify-self:center;align-items:center;margin-top:6px;margin-bottom:2px}.logo{width:min(52vw,170px);height:auto;max-height:64px;object-fit:contain;object-position:center center}.monthTitle{min-width:auto;width:100%;padding:10px 12px;font-size:.95rem}.today-panel{display:none}.modal-overlay{padding:8px}.modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:18px}.drawer{width:min(86vw,340px)}.reminder-grid,.manual-reminder-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -181,6 +184,15 @@
       <div class="switch" style="grid-column:1/-1"><span>שעת תזכורת</span><input id="reminderTime" class="time-input" type="time" value="15:00"></div>
     </div>
   </div>
+  <div class="manual-reminder-card">
+    <span>תזכורת ידנית</span>
+    <div class="manual-reminder-grid">
+      <div class="switch"><span>פעיל</span><input id="manualReminderEnabled" type="checkbox"></div>
+      <div class="switch"><span>שעה</span><input id="manualReminderTime" class="time-input" type="time" value="20:00"></div>
+      <div class="switch switch-feature"><span>תדירות</span><select id="manualReminderMode"><option value="today">רק להיום</option><option value="daily">כל יום</option></select></div>
+      <div class="switch switch-feature"><span>מספר פעמים</span><select id="manualReminderCount"><option value="1">פעם אחת</option><option value="2">פעמיים</option></select></div>
+    </div>
+  </div>
   <button id="openTimeline" class="btn">ציר הזמן</button>
   <div class="switch switch-feature"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
   <div class="switch switch-feature"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
@@ -210,7 +222,7 @@ const db=firebase.firestore();
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
 const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
-const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
+const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
 let webViewSafeReady=false;
 const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
@@ -382,6 +394,8 @@ async function resolveSunset(date){
 function hasMarkerOnDate(dateKey,type){return normalizeDay(dayEvents.get(dateKey)).markers.some(m=>m.type===type)}
 function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
 function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
+function getManualReminderLog(){try{return JSON.parse(localStorage.getItem(MANUAL_REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
+function setManualReminderLog(next){localStorage.setItem(MANUAL_REMINDER_FIRE_KEY,JSON.stringify(next));}
 async function ensureNotificationPermission(){
   if(window.AndroidBridge) return false;
   if(!("Notification" in window)) return false;
@@ -417,16 +431,46 @@ async function fireHefsekReminder(dateKey){
   log[dateKey]=time;
   setReminderLog(log);
 }
+async function fireManualReminder(dateKey,slot){
+  const log=getManualReminderLog();
+  const key=`${dateKey}-${slot}`;
+  if(log[key]) return;
+  playReminderSound();
+  const msg="תזכורת ידנית מהלוח";
+  const hasPermission=await ensureNotificationPermission();
+  if(hasPermission && !window.AndroidBridge){
+    new Notification("תזכורת ידנית",{body:msg,icon:"1.png"});
+  }else{
+    showToast(msg);
+  }
+  log[key]=Date.now();
+  setManualReminderLog(log);
+}
 function startReminderWatcher(){
   if(reminderTimer) clearInterval(reminderTimer);
   const tick=async()=>{
     const prefs=getPrefs();
-    if(!prefs.reminderEnabled) return;
-    const dateKey=ymd(today);
-    if(!hasMarkerOnDate(dateKey,"hefsek")) return;
     const now=new Date();
+    const nowKey=ymd(startOfDay(now));
     const hhmm=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
-    if(hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(dateKey);
+    if(prefs.reminderEnabled && hasMarkerOnDate(nowKey,"hefsek") && hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(nowKey);
+    if(prefs.manualReminderEnabled){
+      const manualTime=prefs.manualReminderTime||"20:00";
+      if(hhmm>=manualTime){
+        const mode=prefs.manualReminderMode||"today";
+        const onlyDate=prefs.manualReminderDate||nowKey;
+        const count=Number(prefs.manualReminderCount||1);
+        const slot1=`${manualTime}-1`;
+        const slot2=`${manualTime}-2`;
+        if(mode==="daily"||onlyDate===nowKey) await fireManualReminder(nowKey,slot1);
+        if(count>1){
+          const [h,m]=manualTime.split(":").map(Number);
+          const second=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m+30);
+          const secondTime=`${pad2(second.getHours())}:${pad2(second.getMinutes())}`;
+          if(hhmm>=secondTime) await fireManualReminder(nowKey,slot2);
+        }
+      }
+    }
   };
   tick();
   reminderTimer=setInterval(tick,30000);
@@ -609,8 +653,8 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),orzaruaToggle=el("orzaruaToggle");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),orzaruaToggle=el("orzaruaToggle");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
@@ -619,6 +663,10 @@ minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived(
 reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
 meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פרישה עודכנה")};
 reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
+manualReminderEnabled.onchange=async e=>{const next={manualReminderEnabled:e.target.checked};if(e.target.checked&&(manualReminderMode.value||"today")==="today")next.manualReminderDate=ymd(today);setPrefs(next);if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת הידנית עודכנה")};
+manualReminderTime.onchange=e=>{setPrefs({manualReminderTime:e.target.value||"20:00"});startReminderWatcher();showToast("שעת התזכורת הידנית עודכנה")};
+manualReminderMode.onchange=e=>{const mode=e.target.value||"today";setPrefs({manualReminderMode:mode,manualReminderDate:mode==="today"?ymd(today):null});startReminderWatcher();showToast("תדירות התזכורת עודכנה")};
+manualReminderCount.onchange=e=>{setPrefs({manualReminderCount:Number(e.target.value||1)});startReminderWatcher();showToast("מספר התזכורות עודכן")};
 sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
 orzaruaToggle.onchange=async e=>{setPrefs({orzarua:e.target.checked});recalcDerived();await render();};
