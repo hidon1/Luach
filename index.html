@@ -254,30 +254,26 @@ function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenaz
 function canSetHefsek(d){const periods=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period").map(()=>new Date(k))).sort((a,b)=>a-b);const last=periods.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
 function getPrishaOnotForMode(baseOna,mode){return mode==="full"?["night","day"]:[baseOna];}
 function addPrishaMarkers(date,onot,label,source){for(const ona of onot){addMarker(ymd(date),{type:"prisha",label:markerLabel(label,ona),ona,source});}}
-function calculateKavuah(patterns){
-  const byGap=new Map(),byHebrew=new Map();
-  if(patterns.length<3) return {byGap,byHebrew};
-  for(let i=0;i<=patterns.length-3;i++){
-    const a=patterns[i],b=patterns[i+1],c=patterns[i+2];
-    const gap1=Math.round((b.date-a.date)/86400000),gap2=Math.round((c.date-b.date)/86400000);
-    if(gap1===gap2){const key=`gap-${gap1}-${c.ona}`;if(!byGap.has(key))byGap.set(key,{gap:gap1,ona:c.ona,start:c.date});}
-    const h1=getHebrewDateParts(a.date),h2=getHebrewDateParts(b.date),h3=getHebrewDateParts(c.date);
-    const d1=h1.day,d2=h2.day,d3=h3.day;
-    if((d1===d2&&d2===d3)||((d2-d1+30)%30===1&&(d3-d2+30)%30===1)){
-      const key=`heb-${d3}-${c.ona}-${h3.month}`;
-      if(!byHebrew.has(key))byHebrew.set(key,{day:d3,ona:c.ona,start:c.date,increment:(d1===d2&&d2===d3)?0:1});
+function calculateGapKavuahByPeriod(periods){
+  const byPeriod=new Array(periods.length).fill(null);
+  if(periods.length<4) return byPeriod;
+  const gaps=[];
+  for(let i=1;i<periods.length;i++) gaps.push(Math.round((periods[i].date-periods[i-1].date)/86400000)+1);
+  let activeGap=null,missCount=0,deactivateAt=null;
+  for(let i=0;i<periods.length;i++){
+    if(deactivateAt===i){activeGap=null;missCount=0;deactivateAt=null;}
+    if(!activeGap&&i>=3){
+      const g1=gaps[i-1],g2=gaps[i-2],g3=gaps[i-3];
+      if(g1===g2&&g2===g3){activeGap=g1;missCount=0;}
+    }
+    byPeriod[i]=activeGap;
+    if(activeGap&&i<periods.length-1){
+      const nextGap=gaps[i];
+      if(nextGap===activeGap) missCount=0;
+      else{missCount+=1;if(missCount>=3) deactivateAt=i+1;}
     }
   }
-  return {byGap,byHebrew};
-}
-function getHebrewDateParts(d){
-  const parts=new Intl.DateTimeFormat("he-u-ca-hebrew",{day:"numeric",month:"long"}).formatToParts(d);
-  return {day:Number(parts.find(p=>p.type==="day")?.value||1),month:parts.find(p=>p.type==="month")?.value||""};
-}
-function hasKavuahForPeriod(period,kavuah){
-  for(const v of kavuah.byGap.values()) if(v.ona===period.ona && period.date>=v.start) return true;
-  for(const v of kavuah.byHebrew.values()) if(v.ona===period.ona && period.date>=v.start) return true;
-  return false;
+  return byPeriod;
 }
 function recalcDerived(){
   clearDerived();
@@ -286,34 +282,32 @@ function recalcDerived(){
   periods.sort((a,b)=>a.date-b.date); hefseks.sort((a,b)=>a-b);
   const prefs=getPrefs();
   const day30Mode=prefs.day30Mode||"ona",day31Mode=prefs.day31Mode||"ona";
-  const kavuah=calculateKavuah(periods);
+  const activeGapByPeriod=calculateGapKavuahByPeriod(periods);
   for(let i=0;i<periods.length;i++){
     const p=periods[i];
     const d30=addDays(p.date,29);
     const next=periods[i+1];
     const isBeforeNextPeriod=date=>!next||date<next.date;
-    if(!hasKavuahForPeriod(p,kavuah)&&isBeforeNextPeriod(d30)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
-    if(prefs.orzarua!==false){
-      const ozDate=p.ona==="day"?d30:addDays(d30,-1);
-      if(isBeforeNextPeriod(ozDate)) addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
-    }
-    if(prefs.day31){const d31=addDays(p.date,30);if(isBeforeNextPeriod(d31))addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");}
-    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
-    if(next){
-      const gap=Math.round((next.date-p.date)/86400000)+1;
-      if(gap>0){
-        const haflagaDate=addDays(next.date,gap-1);
-        addPrishaMarkers(haflagaDate,getPrishaOnotForMode(next.ona,day30Mode),`הפלגה ${gap} יום`,`auto-haflaga-${gap}`);
+    const activeGap=activeGapByPeriod[i];
+    if(activeGap){
+      const kavuahDate=addDays(p.date,activeGap-1);
+      if(isBeforeNextPeriod(kavuahDate)) addPrishaMarkers(kavuahDate,getPrishaOnotForMode(p.ona,day30Mode),`קביעת וסת ${activeGap} יום`,`auto-kavuah-gap-${activeGap}`);
+    }else{
+      if(isBeforeNextPeriod(d30)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
+      if(prefs.orzarua!==false){
+        const ozDate=p.ona==="day"?d30:addDays(d30,-1);
+        if(isBeforeNextPeriod(ozDate)) addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
+      }
+      if(prefs.day31){const d31=addDays(p.date,30);if(isBeforeNextPeriod(d31))addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");}
+      if(next){
+        const gap=Math.round((next.date-p.date)/86400000)+1;
+        if(gap>0){
+          const haflagaDate=addDays(next.date,gap-1);
+          addPrishaMarkers(haflagaDate,getPrishaOnotForMode(next.ona,day30Mode),`הפלגה ${gap} יום`,`auto-haflaga-${gap}`);
+        }
       }
     }
-  }
-  for(const v of kavuah.byGap.values()){
-    const d=addDays(v.start,v.gap-1);
-    addMarker(ymd(d),{type:"prisha",label:markerLabel(`קביעת וסת ${v.gap} יום`,v.ona),ona:v.ona,source:`auto-kavuah-gap-${v.gap}`});
-  }
-  for(const v of kavuah.byHebrew.values()){
-    const d=addDays(v.start,29);
-    addMarker(ymd(d),{type:"prisha",label:markerLabel("וסת תאריך קבוע",v.ona),ona:v.ona,source:"auto-kavuah-heb"});
+    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
   for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
 }
