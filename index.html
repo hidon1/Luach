@@ -116,7 +116,7 @@
     .modal-title{font-size:1.2rem;font-weight:900;color:#41125e}
     #btnEventA{background:#fff;color:#23193a}
     #btnEventB{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
-    .auth-form{display:grid;gap:8px;margin-top:10px}input,select{padding:8px;border-radius:12px;border:1px solid var(--line)}
+    .auth-form{display:grid;gap:8px;margin-top:10px}.auth-google-row{display:grid;margin-top:10px}.btn-google{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#fff,#f4f7ff);border:1px solid #c9d5ff;color:#23335f;font-weight:900}.btn-google .g-icon{font-size:1rem;line-height:1}.auth-status{overflow-wrap:anywhere;word-break:break-word;line-height:1.35}input,select{padding:8px;border-radius:12px;border:1px solid var(--line)}
     .drawer select,#day30Mode,#day31Mode,#minhagSelect,#timelineFilter{border-radius:999px;padding:10px 14px;background:linear-gradient(120deg,#fff,#f6ebff);border:1px solid #d4b8f0;font-weight:900;color:#34174f;box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(130,70,200,.1)}
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
@@ -198,11 +198,11 @@
   <div class="switch switch-feature"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
   <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
-  <div id="authState" class="small">לא מחובר</div>
+  <div id="authState" class="small auth-status">לא מחובר</div>
 </aside>
 <div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div></div></div>
 <div id="onaOverlay" class="modal-overlay hidden"><div class="modal card ona-modal" style="max-width:360px"><div class="ona-title">בחירת עונה לתחילת מחזור</div><div class="small">אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.</div><div class="modal-actions ona-actions"><button id="chooseDay" class="btn btn-primary"><span class="ona-icon sun">☀</span>יום</button><button id="chooseNight" class="btn"><span class="ona-icon moon">☾</span>לילה</button><button id="onaCancel" class="btn">ביטול</button></div></div></div>
-<div id="authOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:420px"><div class="modal-head"><div><div id="authTitle">התחברות</div><div id="authSub" class="small"></div></div><button id="authClose" class="btn">✕</button></div><form class="auth-form"><input id="email" type="email" placeholder="אימייל" required><input id="password" type="password" placeholder="סיסמה" required><button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button><button id="signOutBtn" type="button" class="btn">התנתקות</button></form><div class="small"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn">לחץ כאן</button></div><div id="authMsg" class="small"></div></div></div>
+<div id="authOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:420px"><div class="modal-head"><div><div id="authTitle">התחברות</div><div id="authSub" class="small"></div></div><button id="authClose" class="btn">✕</button></div><form class="auth-form"><input id="email" type="email" placeholder="אימייל" required><input id="password" type="password" placeholder="סיסמה" required><button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button><button id="signOutBtn" type="button" class="btn">התנתקות</button></form><div class="auth-google-row"><button id="googleSignInBtn" type="button" class="btn btn-google"><span class="g-icon">G</span>התחברות עם Google</button></div><div class="small"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn">לחץ כאן</button></div><div id="authMsg" class="small"></div></div></div>
 <div id="timelineOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div class="modal-title">ציר הזמן</div><div class="small">כל העדכונים האחרונים לפי תאריך</div></div><button id="timelineClose" class="btn">✕</button></div><div class="timeline-toolbar"><label for="timelineFilter">סינון:</label><select id="timelineFilter"><option value="all">הכל</option><option value="period">תחילת מחזור בלבד</option><option value="prisha">ימי פרישה בלבד</option></select></div><div id="timelineList" class="timeline-list"></div></div></div>
 <div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
 <div id="toast" class="toast hidden"></div>
@@ -244,7 +244,7 @@ function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPre
 function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
 function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
 
-async function loadRemoteEvents(uid){const snap=await db.collection("users").doc(uid).get();if(!snap.exists)return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs)localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...data.prefs}));}
+async function loadRemoteEvents(uid){const snap=await db.collection("users").doc(uid).get();if(!snap.exists)return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs){const localPrefs=getPrefs();const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};localStorage.setItem(PREFS_KEY,JSON.stringify(mergedPrefs));}}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
@@ -637,8 +637,24 @@ function openAuth(){el("authOverlay").classList.remove("hidden")} function close
 function renderAuthMode(){const t=el("authTitle"),s=el("authSub"),sw=el("authSwitchText"),a=el("authActionBtn");if(authMode==="signin"){t.textContent="התחברות";s.textContent="התחברי עם אימייל וסיסמה";a.textContent="התחברות";sw.textContent="אין לך חשבון?";}else{t.textContent="רישום";s.textContent="צרי חשבון חדש";a.textContent="רישום";sw.textContent="יש לך כבר חשבון?";}}
 async function doSignIn(){try{await auth.signInWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת התחברות: "+e.message}}
 async function doSignUp(){try{await auth.createUserWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת רישום: "+e.message}}
+async function doGoogleSignIn(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+  try{
+    await auth.signInWithPopup(provider);
+    closeAuth();
+    el("authMsg").textContent="";
+  }catch(e){
+    const fallbackCodes=["auth/popup-blocked","auth/popup-closed-by-user","auth/operation-not-supported-in-this-environment","auth/unauthorized-domain"];
+    if(fallbackCodes.includes(e.code)){
+      await auth.signInWithRedirect(provider);
+      return;
+    }
+    el("authMsg").textContent="שגיאת התחברות עם Google: "+e.message;
+  }
+}
 
-auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;authState.textContent=user?`מחובר: ${user.email}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
+auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;const name=user?.displayName||user?.email||"";authState.textContent=user?`מחובר: ${name}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
 
 el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
 el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
@@ -671,7 +687,10 @@ sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
 orzaruaToggle.onchange=async e=>{setPrefs({orzarua:e.target.checked});recalcDerived();await render();};
 
+auth.getRedirectResult().then(result=>{if(result?.user){closeAuth();}}).catch(e=>{if(e?.message)el("authMsg").textContent="שגיאת התחברות עם Google: "+e.message;});
+
 el("authActionBtn").onclick=()=>authMode==="signin"?doSignIn():doSignUp();
+el("googleSignInBtn").onclick=doGoogleSignIn;
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
 el("signOutBtn").onclick=async()=>{await auth.signOut();el("authMsg").textContent="התנתקת"};
 
