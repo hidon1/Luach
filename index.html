@@ -57,7 +57,7 @@
     .calendar{padding:18px 12px 12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
     .dow{margin-bottom:10px}.dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
-    .cell{min-height:120px;padding:8px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:.2s;position:relative}
+    .cell{height:120px;padding:6px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:.2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px}
     .cell:hover{transform:translateY(-2px)}
     .muted{opacity:.45}
     .today{outline:2px solid var(--accent)}
@@ -67,27 +67,29 @@
     .phase-clean{background:#b2efbc}
     .phase-mikveh{background:#a8e4f5}
     .phase-prisha{background:var(--warn)}
-    .greg{font-size:1.2rem;font-weight:800;margin-bottom:3px}
-    .hebrew{font-size:.83rem;color:#2a1742;margin-bottom:7px;font-weight:900}
-    .sunset{font-size:.74rem;color:#6f1f4b;margin-top:5px;font-weight:800}
-    .badge{display:inline-flex;align-items:center;gap:6px;margin-top:5px;padding:4px 10px;border-radius:999px;font-size:.78rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.01em}
-    .badge-note-dot{width:8px;height:8px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 3px rgba(255,79,138,.2)}
+    .greg{font-size:.95rem;font-weight:900;margin-bottom:1px;line-height:1.1;display:flex;align-items:center;gap:4px;white-space:nowrap}
+    .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
+    .hebrew{font-size:.67rem;color:#2a1742;margin-bottom:2px;font-weight:900;line-height:1.1}
+    .sunset{font-size:.6rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
+    .badges{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
+    .badge{display:inline-flex;align-items:center;gap:4px;margin-top:0;padding:1px 7px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    .badge-note-dot{width:6px;height:6px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22)}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
-    .ona-icon{display:inline-flex;align-items:center;justify-content:center;font-weight:900;line-height:1;margin-inline:2px 4px;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;filter:none}
+    .ona-icon{display:inline-flex;align-items:center;justify-content:center;font-weight:900;line-height:1;margin-inline:0;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;filter:none;font-size:.55rem}
     .ona-icon.sun{color:#ffcf00;text-shadow:none}
     .ona-icon.moon{color:#3a3054;text-shadow:none}
     .greg,.hebrew,.sunset,.badge,.monthTitle,.btn,.dow div,.small,.switch,.timeline-item,.modal-title,.ona-title,footer,a{font-weight:900;letter-spacing:.015em;-webkit-text-stroke:.2px rgba(36,16,58,.28);text-shadow:0 1px 0 rgba(255,255,255,.35)}
     body.dark .greg,body.dark .hebrew,body.dark .sunset,body.dark .badge,body.dark .monthTitle,body.dark .btn,body.dark .dow div,body.dark .small,body.dark .switch,body.dark .timeline-item,body.dark .modal-title,body.dark .ona-title,body.dark footer,body.dark a{-webkit-text-stroke:.2px rgba(255,236,255,.18);text-shadow:0 1px 0 rgba(0,0,0,.45)}
     .time-input{padding:10px 14px;border:1px solid #d8b4f1;border-radius:999px;background:linear-gradient(120deg,#fff,#ffeefe);font-weight:800;color:#24183c;min-width:140px;box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(182,90,155,.12)}
     .switch.reminder-card{display:block;background:linear-gradient(150deg,#fff6fd,#ffe8f5);border:1px solid #f1bdd9;border-radius:14px;padding:10px}
-    .reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+    .reminder-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
     .reminder-grid .switch{margin:0}
     .manual-reminder-card{display:grid;gap:8px;background:linear-gradient(150deg,#f5fbff,#e8f3ff);border:1px solid #b9d7f7;border-radius:14px;padding:10px}
-    .manual-reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .manual-reminder-grid{display:grid;grid-template-columns:1fr;gap:8px}
     .manual-reminder-grid .switch{margin:0}
     .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid #eaddea;margin-bottom:4px}
     .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
-    .half{padding:2px 4px;min-height:18px;font-size:.62rem;display:flex;gap:3px;align-items:center;justify-content:center}
+    .half{padding:1px 2px;min-height:14px;font-size:.5rem;display:flex;gap:2px;align-items:center;justify-content:center}
     .half-night{background:rgba(142,119,161,.08)}
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
@@ -131,9 +133,9 @@
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1280px) and (min-width:721px){.brand{width:100%;max-width:100%;display:flex;justify-content:center;align-items:center;justify-self:center;margin-top:18px;padding:0}.logo{width:min(560px,74vw);height:auto;max-height:132px;object-fit:contain;object-position:center center;margin-inline:auto}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
-    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{min-height:76px;padding:5px}.greg{font-size:.92rem}.hebrew{font-size:.74rem}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
+    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{height:84px;padding:4px}.greg{font-size:.84rem}.greg-g{font-size:.6rem}.hebrew{font-size:.62rem}.sunset{font-size:.55rem}.badge{font-size:.56rem;padding:1px 6px}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
-    @media(max-width:720px){body{overflow-x:hidden}.topbar{padding:6px 10px 0}.container{padding:0 8px 18px;margin:2px auto 0;max-width:100vw}.calendar,.controls{padding:8px}.dow,.grid{gap:3px}.dow div{padding:6px 2px;font-size:.66rem}.cell{min-height:56px;padding:3px;border-radius:10px}.greg{font-size:.78rem}.hebrew{font-size:.64rem}.sunset{font-size:.58rem}.badge{font-size:.58rem;padding:2px 4px}.half-cell{padding:3px 2px;font-size:.56rem;min-height:24px}.menu-btn{padding:9px 12px;font-size:1.05rem;border-radius:12px;right:8px;top:8px}.brand{gap:6px;justify-self:center;align-items:center;margin-top:6px;margin-bottom:2px}.logo{width:min(52vw,170px);height:auto;max-height:64px;object-fit:contain;object-position:center center}.monthTitle{min-width:auto;width:100%;padding:10px 12px;font-size:.95rem}.today-panel{display:none}.modal-overlay{padding:8px}.modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:18px}.drawer{width:min(86vw,340px)}.reminder-grid,.manual-reminder-grid{grid-template-columns:1fr}}
+    @media(max-width:720px){body{overflow-x:hidden}.topbar{padding:6px 10px 0}.container{padding:0 8px 18px;margin:2px auto 0;max-width:100vw}.calendar,.controls{padding:8px}.dow,.grid{gap:3px}.dow div{padding:6px 2px;font-size:.64rem}.cell{height:62px;padding:2px;border-radius:10px}.greg{font-size:.7rem}.greg-g{font-size:.52rem}.hebrew{font-size:.55rem}.sunset{font-size:.5rem}.badge{font-size:.5rem;padding:1px 4px}.half{font-size:.44rem;min-height:12px}.menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:8px}.brand{gap:6px;justify-self:center;align-items:center;margin-top:6px;margin-bottom:2px}.logo{width:min(52vw,170px);height:auto;max-height:64px;object-fit:contain;object-position:center center}.monthTitle{min-width:auto;width:100%;padding:9px 10px;font-size:.86rem}.today-panel{display:none}.modal-overlay{padding:8px}.modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:18px}.drawer{width:min(86vw,340px)}.drawer,.drawer .switch,.drawer .btn,.drawer select,.drawer .small{font-size:.84rem}.time-input{min-width:108px;padding:7px 10px}}
   </style>
 </head>
 <body>
@@ -232,6 +234,7 @@ function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())
 function numberToHebrewDay(n){const ones=["","א","ב","ג","ד","ה","ו","ז","ח","ט"],tens=["","י","כ","ל"];if(n===15)return"ט״ו";if(n===16)return"ט״ז";if(n<10)return `${ones[n]}׳`;if(n%10===0)return `${tens[n/10]}׳`;return `${tens[Math.floor(n/10)]}״${ones[n%10]}`}
 function getHebrewDateDisplay(d){const parts=new Intl.DateTimeFormat("he-u-ca-hebrew",{day:"numeric",month:"long"}).formatToParts(d);const day=Number(parts.find(p=>p.type==="day")?.value||1);const month=parts.find(p=>p.type==="month")?.value||"";return `${numberToHebrewDay(day)} ${month}`}
 const markerIcon=o=>o==="day"?"☀":"☾"; const markerLabel=(b,o)=>o?`${b} ${markerIcon(o)}`:b;
+const markerPlainLabel=l=>(l||"").replace(/[☀☾]/g,"").trim();
 const onaIconHtml=o=>`<span class="ona-icon ${o==="day"?"sun":"moon"}">${o==="day"?"☀":"☾"}</span>`;
 const normalizeDay=v=>!v?{markers:[]}:Array.isArray(v.markers)?v:v.type?{markers:[v]}:{markers:[]};
 function loadLocalEvents(){try{return new Map(Object.entries(JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")));}catch{return new Map();}}
@@ -573,10 +576,11 @@ function renderMonthCells(targetGrid,y,m){
   for(let i=0;i<42;i++){
     const d=addDays(gridStart,i),key=ymd(d),inMonth=d.getMonth()===m; const cell=document.createElement("div");
     const phase=phaseMap[key]; cell.className=`cell${inMonth?"":" muted"}${key===ymd(today)?" today":""}${phase?` phase-${phase}`:""}`;
-    const greg=document.createElement("div");greg.className="greg";greg.textContent=d.getDate();
+    const greg=document.createElement("div");greg.className="greg";greg.innerHTML=`<span>${d.getDate()}</span><span class="greg-g">/${d.getMonth()+1}</span>`;
     const heb=document.createElement("div");heb.className="hebrew";heb.textContent=getHebrewDateDisplay(d);
     const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent=`שקיעה: …`; resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
-    cell.append(greg,heb,sunset);
+    const badgesWrap=document.createElement("div");badgesWrap.className="badges";
+    cell.append(greg,heb,badgesWrap,sunset);
     const markers=normalizeDay(dayEvents.get(key)).markers;
     const shouldShowHalves=markers.some(ev=>ev.ona||ev.type==="mikveh");
     let halfNight,halfDay;
@@ -587,7 +591,7 @@ function renderMonthCells(targetGrid,y,m){
       halves.append(halfNight,halfDay);
       cell.insertBefore(halves,sunset);
     }
-    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;b.innerHTML=ev.ona?`${onaIconHtml(ev.ona)}${ev.label}`:ev.label;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};cell.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=`${onaIconHtml("night")} ${ev.label}`;}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=`${onaIconHtml("day")} ${ev.label}`;}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=`${onaIconHtml("night")} ${ev.label}`;halfDay.innerHTML=`${onaIconHtml("day")} ${ev.label}`;}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=`${onaIconHtml("night")} לילה טבילה`;}}
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);b.innerHTML=ev.ona?`${onaIconHtml(ev.ona)} ${plainLabel}`:plainLabel;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
@@ -635,8 +639,8 @@ async function commitAndSync(){await persistAll();await render();showToast("הנ
 
 function openAuth(){el("authOverlay").classList.remove("hidden")} function closeAuth(){el("authOverlay").classList.add("hidden")}
 function renderAuthMode(){const t=el("authTitle"),s=el("authSub"),sw=el("authSwitchText"),a=el("authActionBtn");if(authMode==="signin"){t.textContent="התחברות";s.textContent="התחברי עם אימייל וסיסמה";a.textContent="התחברות";sw.textContent="אין לך חשבון?";}else{t.textContent="רישום";s.textContent="צרי חשבון חדש";a.textContent="רישום";sw.textContent="יש לך כבר חשבון?";}}
-async function doSignIn(){try{await auth.signInWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת התחברות: "+e.message}}
-async function doSignUp(){try{await auth.createUserWithEmailAndPassword(el("email").value,el("password").value);closeAuth();}catch(e){el("authMsg").textContent="שגיאת רישום: "+e.message}}
+async function doSignIn(){const email=(el("email").value||"").trim(),password=el("password").value||"";if(!email||!password){el("authMsg").textContent="יש למלא אימייל וסיסמה";return;}try{await auth.signInWithEmailAndPassword(email,password);closeAuth();el("authMsg").textContent="";}catch(e){el("authMsg").textContent="שגיאת התחברות: "+(e?.message||"לא ניתן להתחבר כרגע")}}
+async function doSignUp(){const email=(el("email").value||"").trim(),password=el("password").value||"";if(!email||!password){el("authMsg").textContent="יש למלא אימייל וסיסמה";return;}try{await auth.createUserWithEmailAndPassword(email,password);closeAuth();el("authMsg").textContent="";}catch(e){el("authMsg").textContent="שגיאת רישום: "+(e?.message||"לא ניתן לבצע רישום כרגע")}}
 async function doGoogleSignIn(){
   const provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:"select_account"});
@@ -645,7 +649,7 @@ async function doGoogleSignIn(){
     closeAuth();
     el("authMsg").textContent="";
   }catch(e){
-    const fallbackCodes=["auth/popup-blocked","auth/popup-closed-by-user","auth/operation-not-supported-in-this-environment","auth/unauthorized-domain"];
+    const fallbackCodes=["auth/popup-blocked","auth/popup-closed-by-user","auth/operation-not-supported-in-this-environment","auth/unauthorized-domain","auth/cancelled-popup-request"];
     if(fallbackCodes.includes(e.code)){
       await auth.signInWithRedirect(provider);
       return;
