@@ -70,8 +70,8 @@
     .date-line{display:flex;align-items:center;justify-content:space-between;gap:6px;white-space:nowrap}
     .greg{font-size:.95rem;font-weight:900;margin-bottom:0;line-height:1.1;display:flex;align-items:center;gap:4px;white-space:nowrap}
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
-    .hebrew{font-size:.67rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
-    .sunset{font-size:.6rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
+    .hebrew{font-size:.7rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
+    .sunset{font-size:.64rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
     .badges{display:flex;align-items:center;gap:3px;min-height:0;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
     .badges:empty{display:none}
     .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 0 auto}
@@ -131,6 +131,7 @@
     .timeline-item small{color:#5b2f74;font-weight:700}
     .notes-list{margin:0;padding-right:16px;display:grid;gap:6px}
     .notes-list li{font-size:.88rem;color:#3f2a54}
+    .noise-effect-label{font-size:1.08em;font-weight:900}
     .note-editor{display:grid;gap:10px;margin-top:10px}
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
@@ -148,7 +149,7 @@
       .dow div{padding:7px 2px;font-size:.64rem}
       .cell{height:112px;padding:4px 2px;border-radius:10px}
       .date-line{gap:3px;justify-content:flex-start}
-      .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}
+      .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
       .badges{padding:2px 2px 1px;gap:2px}
       .badge{font-size:.46rem;padding:1px 4px;line-height:1.2}
       .half{font-size:.48rem;min-height:14px}
@@ -552,8 +553,11 @@ function openMarkerNoteEditor(dateKey,marker){
   const target=day.markers.find(m=>m.type===marker.type&&m.label===marker.label&&m.ona===marker.ona&&m.source===marker.source);
   if(!target) return;
   activeNoteEditor={dateKey,markerRef:target};
-  el("noteTitle").textContent=`הערה עבור ${target.label}`;
-  el("noteSub").textContent=`תאריך: ${dateKey}`;
+  const noteDate=new Date(`${dateKey}T00:00:00`);
+  const hebrewDate=Number.isNaN(noteDate.getTime())?"":getHebrewDateDisplay(noteDate);
+  const isNoiseEffect=target.type==="prisha";
+  el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 אפקט הרעש</span> · הערה עבור ${target.label}`:`הערה עבור ${target.label}`;
+  el("noteSub").textContent=`תאריך לועזי: ${dateKey}${hebrewDate?` | תאריך עברי: ${hebrewDate}`:""}`;
   el("noteInput").value=target.note||"";
   const key=`${dateKey}__${target.label}`;
   const history=getNoteHistory()[key]||[];
