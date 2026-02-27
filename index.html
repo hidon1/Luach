@@ -72,9 +72,9 @@
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
     .hebrew{font-size:.7rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
     .sunset{font-size:.64rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
-    .badges{display:flex;align-items:center;gap:3px;min-height:0;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
+    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:3px;min-height:0;max-height:40px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
     .badges:empty{display:none}
-    .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 0 auto}
+    .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 1 auto}
     .badge-text{display:inline}
     .badge-note-dot{width:6px;height:6px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22)}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
@@ -129,6 +129,9 @@
     .timeline-list{display:grid;gap:8px;margin-top:12px;max-height:52vh;overflow:auto;padding-inline-end:4px}
     .timeline-item{padding:10px;border-radius:12px;background:#fff;border:1px solid #ead5f5;display:grid;gap:4px}
     .timeline-item small{color:#5b2f74;font-weight:700}
+    .day-notes-box{margin-top:10px;padding:10px;border-radius:12px;border:1px solid #ead5f5;background:#fff8ff;display:grid;gap:6px}
+    .day-notes-list{margin:0;padding-right:16px;display:grid;gap:4px;max-height:140px;overflow:auto}
+    .day-notes-list li{font-size:.88rem;color:#3f2a54}
     .notes-list{margin:0;padding-right:16px;display:grid;gap:6px}
     .notes-list li{font-size:.88rem;color:#3f2a54}
     .noise-effect-label{font-size:1.08em;font-weight:900}
@@ -150,7 +153,7 @@
       .cell{height:112px;padding:4px 2px;border-radius:10px}
       .date-line{gap:3px;justify-content:flex-start}
       .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
-      .badges{padding:2px 2px 1px;gap:2px}
+      .badges{padding:2px 2px 1px;gap:2px;max-height:42px}
       .badge{font-size:.46rem;padding:1px 4px;line-height:1.2}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
@@ -234,11 +237,11 @@
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small auth-status">לא מחובר</div>
 </aside>
-<div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div></div></div>
+<div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div><div class="day-notes-box"><div class="small">כל ההערות של היום:</div><ul id="modalDayNotes" class="day-notes-list"></ul></div></div></div>
 <div id="onaOverlay" class="modal-overlay hidden"><div class="modal card ona-modal" style="max-width:360px"><div class="ona-title">בחירת עונה לתחילת מחזור</div><div class="small">אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.</div><div class="modal-actions ona-actions"><button id="chooseDay" class="btn btn-primary"><span class="ona-icon sun">☀</span>יום</button><button id="chooseNight" class="btn"><span class="ona-icon moon">☾</span>לילה</button><button id="onaCancel" class="btn">ביטול</button></div></div></div>
 <div id="authOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:420px"><div class="modal-head"><div><div id="authTitle">התחברות</div><div id="authSub" class="small"></div></div><button id="authClose" class="btn">✕</button></div><form class="auth-form"><input id="email" type="email" placeholder="אימייל" required><input id="password" type="password" placeholder="סיסמה" required><button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button><button id="signOutBtn" type="button" class="btn">התנתקות</button></form><div class="auth-google-row"><button id="googleSignInBtn" type="button" class="btn btn-google"><span class="g-icon">G</span>התחברות עם Google</button></div><div class="small"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn">לחץ כאן</button></div><div id="authMsg" class="small"></div></div></div>
 <div id="timelineOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div class="modal-title">ציר הזמן</div><div class="small">כל העדכונים האחרונים לפי תאריך</div></div><button id="timelineClose" class="btn">✕</button></div><div class="timeline-toolbar"><label for="timelineFilter">סינון:</label><select id="timelineFilter"><option value="all">הכל</option><option value="period">תחילת מחזור בלבד</option><option value="prisha">ימי פרישה בלבד</option></select></div><div id="timelineList" class="timeline-list"></div></div></div>
-<div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
+<div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="day-notes-box"><div class="small">כל ההערות של היום:</div><ul id="dayNotesList" class="day-notes-list"></ul></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -545,6 +548,25 @@ function applyMode(){
   if(continuousMode) renderContinuousMonths();
 }
 
+function getDayNotes(dateKey){
+  const day=normalizeDay(dayEvents.get(dateKey));
+  return day.markers.filter(m=>m.note&&String(m.note).trim()).map(m=>({label:m.label,note:String(m.note).trim()}));
+}
+function renderDayNotesList(dateKey,targetId="dayNotesList"){
+  const list=el(targetId);
+  if(!list) return;
+  const notes=getDayNotes(dateKey);
+  list.innerHTML="";
+  if(!notes.length){
+    list.innerHTML="<li>אין הערות ליום הזה</li>";
+    return;
+  }
+  for(const item of notes){
+    const li=document.createElement("li");
+    li.textContent=`${markerPlainLabel(item.label)}: ${item.note}`;
+    list.appendChild(li);
+  }
+}
 function getNoteHistory(){try{return JSON.parse(localStorage.getItem(NOTE_HISTORY_KEY)||"{}");}catch{return {};}}
 function setNoteHistory(next){localStorage.setItem(NOTE_HISTORY_KEY,JSON.stringify(next));}
 let activeNoteEditor=null;
@@ -559,6 +581,7 @@ function openMarkerNoteEditor(dateKey,marker){
   el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 אפקט הרעש</span> · הערה עבור ${target.label}`:`הערה עבור ${target.label}`;
   el("noteSub").textContent=`תאריך לועזי: ${dateKey}${hebrewDate?` | תאריך עברי: ${hebrewDate}`:""}`;
   el("noteInput").value=target.note||"";
+  renderDayNotesList(dateKey);
   const key=`${dateKey}__${target.label}`;
   const history=getNoteHistory()[key]||[];
   const list=el("noteHistory");
@@ -659,7 +682,8 @@ function openTimeline(){
 }
 const closeTimeline=()=>el("timelineOverlay").classList.add("hidden");
 
-function openModal(d){el("modalDateTitle").textContent=`תאריך: ${ymd(d)}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
+function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`תאריך: ${dateKey}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
+  renderDayNotesList(dateKey,"modalDayNotes");
   el("btnEventA").onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור.`);return;}closeModal();addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await commitAndSync();};
   el("btnEventB").onclick=()=>openOnaPicker(d);
   el("btnClear").onclick=async()=>{closeModal();dayEvents.delete(ymd(d));recalcDerived();await commitAndSync();};
