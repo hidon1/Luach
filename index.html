@@ -72,8 +72,10 @@
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
     .hebrew{font-size:.67rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
     .sunset{font-size:.6rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
-    .badges{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
-    .badge{display:inline-flex;align-items:center;gap:4px;margin-top:0;padding:1px 7px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:normal;overflow:visible;text-overflow:clip;max-width:100%;line-height:1.2;flex-wrap:wrap}
+    .badges{display:flex;align-items:center;gap:3px;min-height:0;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
+    .badges:empty{display:none}
+    .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.6rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 0 auto}
+    .badge-text{display:inline}
     .badge-note-dot{width:6px;height:6px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22)}
     .badge.period{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
     .ona-icon{display:inline-flex;align-items:center;justify-content:center;font-weight:900;line-height:1;margin-inline:0;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;filter:drop-shadow(0 1px 1px rgba(60,20,70,.35));font-size:.62em;transform:translateY(-.5px)}
@@ -145,9 +147,10 @@
       .dow,.grid{gap:3px}
       .dow div{padding:7px 2px;font-size:.64rem}
       .cell{height:112px;padding:4px 2px;border-radius:10px}
-      .date-line{gap:4px}
-      .greg{font-size:.63rem}.greg-g{font-size:.5rem}.hebrew{font-size:.52rem}.sunset{font-size:.5rem}
-      .badge{font-size:.46rem;padding:2px 4px;line-height:1.25}
+      .date-line{gap:3px;justify-content:flex-start}
+      .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}
+      .badges{padding:2px 2px 1px;gap:2px}
+      .badge{font-size:.46rem;padding:1px 4px;line-height:1.2}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
@@ -616,7 +619,7 @@ function renderMonthCells(targetGrid,y,m){
       halves.append(halfNight,halfDay);
       cell.insertBefore(halves,sunset);
     }
-    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);b.innerHTML=ev.ona?`${onaIconHtml(ev.ona)} ${plainLabel}`:plainLabel;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
