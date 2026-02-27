@@ -114,6 +114,12 @@
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
+    .menu-group{border:1px solid #d9b9f2;border-radius:14px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden}
+    .menu-group summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:900;color:#3a1757;display:flex;justify-content:space-between;align-items:center}
+    .menu-group summary::-webkit-details-marker{display:none}
+    .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
+    .menu-group[open] summary::before{transform:rotate(90deg)}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -154,9 +160,13 @@
       .date-line{gap:3px;justify-content:flex-start}
       .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
       .badges{padding:2px 2px 1px;gap:2px;max-height:42px}
-      .badge{font-size:.46rem;padding:1px 4px;line-height:1.2}
+      .badge{font-size:.44rem;padding:1px 3px;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
+      .cell{overflow:visible}
+      .badges{max-height:none;overflow:visible}
+      .badges .badge{background:transparent;border:none;border-radius:0;padding:0 0 2px;display:block;width:100%;font-size:.66rem}
+      .badge-note-dot{width:5px;height:5px}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
       .brand{gap:6px;justify-self:center;align-items:center;margin-top:2px;margin-bottom:6px;width:100%}
       .logo{width:min(96vw,430px);height:auto;max-height:124px;object-fit:contain;object-position:center center;margin-top:0}
@@ -208,40 +218,60 @@
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="drawer" class="drawer hidden">
   <div class="drawer-head"><h3>תפריט</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
-  <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
-  <div class="switch"><span>יום 31</span><input id="day31Toggle" type="checkbox"></div>
-  <div class="switch switch-feature"><span>אופן עונה בינונית (30)</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
-  <div class="switch switch-feature"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
-  <div class="switch"><span>להציג אור זרוע</span><input id="orzaruaToggle" type="checkbox" checked></div>
-  <div class="switch reminder-card">
-    <span>תזכורות חכמות</span>
-    <div class="reminder-grid">
-      <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
-      <div class="switch"><span>תזכורת לימי פרישה</span><input id="meetingToggle" type="checkbox"></div>
-      <div class="switch" style="grid-column:1/-1"><span>שעת תזכורת</span><input id="reminderTime" class="time-input" type="time" value="15:00"></div>
+
+  <details class="menu-group" open>
+    <summary>מנהגים</summary>
+    <div class="menu-group-content">
+      <div class="switch"><span>מנהג</span><select id="minhagSelect"><option value="sephardi">ספרדים</option><option value="ashkenazi">אשכנזים</option></select></div>
+      <div class="switch"><span>יום 31</span><input id="day31Toggle" type="checkbox"></div>
+      <div class="switch switch-feature"><span>אופן עונה בינונית (30)</span><select id="day30Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
+      <div class="switch switch-feature"><span>אופן יום 31</span><select id="day31Mode"><option value="ona">רק עונת ראייה</option><option value="full">כל היום (יום+לילה)</option></select></div>
+      <div class="switch"><span>להציג אור זרוע</span><input id="orzaruaToggle" type="checkbox" checked></div>
     </div>
-  </div>
-  <div class="manual-reminder-card">
-    <span>תזכורת ידנית</span>
-    <div class="manual-reminder-grid">
-      <div class="switch"><span>פעיל</span><input id="manualReminderEnabled" type="checkbox"></div>
-      <div class="switch"><span>שעה</span><input id="manualReminderTime" class="time-input" type="time" value="20:00"></div>
-      <div class="switch switch-feature"><span>תדירות</span><select id="manualReminderMode"><option value="today">רק להיום</option><option value="daily">כל יום</option></select></div>
-      <div class="switch switch-feature"><span>מספר פעמים</span><select id="manualReminderCount"><option value="1">פעם אחת</option><option value="2">פעמיים</option></select></div>
+  </details>
+
+  <details class="menu-group">
+    <summary>תזכורות</summary>
+    <div class="menu-group-content">
+      <div class="switch reminder-card">
+        <span>תזכורות חכמות</span>
+        <div class="reminder-grid">
+          <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
+          <div class="switch"><span>תזכורת לימי פרישה</span><input id="meetingToggle" type="checkbox"></div>
+          <div class="switch" style="grid-column:1/-1"><span>שעת תזכורת</span><input id="reminderTime" class="time-input" type="time" value="15:00"></div>
+        </div>
+      </div>
+      <div class="manual-reminder-card">
+        <span>תזכורת ידנית</span>
+        <div class="manual-reminder-grid">
+          <div class="switch"><span>פעיל</span><input id="manualReminderEnabled" type="checkbox"></div>
+          <div class="switch"><span>שעה</span><input id="manualReminderTime" class="time-input" type="time" value="20:00"></div>
+          <div class="switch switch-feature"><span>תדירות</span><select id="manualReminderMode"><option value="today">רק להיום</option><option value="daily">כל יום</option></select></div>
+          <div class="switch switch-feature"><span>מספר פעמים</span><select id="manualReminderCount"><option value="1">פעם אחת</option><option value="2">פעמיים</option></select></div>
+        </div>
+      </div>
     </div>
-  </div>
-  <button id="openTimeline" class="btn">ציר הזמן</button>
-  <div class="switch switch-feature"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
-  <div class="switch switch-feature"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
-  <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
+  </details>
+
+  <details class="menu-group">
+    <summary>שקיעה ותצוגה</summary>
+    <div class="menu-group-content">
+      <div class="switch switch-feature"><span>שקיעה לפי</span><select id="sunsetMode"><option value="location">מקום נוכחי (משתנה)</option><option value="city">עיר קבועה</option></select></div>
+      <div class="switch switch-feature"><span>עיר קבועה</span><select id="sunsetCity"><option value="Jerusalem">ירושלים</option><option value="Tel Aviv">תל אביב</option><option value="Haifa">חיפה</option><option value="Rishon LeZion">ראשון לציון</option><option value="Petah Tikva">פתח תקווה</option><option value="Ashdod">אשדוד</option><option value="Netanya">נתניה</option><option value="Beersheba">באר שבע</option><option value="Bnei Brak">בני ברק</option><option value="Holon">חולון</option><option value="Ramat Gan">רמת גן</option><option value="Ashkelon">אשקלון</option><option value="Rehovot">רחובות</option><option value="Bat Yam">בת ים</option><option value="Herzliya">הרצליה</option><option value="Kfar Saba">כפר סבא</option><option value="Modiin">מודיעין</option><option value="Nazareth">נצרת</option><option value="Hadera">חדרה</option><option value="Eilat">אילת</option></select></div>
+      <div class="switch switch-feature"><span>החלפת יום לפי</span><select id="dayChangeMode"><option value="sunset">שקיעה</option><option value="gregorian">תאריך לועזי (00:00)</option></select></div>
+      <button id="openTimeline" class="btn">ציר הזמן</button>
+      <div class="switch"><span>מצב כהה</span><input id="darkToggle" type="checkbox"></div>
+    </div>
+  </details>
+
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small auth-status">לא מחובר</div>
 </aside>
-<div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div><div class="day-notes-box"><div class="small">כל ההערות של היום:</div><ul id="modalDayNotes" class="day-notes-list"></ul></div></div></div>
+<div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnClear" class="btn">נקה</button></div><div class="day-notes-box"><div class="small">כל עדכוני היום:</div><ul id="modalDayNotes" class="day-notes-list"></ul></div></div></div>
 <div id="onaOverlay" class="modal-overlay hidden"><div class="modal card ona-modal" style="max-width:360px"><div class="ona-title">בחירת עונה לתחילת מחזור</div><div class="small">אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.</div><div class="modal-actions ona-actions"><button id="chooseDay" class="btn btn-primary"><span class="ona-icon sun">☀</span>יום</button><button id="chooseNight" class="btn"><span class="ona-icon moon">☾</span>לילה</button><button id="onaCancel" class="btn">ביטול</button></div></div></div>
 <div id="authOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:420px"><div class="modal-head"><div><div id="authTitle">התחברות</div><div id="authSub" class="small"></div></div><button id="authClose" class="btn">✕</button></div><form class="auth-form"><input id="email" type="email" placeholder="אימייל" required><input id="password" type="password" placeholder="סיסמה" required><button id="authActionBtn" type="button" class="btn btn-primary">התחברות</button><button id="signOutBtn" type="button" class="btn">התנתקות</button></form><div class="auth-google-row"><button id="googleSignInBtn" type="button" class="btn btn-google"><span class="g-icon">G</span>התחברות עם Google</button></div><div class="small"><span id="authSwitchText"></span> <button id="authSwitchBtn" class="btn">לחץ כאן</button></div><div id="authMsg" class="small"></div></div></div>
 <div id="timelineOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div class="modal-title">ציר הזמן</div><div class="small">כל העדכונים האחרונים לפי תאריך</div></div><button id="timelineClose" class="btn">✕</button></div><div class="timeline-toolbar"><label for="timelineFilter">סינון:</label><select id="timelineFilter"><option value="all">הכל</option><option value="period">תחילת מחזור בלבד</option><option value="prisha">ימי פרישה בלבד</option></select></div><div id="timelineList" class="timeline-list"></div></div></div>
-<div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="day-notes-box"><div class="small">כל ההערות של היום:</div><ul id="dayNotesList" class="day-notes-list"></ul></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
+<div id="noteOverlay" class="modal-overlay hidden"><div class="modal card" style="max-width:460px"><div class="modal-head"><div><div id="noteTitle" class="modal-title">הערה</div><div id="noteSub" class="small"></div></div><button id="noteClose" class="btn">✕</button></div><div class="day-notes-box"><div class="small">כל עדכוני היום:</div><ul id="dayNotesList" class="day-notes-list"></ul></div><div class="note-editor"><textarea id="noteInput" placeholder="כתבי כאן הערה..."></textarea><div class="modal-actions"><button id="saveNoteBtn" class="btn btn-primary">שמור</button><button id="deleteNoteBtn" class="btn">מחק הערה</button><button id="cancelNoteBtn" class="btn">ביטול</button></div></div><div><div class="small">הערות קודמות:</div><ul id="noteHistory" class="notes-list"></ul></div></div></div>
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -258,7 +288,7 @@ const db=firebase.firestore();
 
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
-const today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
+let today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
 const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
 let webViewSafeReady=false;
@@ -424,6 +454,25 @@ async function resolveSunset(date){
 }
 
 
+
+function parseSunsetTime(value){
+  const m=String(value||"").match(/(\d{1,2}):(\d{2})/);
+  if(!m) return null;
+  return {h:Number(m[1]),m:Number(m[2])};
+}
+async function getEffectiveToday(now=new Date()){
+  const prefs=getPrefs();
+  const base=startOfDay(now);
+  if((prefs.dayChangeMode||"sunset")!=="sunset") return base;
+  const sunsetText=await resolveSunset(base);
+  const parsed=parseSunsetTime(sunsetText);
+  if(!parsed) return base;
+  const sunsetMoment=new Date(base.getFullYear(),base.getMonth(),base.getDate(),parsed.h,parsed.m);
+  return now>=sunsetMoment?addDays(base,1):base;
+}
+async function refreshTodayBySetting(){
+  today=await getEffectiveToday(new Date());
+}
 function hasMarkerOnDate(dateKey,type){return normalizeDay(dayEvents.get(dateKey)).markers.some(m=>m.type===type)}
 function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
 function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
@@ -521,7 +570,7 @@ async function renderTodayCard(){
   if(hefsekMarker){banner.textContent="⚠️ היום לבצע הפסק טהרה";banner.title=hefsekMarker.note||"לחצי להוספת הערה";banner.onclick=()=>openMarkerNoteEditor(dateKey,hefsekMarker);banner.classList.remove("hidden");}
   else{banner.classList.add("hidden");banner.onclick=null;}
 }
-function startClock(){const paint=()=>el("clock").textContent=new Date().toLocaleTimeString("he-IL",{hour12:false});paint();if(clockTimer)clearInterval(clockTimer);clockTimer=setInterval(paint,1000)}
+function startClock(){const paint=async()=>{const now=new Date();el("clock").textContent=now.toLocaleTimeString("he-IL",{hour12:false});if(now.getSeconds()===0){await refreshTodayBySetting();await renderTodayCard();}};paint();if(clockTimer)clearInterval(clockTimer);clockTimer=setInterval(paint,1000)}
 
 function renderContinuousMonths(){
   const track=el("continuousTrack");
@@ -550,7 +599,7 @@ function applyMode(){
 
 function getDayNotes(dateKey){
   const day=normalizeDay(dayEvents.get(dateKey));
-  return day.markers.filter(m=>m.note&&String(m.note).trim()).map(m=>({label:m.label,note:String(m.note).trim()}));
+  return day.markers.map(m=>({label:m.label,note:String(m.note||"").trim()}));
 }
 function renderDayNotesList(dateKey,targetId="dayNotesList"){
   const list=el(targetId);
@@ -558,12 +607,12 @@ function renderDayNotesList(dateKey,targetId="dayNotesList"){
   const notes=getDayNotes(dateKey);
   list.innerHTML="";
   if(!notes.length){
-    list.innerHTML="<li>אין הערות ליום הזה</li>";
+    list.innerHTML="<li>אין עדכונים ליום הזה</li>";
     return;
   }
   for(const item of notes){
     const li=document.createElement("li");
-    li.textContent=`${markerPlainLabel(item.label)}: ${item.note}`;
+    li.textContent=item.note?`${markerPlainLabel(item.label)}: ${item.note}`:markerPlainLabel(item.label);
     list.appendChild(li);
   }
 }
@@ -652,6 +701,7 @@ function renderMonthCells(targetGrid,y,m){
 }
 
 async function render(){
+  await refreshTodayBySetting();
   const y=view.getFullYear(),m=view.getMonth();
   monthTitle.textContent=continuousMode?`שנה ${y} — גלילה רציפה` : new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));
   renderMonthCells(grid,y,m);
@@ -664,7 +714,7 @@ function renderTimelineList(){
   list.innerHTML="";
   const items=[];
   for(const [dateKey,val] of dayEvents.entries()) for(const m of normalizeDay(val).markers){
-    items.push({dateKey,label:m.label,type:m.type,note:m.note||""});
+    items.push({dateKey,label:m.label,type:m.type==="period"?"period":m.type==="prisha"?"prisha":"other",note:m.note||""});
   }
   const filtered=items.filter(it=>filter==="all"?true:it.type===filter);
   filtered.sort((a,b)=>a.dateKey<b.dateKey?1:-1);
@@ -729,8 +779,8 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),orzaruaToggle=el("orzaruaToggle");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),dayChangeMode=el("dayChangeMode"),orzaruaToggle=el("orzaruaToggle");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; dayChangeMode.value=prefs.dayChangeMode||"sunset"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
@@ -745,6 +795,7 @@ manualReminderMode.onchange=e=>{const mode=e.target.value||"today";setPrefs({man
 manualReminderCount.onchange=e=>{setPrefs({manualReminderCount:Number(e.target.value||1)});startReminderWatcher();showToast("מספר התזכורות עודכן")};
 sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
+dayChangeMode.onchange=async e=>{setPrefs({dayChangeMode:e.target.value});await render();};
 orzaruaToggle.onchange=async e=>{setPrefs({orzarua:e.target.checked});recalcDerived();await render();};
 
 auth.getRedirectResult().then(result=>{if(result?.user){closeAuth();}}).catch(e=>{if(e?.message)el("authMsg").textContent="שגיאת התחברות עם Google: "+e.message;});
