@@ -102,7 +102,7 @@
     .half-day{background:rgba(255,202,94,.12)}
     .half-empty{opacity:.45;color:#7a6b91}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
     .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08);font-weight:800;color:#31154e}
     .switch-feature{background:linear-gradient(145deg,#fff,#f7ecff);border:1px solid #c9a6ea;box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(130,70,200,.12)}
@@ -123,7 +123,7 @@
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
     .menu-group[open] summary::before{transform:rotate(90deg)}
-    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:none;overflow:visible}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:min(45vh,380px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -296,7 +296,7 @@ const db=firebase.firestore();
 const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),monthPicker=el("monthPicker"),authState=el("authState"),toast=el("toast");
 let today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
-const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
+const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1",MARKER_NOTE_STORE_KEY="calendar_marker_notes_v1",SUNSET_PREFETCH_STATE_KEY="sunset_prefetch_state_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
 const hebrewMonthNames=Array.from({length:12},(_,m)=>new Intl.DateTimeFormat("he",{month:"long"}).format(new Date(2024,m,1)));
 let webViewSafeReady=false;
@@ -319,6 +319,16 @@ async function persistAll(){const events=exportEvents();localStorage.setItem(STO
 function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
 function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
 function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
+function getMarkerNotesStore(){try{return JSON.parse(localStorage.getItem(MARKER_NOTE_STORE_KEY)||"{}");}catch{return {};}}
+function setMarkerNotesStore(next){localStorage.setItem(MARKER_NOTE_STORE_KEY,JSON.stringify(next));}
+function getSunsetPrefetchState(){try{return JSON.parse(localStorage.getItem(SUNSET_PREFETCH_STATE_KEY)||"{}");}catch{return {};}}
+function setSunsetPrefetchState(next){localStorage.setItem(SUNSET_PREFETCH_STATE_KEY,JSON.stringify(next));}
+function markerNoteKey(dateKey,marker){return `${dateKey}__${marker.type||"other"}__${markerPlainLabel(marker.label)}__${marker.ona||"all"}`}
+function getPersistedMarkerNote(dateKey,marker){
+  if(marker?.note) return String(marker.note).trim();
+  const store=getMarkerNotesStore();
+  return String(store[markerNoteKey(dateKey,marker)]||"").trim();
+}
 
 async function loadRemoteEvents(uid){const snap=await db.collection("users").doc(uid).get();if(!snap.exists)return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs){const localPrefs=getPrefs();const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};localStorage.setItem(PREFS_KEY,JSON.stringify(mergedPrefs));}}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
@@ -455,13 +465,32 @@ async function resolveSunset(date){
     const r=await fetch(url); const j=await r.json();
     const t=new Date(j.results.sunset).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
     sunsetCache[cacheKey]=t;
-    if(mode==="city") saveSunsetCache();
+    saveSunsetCache();
     return t;
   }catch{
-    sunsetCache[cacheKey]="טוען מיקום…";
-    setTimeout(()=>{delete sunsetCache[cacheKey];renderTodayCard();},2500);
+    if(sunsetCache[cacheKey]) delete sunsetCache[cacheKey];
+    saveSunsetCache();
+    setTimeout(()=>{renderTodayCard();},2500);
     return "טוען מיקום…";
   }
+}
+
+async function prefetchSunsetYear(){
+  const prefs=getPrefs();
+  if((prefs.sunsetMode||"location")!=="city") return;
+  const cityKey=prefs.sunsetCity||"Jerusalem";
+  const year=view.getFullYear();
+  const state=getSunsetPrefetchState();
+  const stateKey=`${cityKey}-${year}`;
+  if(state[stateKey]) return;
+  for(let month=0;month<12;month++){
+    const daysInMonth=new Date(year,month+1,0).getDate();
+    for(let day=1;day<=daysInMonth;day++){
+      await resolveSunset(new Date(year,month,day));
+    }
+  }
+  state[stateKey]=Date.now();
+  setSunsetPrefetchState(state);
 }
 
 
@@ -505,13 +534,33 @@ async function ensureNotificationPermission(){
         if(enabled===true||enabled===1||enabled==="1") return true;
       }
     }catch{}
-    return true;
+    return false;
   }
   if(!("Notification" in window)) return false;
   if(Notification.permission==="granted") return true;
   if(Notification.permission==="denied") return false;
   const p=await Notification.requestPermission();
   return p==="granted";
+}
+async function showSystemNotification(title,msg,sound){
+  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
+    try{window.AndroidBridge.scheduleNotificationNow(title,msg,sound);return true;}catch{}
+  }
+  const hasPermission=await ensureNotificationPermission();
+  if(hasPermission && !window.AndroidBridge){
+    new Notification(title,{body:msg,icon:"1.png"});
+    return true;
+  }
+  if("serviceWorker" in navigator){
+    try{
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(reg){
+        await reg.showNotification(title,{body:msg,icon:"1.png"});
+        return true;
+      }
+    }catch{}
+  }
+  return false;
 }
 function playReminderSound(type="bell"){
   const profiles={
@@ -548,13 +597,8 @@ async function fireHefsekReminder(dateKey){
   const sound=prefs.reminderSound||"bell";
   playReminderSound(sound);
   const msg="היום צריך לבצע הפסק טהרה";
-  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
-    try{window.AndroidBridge.scheduleNotificationNow("תזכורת לוח",msg,sound);}catch{}
-  }
-  const hasPermission=await ensureNotificationPermission();
-  if(hasPermission && !window.AndroidBridge){
-    new Notification("תזכורת לוח",{body:msg,icon:"1.png"});
-  }else{
+  const delivered=await showSystemNotification("תזכורת לוח",msg,sound);
+  if(!delivered){
     showToast(msg);
     alert(msg);
   }
@@ -569,13 +613,8 @@ async function fireManualReminder(dateKey,slot){
   const sound=prefs.manualReminderSound||"chime";
   playReminderSound(sound);
   const msg="תזכורת ידנית מהלוח";
-  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
-    try{window.AndroidBridge.scheduleNotificationNow("תזכורת ידנית",msg,sound);}catch{}
-  }
-  const hasPermission=await ensureNotificationPermission();
-  if(hasPermission && !window.AndroidBridge){
-    new Notification("תזכורת ידנית",{body:msg,icon:"1.png"});
-  }else{
+  const delivered=await showSystemNotification("תזכורת ידנית",msg,sound);
+  if(!delivered){
     showToast(msg);
   }
   log[key]=Date.now();
@@ -669,7 +708,7 @@ function openMonthPicker(){
 
 function getDayNotes(dateKey){
   const day=normalizeDay(dayEvents.get(dateKey));
-  return day.markers.map(m=>({label:m.label,note:String(m.note||"").trim()}));
+  return day.markers.map(m=>({label:m.label,note:getPersistedMarkerNote(dateKey,m)}));
 }
 function renderDayNotesList(dateKey,targetId="dayNotesList"){
   const list=el(targetId);
@@ -699,6 +738,7 @@ function openMarkerNoteEditor(dateKey,marker){
   const isNoiseEffect=target.type==="prisha";
   el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 אפקט הרעש</span> · הערה עבור ${target.label}`:`הערה עבור ${target.label}`;
   el("noteSub").textContent=`תאריך לועזי: ${dateKey}${hebrewDate?` | תאריך עברי: ${hebrewDate}`:""}`;
+  target.note=getPersistedMarkerNote(dateKey,target);
   el("noteInput").value=target.note||"";
   renderDayNotesList(dateKey);
   const key=`${dateKey}__${target.label}`;
@@ -721,6 +761,11 @@ async function saveNote(){
   saveBtn.textContent="שומר...";
   const {dateKey,markerRef}=activeNoteEditor;
   const text=(el("noteInput").value||"").trim();
+  const store=getMarkerNotesStore();
+  const noteKey=markerNoteKey(dateKey,markerRef);
+  if(text) store[noteKey]=text;
+  else delete store[noteKey];
+  setMarkerNotesStore(store);
   markerRef.note=text;
   if(!markerRef.note) delete markerRef.note;
   const hist=getNoteHistory();
@@ -736,7 +781,10 @@ async function saveNote(){
 }
 async function clearNote(){
   if(!activeNoteEditor) return;
-  const {markerRef}=activeNoteEditor;
+  const {dateKey,markerRef}=activeNoteEditor;
+  const store=getMarkerNotesStore();
+  delete store[markerNoteKey(dateKey,markerRef)];
+  setMarkerNotesStore(store);
   delete markerRef.note;
   await commitAndSync();
   closeNoteEditor();
@@ -765,7 +813,7 @@ function renderMonthCells(targetGrid,y,m){
       halves.append(halfNight,halfDay);
       cell.insertBefore(halves,sunset);
     }
-    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);const noteText=getPersistedMarkerNote(key,ev);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(noteText){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=noteText||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
@@ -775,6 +823,7 @@ async function render(){
   const y=view.getFullYear(),m=view.getMonth();
   monthTitle.textContent=continuousMode?`שנה ${y} — גלילה רציפה` : new Intl.DateTimeFormat("he",{month:"long",year:"numeric"}).format(new Date(y,m,1));
   renderMonthCells(grid,y,m);
+  setTimeout(()=>{prefetchSunsetYear();},0);
   await renderTodayCard();
 }
 
@@ -784,7 +833,7 @@ function renderTimelineList(){
   list.innerHTML="";
   const items=[];
   for(const [dateKey,val] of dayEvents.entries()) for(const m of normalizeDay(val).markers){
-    items.push({dateKey,label:m.label,type:m.type==="period"?"period":m.type==="prisha"?"prisha":"other",note:m.note||""});
+    items.push({dateKey,label:m.label,type:m.type==="period"?"period":m.type==="prisha"?"prisha":"other",note:getPersistedMarkerNote(dateKey,m)});
   }
   const filtered=items.filter(it=>filter==="all"?true:it.type===filter);
   filtered.sort((a,b)=>a.dateKey<b.dateKey?1:-1);
