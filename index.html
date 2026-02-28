@@ -239,6 +239,7 @@
           <div class="switch"><span>תזכורת להפסק טהרה</span><input id="reminderToggle" type="checkbox"></div>
           <div class="switch"><span>תזכורת לימי פרישה</span><input id="meetingToggle" type="checkbox"></div>
           <div class="switch" style="grid-column:1/-1"><span>שעת תזכורת</span><input id="reminderTime" class="time-input" type="time" value="15:00"></div>
+          <div class="switch switch-feature" style="grid-column:1/-1"><span>צליל להפסק טהרה</span><select id="reminderSound"><option value="bell">פעמון</option><option value="chime">צלצול רך</option><option value="alert">התראה חזקה</option></select></div>
         </div>
       </div>
       <div class="manual-reminder-card">
@@ -248,6 +249,7 @@
           <div class="switch"><span>שעה</span><input id="manualReminderTime" class="time-input" type="time" value="20:00"></div>
           <div class="switch switch-feature"><span>תדירות</span><select id="manualReminderMode"><option value="today">רק להיום</option><option value="daily">כל יום</option></select></div>
           <div class="switch switch-feature"><span>מספר פעמים</span><select id="manualReminderCount"><option value="1">פעם אחת</option><option value="2">פעמיים</option></select></div>
+          <div class="switch switch-feature" style="grid-column:1/-1"><span>צליל לתזכורת ידנית</span><select id="manualReminderSound"><option value="bell">פעמון</option><option value="chime">צלצול רך</option><option value="alert">התראה חזקה</option></select></div>
         </div>
       </div>
     </div>
@@ -486,23 +488,44 @@ async function ensureNotificationPermission(){
   const p=await Notification.requestPermission();
   return p==="granted";
 }
-function playReminderSound(){
+function playReminderSound(type="bell"){
+  const profiles={
+    bell:[{freq:880,wave:"sine",duration:.45,peak:.28}],
+    chime:[{freq:1046,wave:"triangle",duration:.2,peak:.22},{freq:1318,wave:"triangle",duration:.32,peak:.18,delay:.12}],
+    alert:[{freq:740,wave:"square",duration:.18,peak:.25},{freq:880,wave:"square",duration:.18,peak:.25,delay:.2},{freq:740,wave:"square",duration:.2,peak:.25,delay:.4}]
+  };
+  const tone=profiles[type]||profiles.bell;
+  if(window.AndroidBridge&&typeof window.AndroidBridge.playReminderSound==="function"){
+    try{window.AndroidBridge.playReminderSound(type);return;}catch{}
+  }
   const Ctx=window.AudioContext||window.webkitAudioContext;
   if(!Ctx) return;
   const ctx=new Ctx();
-  const osc=ctx.createOscillator(),gain=ctx.createGain();
-  osc.type="sine"; osc.frequency.value=880; gain.gain.value=.001;
-  osc.connect(gain); gain.connect(ctx.destination); osc.start();
-  gain.gain.exponentialRampToValueAtTime(.28,ctx.currentTime+.03);
-  gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.45);
-  osc.stop(ctx.currentTime+.5);
+  tone.forEach(part=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    const delay=part.delay||0;
+    osc.type=part.wave;
+    osc.frequency.value=part.freq;
+    gain.gain.value=.001;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime+delay);
+    gain.gain.exponentialRampToValueAtTime(part.peak,ctx.currentTime+delay+.03);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+part.duration);
+    osc.stop(ctx.currentTime+delay+part.duration+.04);
+  });
 }
 async function fireHefsekReminder(dateKey){
   const log=getReminderLog();
-  const time=getPrefs().reminderTime||"15:00";
+  const prefs=getPrefs();
+  const time=prefs.reminderTime||"15:00";
   if(log[dateKey]===time) return;
-  playReminderSound();
+  const sound=prefs.reminderSound||"bell";
+  playReminderSound(sound);
   const msg="היום צריך לבצע הפסק טהרה";
+  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
+    try{window.AndroidBridge.scheduleNotificationNow("תזכורת לוח",msg,sound);}catch{}
+  }
   const hasPermission=await ensureNotificationPermission();
   if(hasPermission && !window.AndroidBridge){
     new Notification("תזכורת לוח",{body:msg,icon:"1.png"});
@@ -517,8 +540,13 @@ async function fireManualReminder(dateKey,slot){
   const log=getManualReminderLog();
   const key=`${dateKey}-${slot}`;
   if(log[key]) return;
-  playReminderSound();
+  const prefs=getPrefs();
+  const sound=prefs.manualReminderSound||"chime";
+  playReminderSound(sound);
   const msg="תזכורת ידנית מהלוח";
+  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
+    try{window.AndroidBridge.scheduleNotificationNow("תזכורת ידנית",msg,sound);}catch{}
+  }
   const hasPermission=await ensureNotificationPermission();
   if(hasPermission && !window.AndroidBridge){
     new Notification("תזכורת ידנית",{body:msg,icon:"1.png"});
@@ -779,8 +807,8 @@ const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
-const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),dayChangeMode=el("dayChangeMode"),orzaruaToggle=el("orzaruaToggle");
-const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; dayChangeMode.value=prefs.dayChangeMode||"sunset"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
+const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),reminderSound=el("reminderSound"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),manualReminderSound=el("manualReminderSound"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),dayChangeMode=el("dayChangeMode"),orzaruaToggle=el("orzaruaToggle");
+const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; reminderSound.value=prefs.reminderSound||"bell"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); manualReminderSound.value=prefs.manualReminderSound||"chime"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; dayChangeMode.value=prefs.dayChangeMode||"sunset"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
 darkToggle.onchange=e=>{document.body.classList.toggle("dark",e.target.checked);setPrefs({dark:e.target.checked})};
 day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived();await commitAndSync()};
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
@@ -789,10 +817,13 @@ minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived(
 reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
 meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פרישה עודכנה")};
 reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
+
+reminderSound.onchange=e=>{setPrefs({reminderSound:e.target.value||"bell"});showToast("צליל להפסק טהרה עודכן")};
 manualReminderEnabled.onchange=async e=>{const next={manualReminderEnabled:e.target.checked};if(e.target.checked&&(manualReminderMode.value||"today")==="today")next.manualReminderDate=ymd(today);setPrefs(next);if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת הידנית עודכנה")};
 manualReminderTime.onchange=e=>{setPrefs({manualReminderTime:e.target.value||"20:00"});startReminderWatcher();showToast("שעת התזכורת הידנית עודכנה")};
 manualReminderMode.onchange=e=>{const mode=e.target.value||"today";setPrefs({manualReminderMode:mode,manualReminderDate:mode==="today"?ymd(today):null});startReminderWatcher();showToast("תדירות התזכורת עודכנה")};
 manualReminderCount.onchange=e=>{setPrefs({manualReminderCount:Number(e.target.value||1)});startReminderWatcher();showToast("מספר התזכורות עודכן")};
+manualReminderSound.onchange=e=>{setPrefs({manualReminderSound:e.target.value||"chime"});showToast("צליל לתזכורת ידנית עודכן")};
 sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
 dayChangeMode.onchange=async e=>{setPrefs({dayChangeMode:e.target.value});await render();};
