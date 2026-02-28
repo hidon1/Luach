@@ -119,7 +119,7 @@
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
     .menu-group[open] summary::before{transform:rotate(90deg)}
-    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:42vh;overflow-y:auto}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -136,7 +136,7 @@
     .timeline-item{padding:10px;border-radius:12px;background:#fff;border:1px solid #ead5f5;display:grid;gap:4px}
     .timeline-item small{color:#5b2f74;font-weight:700}
     .day-notes-box{margin-top:10px;padding:10px;border-radius:12px;border:1px solid #ead5f5;background:#fff8ff;display:grid;gap:6px}
-    .day-notes-list{margin:0;padding-right:16px;display:grid;gap:4px;max-height:140px;overflow:auto}
+    .day-notes-list{margin:0;padding-right:16px;display:grid;gap:4px}
     .day-notes-list li{font-size:.88rem;color:#3f2a54}
     .notes-list{margin:0;padding-right:16px;display:grid;gap:6px}
     .notes-list li{font-size:.88rem;color:#3f2a54}
@@ -165,7 +165,7 @@
       .day-halves{display:none}
       .cell{overflow:visible}
       .badges{max-height:none;overflow:visible}
-      .badges .badge{background:transparent;border:none;border-radius:0;padding:0 0 2px;display:block;width:100%;font-size:.58rem}
+      .badges .badge{background:transparent;border:none;border-radius:0;padding:0 0 2px;display:block;width:100%;font-size:.5rem}
       .badge-note-dot{width:5px;height:5px}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
       .brand{gap:6px;justify-self:center;align-items:center;margin-top:2px;margin-bottom:6px;width:100%}
@@ -347,6 +347,7 @@ function recalcDerived(){
   const periods=[],hefseks=[];
   for(const [k,v] of dayEvents.entries()) for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"}); if(m.type==="hefsek")hefseks.push(new Date(k));}
   periods.sort((a,b)=>a.date-b.date); hefseks.sort((a,b)=>a-b);
+  const hefsekKeys=new Set(hefseks.map(d=>ymd(d)));
   const prefs=getPrefs();
   const day30Mode=prefs.day30Mode||"ona",day31Mode=prefs.day31Mode||"ona";
   const activeGapByPeriod=calculateGapKavuahByPeriod(periods);
@@ -374,7 +375,9 @@ function recalcDerived(){
         }
       }
     }
-    const ready=addDays(p.date,minhagDays()-1); addMarker(ymd(ready),{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
+    const ready=addDays(p.date,minhagDays()-1);
+    const readyKey=ymd(ready);
+    if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
   for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
 }
