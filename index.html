@@ -41,11 +41,15 @@
     .container{max-width:1100px;margin:8px auto 0;padding:0 14px 30px;display:grid;gap:12px;position:relative;z-index:40}
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
     .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.month-scroll-hint{display:none}
-    .monthTitle{font-weight:900;min-width:280px;text-align:center;padding:13px 18px;border-radius:18px;background:linear-gradient(140deg,#f6c7ff,#8f327f 74%);border:1px solid #742869;color:#fff;box-shadow:0 6px 0 #6a1e5b,0 14px 28px rgba(109,30,103,.28),inset 0 2px 8px rgba(255,255,255,.3);text-shadow:0 2px 7px rgba(69,15,80,.45)}
+    .monthTitle{font-weight:900;min-width:280px;text-align:center;padding:13px 18px;border-radius:18px;background:linear-gradient(140deg,#f6c7ff,#8f327f 74%);border:1px solid #742869;color:#fff;box-shadow:0 6px 0 #6a1e5b,0 14px 28px rgba(109,30,103,.28),inset 0 2px 8px rgba(255,255,255,.3);text-shadow:0 2px 7px rgba(69,15,80,.45);cursor:pointer;position:relative}
+    .month-picker{position:absolute;top:100%;left:50%;transform:translate(-50%,10px);width:min(360px,92vw);max-height:300px;overflow-y:auto;background:linear-gradient(180deg,#fff,#f6ecff);border:1px solid #cba7ea;border-radius:14px;box-shadow:0 16px 30px rgba(75,27,107,.28);padding:8px;display:grid;gap:6px;z-index:55}
+    .month-picker-item{width:100%;text-align:right;border:1px solid #d8bee9;border-radius:10px;padding:9px 10px;background:#fff;color:#3a1757;font-weight:800}
+    .month-picker-item:hover{background:#f3e3ff}
+    .month-picker-item.active{background:#5d2a84;color:#fff;border-color:#5d2a84}
     .btn{border:1px solid var(--line);background:#ffffffd9;border-radius:14px;padding:9px 12px;font-weight:800;cursor:pointer;color:#23193a;transition:.2s}
     .btn:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(103,48,130,.15)}
     .controls{flex-wrap:wrap}
-    .month-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
+    .month-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%;position:relative}
     .month-extra{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
     .btn-toggle-active{background:#311b52;color:#fff;border-color:#311b52}
     .continuous-wrap{display:none;padding:12px}
@@ -119,7 +123,7 @@
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
     .menu-group[open] summary::before{transform:rotate(90deg)}
-    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:42vh;overflow-y:auto}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:none;overflow:visible}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -201,7 +205,8 @@
   <section class="controls card">
     <div class="month-nav">
       <button id="prevMonth" class="btn">▶ חודש קודם</button>
-      <div id="monthTitle" class="monthTitle"></div>
+      <div id="monthTitle" class="monthTitle" role="button" tabindex="0" aria-label="בחירת חודש"></div>
+      <div id="monthPicker" class="month-picker hidden"></div>
       <button id="nextMonth" class="btn">חודש הבא ◀</button>
       <button id="toggleContinuous" class="btn">תצוגת גלילה רציפה</button>
     </div>
@@ -289,10 +294,11 @@ const auth=firebase.auth();
 const db=firebase.firestore();
 
 const el=id=>document.getElementById(id);
-const grid=el("grid"),monthTitle=el("monthTitle"),authState=el("authState"),toast=el("toast");
+const grid=el("grid"),monthTitle=el("monthTitle"),monthPicker=el("monthPicker"),authState=el("authState"),toast=el("toast");
 let today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
 const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1";
 let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
+const hebrewMonthNames=Array.from({length:12},(_,m)=>new Intl.DateTimeFormat("he",{month:"long"}).format(new Date(2024,m,1)));
 let webViewSafeReady=false;
 const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
 
@@ -484,7 +490,23 @@ function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.string
 function getManualReminderLog(){try{return JSON.parse(localStorage.getItem(MANUAL_REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
 function setManualReminderLog(next){localStorage.setItem(MANUAL_REMINDER_FIRE_KEY,JSON.stringify(next));}
 async function ensureNotificationPermission(){
-  if(window.AndroidBridge) return false;
+  if(window.AndroidBridge){
+    try{
+      if(typeof window.AndroidBridge.requestNotificationPermission==="function"){
+        const result=await window.AndroidBridge.requestNotificationPermission();
+        if(result===true||result==="granted"||result===1||result==="1") return true;
+      }
+      if(typeof window.AndroidBridge.enableNotifications==="function"){
+        const result=await window.AndroidBridge.enableNotifications();
+        if(result===true||result==="granted"||result===1||result==="1") return true;
+      }
+      if(typeof window.AndroidBridge.areNotificationsEnabled==="function"){
+        const enabled=await window.AndroidBridge.areNotificationsEnabled();
+        if(enabled===true||enabled===1||enabled==="1") return true;
+      }
+    }catch{}
+    return true;
+  }
   if(!("Notification" in window)) return false;
   if(Notification.permission==="granted") return true;
   if(Notification.permission==="denied") return false;
@@ -626,6 +648,23 @@ function applyMode(){
   el("continuousWrap").classList.toggle("active",continuousMode);
   el("toggleContinuous").classList.toggle("btn-toggle-active",continuousMode);
   if(continuousMode) renderContinuousMonths();
+  closeMonthPicker();
+}
+
+function closeMonthPicker(){monthPicker.classList.add("hidden");monthPicker.innerHTML=""}
+function openMonthPicker(){
+  if(continuousMode) return;
+  monthPicker.innerHTML="";
+  const y=view.getFullYear();
+  hebrewMonthNames.forEach((name,index)=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className=`month-picker-item${index===view.getMonth()?" active":""}`;
+    btn.textContent=`${name} ${y}`;
+    btn.onclick=()=>{view=new Date(y,index,1);closeMonthPicker();render();};
+    monthPicker.appendChild(btn);
+  });
+  monthPicker.classList.remove("hidden");
 }
 
 function getDayNotes(dateKey){
@@ -797,8 +836,11 @@ async function doGoogleSignIn(){
 
 auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;const name=user?.displayName||user?.email||"";authState.textContent=user?`מחובר: ${name}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
 
-el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
-el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
+el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);closeMonthPicker();render()};
+el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);closeMonthPicker();render()};
+monthTitle.onclick=e=>{e.stopPropagation();if(monthPicker.classList.contains("hidden"))openMonthPicker();else closeMonthPicker();};
+monthTitle.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();monthTitle.click();}};
+document.addEventListener("click",e=>{if(!monthPicker.classList.contains("hidden")&&!monthPicker.contains(e.target)&&e.target!==monthTitle)closeMonthPicker();});
 el("todayPanel").onclick=()=>openModal(today);
 el("toggleContinuous").onclick=()=>{continuousMode=!continuousMode;applyMode();render();};
 el("modalClose").onclick=closeModal; el("modalOverlay").onclick=e=>{if(e.target===el("modalOverlay"))closeModal()};
