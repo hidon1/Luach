@@ -548,15 +548,84 @@ async function ensureNotificationPermission(){
   const p=await Notification.requestPermission();
   return p==="granted";
 }
-function scheduleAndroidAlarmAt(epochMillis,title,msg){
-  if(!isAndroidBridgeAvailable()) return false;
+const REMINDER_NOTIFICATION_IDS={
+  hefsek:1001,
+  manual1:1002,
+  manual2:1003
+};
+function scheduleAndroidAlarmAt(epochMillis,title,msg,notifId){
   const when=Number(epochMillis);
   if(!Number.isFinite(when)) return false;
   const safeWhen=Math.max(Date.now()+1500,Math.round(when));
+  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationAtWithId==="function"){
+    try{window.AndroidBridge.scheduleNotificationAtWithId(Number(notifId||0),safeWhen,title,msg);return true;}catch{}
+  }
+  if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationAt==="function"){
+    try{window.AndroidBridge.scheduleNotificationAt(safeWhen,title,msg);return true;}catch{}
+  }
+  if(!isAndroidBridgeAvailable()) return false;
   try{
     window.Android.scheduleNotification(safeWhen,title,msg);
     return true;
   }catch{return false;}
+}
+function parseDateKey(dateKey){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey||"");
+  if(!m) return null;
+  return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+}
+function firstFutureHefsekReminderEpoch(prefs,now=new Date()){
+  if(!prefs.reminderEnabled) return null;
+  const [h,m]=(prefs.reminderTime||"15:00").split(":").map(Number);
+  if(!Number.isFinite(h)||!Number.isFinite(m)) return null;
+  const nowMs=now.getTime();
+  const hefsekKeys=[...dayEvents.entries()]
+    .filter(([_,v])=>normalizeDay(v).markers.some(marker=>marker.type==="hefsek"))
+    .map(([k])=>k)
+    .sort();
+  for(const key of hefsekKeys){
+    const day=parseDateKey(key);
+    if(!day) continue;
+    const when=new Date(day.getFullYear(),day.getMonth(),day.getDate(),h,m,0,0).getTime();
+    if(when>=nowMs) return when;
+  }
+  return null;
+}
+function nextManualReminderEpochs(prefs,now=new Date()){
+  if(!prefs.manualReminderEnabled) return [];
+  const [h,m]=(prefs.manualReminderTime||"20:00").split(":").map(Number);
+  if(!Number.isFinite(h)||!Number.isFinite(m)) return [];
+  const mode=prefs.manualReminderMode||"today";
+  const count=Math.max(1,Number(prefs.manualReminderCount||1));
+  const baseDate=mode==="today"?parseDateKey(prefs.manualReminderDate||ymd(startOfDay(now))):startOfDay(now);
+  if(!baseDate) return [];
+  const slots=[];
+  const first=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate(),h,m,0,0).getTime();
+  slots.push(first);
+  if(count>1){
+    const second=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate(),h,m+30,0,0).getTime();
+    slots.push(second);
+  }
+  if(mode==="today") return slots.filter(t=>t>=now.getTime());
+  const nowMs=now.getTime();
+  return slots.map(t=>t>=nowMs?t:t+24*60*60*1000);
+}
+async function scheduleUpcomingAndroidReminders(){
+  const prefs=getPrefs();
+  if(!(isAndroidBridgeAvailable()||window.AndroidBridge)) return;
+  const allowed=await ensureNotificationPermission();
+  if(!allowed) return;
+  const hefsekEpoch=firstFutureHefsekReminderEpoch(prefs,new Date());
+  if(hefsekEpoch){
+    scheduleAndroidAlarmAt(hefsekEpoch,"תזכורת לוח","היום צריך לבצע הפסק טהרה",REMINDER_NOTIFICATION_IDS.hefsek);
+  }
+  const manualEpochs=nextManualReminderEpochs(prefs,new Date());
+  if(manualEpochs[0]){
+    scheduleAndroidAlarmAt(manualEpochs[0],"תזכורת ידנית","תזכורת ידנית מהלוח",REMINDER_NOTIFICATION_IDS.manual1);
+  }
+  if(manualEpochs[1]){
+    scheduleAndroidAlarmAt(manualEpochs[1],"תזכורת ידנית","תזכורת ידנית מהלוח",REMINDER_NOTIFICATION_IDS.manual2);
+  }
 }
 async function showSystemNotification(title,msg,sound){
   if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
@@ -880,7 +949,7 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
 function openOnaPicker(date){el("onaOverlay").classList.remove("hidden");const apply=async ona=>{el("onaOverlay").classList.add("hidden");closeModal();addMarker(ymd(date),{type:"period",label:markerLabel("תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await commitAndSync();};el("chooseDay").onclick=()=>apply("day");el("chooseNight").onclick=()=>apply("night")}
 
-async function commitAndSync(){await persistAll();await render();showToast("הנתונים עודכנו")}
+async function commitAndSync(){await persistAll();await render();await scheduleUpcomingAndroidReminders();showToast("הנתונים עודכנו")}
 
 function openAuth(){el("authOverlay").classList.remove("hidden")} function closeAuth(){el("authOverlay").classList.add("hidden")}
 function renderAuthMode(){const t=el("authTitle"),s=el("authSub"),sw=el("authSwitchText"),a=el("authActionBtn");if(authMode==="signin"){t.textContent="התחברות";s.textContent="התחברי עם אימייל וסיסמה";a.textContent="התחברות";sw.textContent="אין לך חשבון?";}else{t.textContent="רישום";s.textContent="צרי חשבון חדש";a.textContent="רישום";sw.textContent="יש לך כבר חשבון?";}}
@@ -928,15 +997,15 @@ day31Toggle.onchange=async e=>{setPrefs({day31:e.target.checked});recalcDerived(
 day30Mode.onchange=async e=>{setPrefs({day30Mode:e.target.value});recalcDerived();await commitAndSync()};
 day31Mode.onchange=async e=>{setPrefs({day31Mode:e.target.value});recalcDerived();await commitAndSync()};
 minhagSelect.onchange=async e=>{setPrefs({minhag:e.target.value});recalcDerived();await commitAndSync()};
-reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת עודכנה")};
+reminderToggle.onchange=async e=>{setPrefs({reminderEnabled:e.target.checked});if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("התזכורת עודכנה")};
 meetingToggle.onchange=e=>{setPrefs({meetingReminders:e.target.checked});showToast("תזכורת ימי פרישה עודכנה")};
-reminderTime.onchange=e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();showToast("שעת התזכורת עודכנה")};
+reminderTime.onchange=async e=>{setPrefs({reminderTime:e.target.value||"15:00"});startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("שעת התזכורת עודכנה")};
 
 reminderSound.onchange=e=>{setPrefs({reminderSound:e.target.value||"bell"});showToast("צליל להפסק טהרה עודכן")};
-manualReminderEnabled.onchange=async e=>{const next={manualReminderEnabled:e.target.checked};if(e.target.checked&&(manualReminderMode.value||"today")==="today")next.manualReminderDate=ymd(today);setPrefs(next);if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();showToast("התזכורת הידנית עודכנה")};
-manualReminderTime.onchange=e=>{setPrefs({manualReminderTime:e.target.value||"20:00"});startReminderWatcher();showToast("שעת התזכורת הידנית עודכנה")};
-manualReminderMode.onchange=e=>{const mode=e.target.value||"today";setPrefs({manualReminderMode:mode,manualReminderDate:mode==="today"?ymd(today):null});startReminderWatcher();showToast("תדירות התזכורת עודכנה")};
-manualReminderCount.onchange=e=>{setPrefs({manualReminderCount:Number(e.target.value||1)});startReminderWatcher();showToast("מספר התזכורות עודכן")};
+manualReminderEnabled.onchange=async e=>{const next={manualReminderEnabled:e.target.checked};if(e.target.checked&&(manualReminderMode.value||"today")==="today")next.manualReminderDate=ymd(today);setPrefs(next);if(e.target.checked)await ensureNotificationPermission();startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("התזכורת הידנית עודכנה")};
+manualReminderTime.onchange=async e=>{setPrefs({manualReminderTime:e.target.value||"20:00"});startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("שעת התזכורת הידנית עודכנה")};
+manualReminderMode.onchange=async e=>{const mode=e.target.value||"today";setPrefs({manualReminderMode:mode,manualReminderDate:mode==="today"?ymd(today):null});startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("תדירות התזכורת עודכנה")};
+manualReminderCount.onchange=async e=>{setPrefs({manualReminderCount:Number(e.target.value||1)});startReminderWatcher();await scheduleUpcomingAndroidReminders();showToast("מספר התזכורות עודכן")};
 manualReminderSound.onchange=e=>{setPrefs({manualReminderSound:e.target.value||"chime"});showToast("צליל לתזכורת ידנית עודכן")};
 sunsetMode.onchange=async e=>{setPrefs({sunsetMode:e.target.value});await render();};
 sunsetCity.onchange=async e=>{setPrefs({sunsetCity:e.target.value});await render();};
@@ -950,7 +1019,7 @@ el("googleSignInBtn").onclick=doGoogleSignIn;
 el("authSwitchBtn").onclick=e=>{e.preventDefault();authMode=authMode==="signin"?"signup":"signin";renderAuthMode()};
 el("signOutBtn").onclick=async()=>{await auth.signOut();el("authMsg").textContent="התנתקת"};
 
-applyMode(); startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); startReminderWatcher(); render();
+applyMode(); startClock(); renderAuthMode(); if(!localStorage.getItem(AUTH_PROMPT_KEY)){openAuth();localStorage.setItem(AUTH_PROMPT_KEY,"1")} recalcDerived(); startReminderWatcher(); scheduleUpcomingAndroidReminders(); render();
 window.addEventListener("load",()=>{
   setTimeout(()=>{
     webViewSafeReady=true;
