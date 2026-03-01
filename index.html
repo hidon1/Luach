@@ -118,12 +118,12 @@
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
-    .menu-group{border:1px solid #d9b9f2;border-radius:14px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden}
+    .menu-group{border:1px solid #d9b9f2;border-radius:14px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr)}
     .menu-group summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:900;color:#3a1757;display:flex;justify-content:space-between;align-items:center}
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
     .menu-group[open] summary::before{transform:rotate(90deg)}
-    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:min(45vh,380px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:min(60dvh,520px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -518,36 +518,52 @@ function getReminderLog(){try{return JSON.parse(localStorage.getItem(REMINDER_FI
 function setReminderLog(next){localStorage.setItem(REMINDER_FIRE_KEY,JSON.stringify(next));}
 function getManualReminderLog(){try{return JSON.parse(localStorage.getItem(MANUAL_REMINDER_FIRE_KEY)||"{}");}catch{return {};}}
 function setManualReminderLog(next){localStorage.setItem(MANUAL_REMINDER_FIRE_KEY,JSON.stringify(next));}
+function normalizeBridge(value){
+  return value===true||value===1||value==="1"||value==="true"||value==="granted";
+}
+function isAndroidBridgeAvailable(){
+  return !!(window.Android&&typeof window.Android.scheduleNotification==="function");
+}
 async function ensureNotificationPermission(){
   if(window.AndroidBridge){
     try{
       if(typeof window.AndroidBridge.requestNotificationPermission==="function"){
         const result=await window.AndroidBridge.requestNotificationPermission();
-        if(result===true||result==="granted"||result===1||result==="1") return true;
+        if(normalizeBridge(result)) return true;
       }
       if(typeof window.AndroidBridge.enableNotifications==="function"){
         const result=await window.AndroidBridge.enableNotifications();
-        if(result===true||result==="granted"||result===1||result==="1") return true;
+        if(normalizeBridge(result)) return true;
       }
       if(typeof window.AndroidBridge.areNotificationsEnabled==="function"){
         const enabled=await window.AndroidBridge.areNotificationsEnabled();
-        if(enabled===true||enabled===1||enabled==="1") return true;
+        if(normalizeBridge(enabled)) return true;
       }
     }catch{}
-    return false;
   }
+  if(isAndroidBridgeAvailable()) return true;
   if(!("Notification" in window)) return false;
   if(Notification.permission==="granted") return true;
   if(Notification.permission==="denied") return false;
   const p=await Notification.requestPermission();
   return p==="granted";
 }
+function scheduleAndroidAlarmAt(epochMillis,title,msg){
+  if(!isAndroidBridgeAvailable()) return false;
+  const when=Number(epochMillis);
+  if(!Number.isFinite(when)) return false;
+  const safeWhen=Math.max(Date.now()+1500,Math.round(when));
+  try{
+    window.Android.scheduleNotification(safeWhen,title,msg);
+    return true;
+  }catch{return false;}
+}
 async function showSystemNotification(title,msg,sound){
   if(window.AndroidBridge&&typeof window.AndroidBridge.scheduleNotificationNow==="function"){
     try{window.AndroidBridge.scheduleNotificationNow(title,msg,sound);return true;}catch{}
   }
   const hasPermission=await ensureNotificationPermission();
-  if(hasPermission && !window.AndroidBridge){
+  if(hasPermission && !window.AndroidBridge && !isAndroidBridgeAvailable()){
     new Notification(title,{body:msg,icon:"1.png"});
     return true;
   }
@@ -597,8 +613,10 @@ async function fireHefsekReminder(dateKey){
   const sound=prefs.reminderSound||"bell";
   playReminderSound(sound);
   const msg="היום צריך לבצע הפסק טהרה";
-  const delivered=await showSystemNotification("תזכורת לוח",msg,sound);
-  if(!delivered){
+  const title="תזכורת לוח";
+  const delivered=await showSystemNotification(title,msg,sound);
+  const scheduledOnAndroid=scheduleAndroidAlarmAt(Date.now()+2000,title,msg);
+  if(!delivered && !scheduledOnAndroid){
     showToast(msg);
     alert(msg);
   }
@@ -613,8 +631,10 @@ async function fireManualReminder(dateKey,slot){
   const sound=prefs.manualReminderSound||"chime";
   playReminderSound(sound);
   const msg="תזכורת ידנית מהלוח";
-  const delivered=await showSystemNotification("תזכורת ידנית",msg,sound);
-  if(!delivered){
+  const title="תזכורת ידנית";
+  const delivered=await showSystemNotification(title,msg,sound);
+  const scheduledOnAndroid=scheduleAndroidAlarmAt(Date.now()+2000,title,msg);
+  if(!delivered && !scheduledOnAndroid){
     showToast(msg);
   }
   log[key]=Date.now();
