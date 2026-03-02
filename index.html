@@ -828,9 +828,8 @@ async function renderTodayCard(){
   const todayMarkers=normalizeDay(dayEvents.get(dateKey)).markers;
   for(const m of todayMarkers){const c=document.createElement("span");c.className=`chip`;c.textContent=m.label;chips.appendChild(c)}
   const banner=el("todayBanner");
-  const hefsekMarker=todayMarkers.find(m=>m.type==="hefsek");
-  if(hefsekMarker){banner.textContent="⚠️ היום לבצע הפסק טהרה";banner.title=hefsekMarker.note||"לחצי להוספת הערה";banner.onclick=()=>openMarkerNoteEditor(dateKey,hefsekMarker);banner.classList.remove("hidden");}
-  else{banner.classList.add("hidden");banner.onclick=null;}
+  banner.classList.add("hidden");
+  banner.onclick=null;
 }
 function startClock(){const paint=async()=>{const now=new Date();el("clock").textContent=now.toLocaleTimeString("he-IL",{hour12:false});if(now.getSeconds()===0){await refreshTodayBySetting();await renderTodayCard();}};paint();if(clockTimer)clearInterval(clockTimer);clockTimer=setInterval(paint,1000)}
 
@@ -1032,7 +1031,7 @@ const closeModal=()=>el("modalOverlay").classList.add("hidden");
 function openOnaPicker(date,type="period"){
   const isKetem=type==="ketem";
   el("onaTitle").textContent=isKetem?"בחירת עונה לכתם":"בחירת עונה לתחילת מחזור";
-  el("onaSub").textContent=isKetem?"כתם גורם לתהליך טהרה רגיל (הפסק, שבעה נקיים וטבילה) אבל לא מייצר ימי פרישה חדשים.":"אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.";
+  el("onaSub").textContent=isKetem?"":"אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.";
   el("onaOverlay").classList.remove("hidden");
   const apply=async ona=>{el("onaOverlay").classList.add("hidden");closeModal();addMarker(ymd(date),{type,label:markerLabel(isKetem?"כתם":"תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await commitAndSync();};
   el("chooseDay").onclick=()=>apply("day");
