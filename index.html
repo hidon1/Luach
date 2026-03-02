@@ -23,7 +23,7 @@
     body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
     body{margin:0;font-family:"Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-weight:750;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
-    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1}
+    body::before{content:"";position:fixed;inset:-140px;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1;will-change:transform}
     .hidden{display:none!important}
     .topbar{position:relative;z-index:30;padding:6px 16px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
     .brand{display:flex;align-items:flex-start;justify-content:center;gap:16px;justify-self:center;grid-column:1/-1;padding:0 8px;width:fit-content;max-width:100%;margin-inline:auto;margin-top:28px}
