@@ -102,7 +102,7 @@
     .half-day{background:rgba(255,202,94,.12)}
     .half-empty{opacity:.45;color:#7a6b91}
     .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
     .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08);font-weight:800;color:#31154e}
     .switch-feature{background:linear-gradient(145deg,#fff,#f7ecff);border:1px solid #c9a6ea;box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(130,70,200,.12)}
@@ -123,7 +123,7 @@
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary::before{content:"▸";font-size:.8rem;transition:transform .2s ease}
     .menu-group[open] summary::before{transform:rotate(90deg)}
-    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:min(60dvh,520px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .menu-group-content{padding:0 10px 10px;display:grid;gap:8px;max-height:min(60dvh,520px);overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -297,7 +297,7 @@ const el=id=>document.getElementById(id);
 const grid=el("grid"),monthTitle=el("monthTitle"),monthPicker=el("monthPicker"),authState=el("authState"),toast=el("toast");
 let today=startOfDay(new Date()); let view=new Date(today.getFullYear(),today.getMonth(),1); let continuousMode=false;
 const STORAGE_KEY="calendar_events_v7",PREFS_KEY="calendar_prefs_v6",AUTH_PROMPT_KEY="auth_prompt_seen_v2",REMINDER_FIRE_KEY="hefsek_reminder_fired_v1",MANUAL_REMINDER_FIRE_KEY="manual_reminder_fired_v1",SUNSET_CITY_CACHE_KEY="sunset_city_cache_v1",NOTE_HISTORY_KEY="calendar_note_history_v1",MARKER_NOTE_STORE_KEY="calendar_marker_notes_v1",SUNSET_PREFETCH_STATE_KEY="sunset_prefetch_state_v1";
-let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null;
+let dayEvents=loadLocalEvents(),currentUid=null,authMode="signin",clockTimer=null,sunsetCache=loadSunsetCache(),locationPromise=null,lastCoords=null,reminderTimer=null,remoteSyncUnsubscribe=null;
 const hebrewMonthNames=Array.from({length:12},(_,m)=>new Intl.DateTimeFormat("he",{month:"long"}).format(new Date(2024,m,1)));
 let webViewSafeReady=false;
 const CITY_COORDS={"Jerusalem":{latitude:31.7683,longitude:35.2137,label:"ירושלים"},"Tel Aviv":{latitude:32.0853,longitude:34.7818,label:"תל אביב"},"Haifa":{latitude:32.794,longitude:34.9896,label:"חיפה"},"Rishon LeZion":{latitude:31.973,longitude:34.7925,label:"ראשון לציון"},"Petah Tikva":{latitude:32.084,longitude:34.8878,label:"פתח תקווה"},"Ashdod":{latitude:31.8014,longitude:34.6435,label:"אשדוד"},"Netanya":{latitude:32.3215,longitude:34.8532,label:"נתניה"},"Beersheba":{latitude:31.252,longitude:34.7915,label:"באר שבע"},"Bnei Brak":{latitude:32.0836,longitude:34.8328,label:"בני ברק"},"Holon":{latitude:32.0158,longitude:34.7874,label:"חולון"},"Ramat Gan":{latitude:32.0684,longitude:34.8248,label:"רמת גן"},"Ashkelon":{latitude:31.6688,longitude:34.5743,label:"אשקלון"},"Rehovot":{latitude:31.8948,longitude:34.8113,label:"רחובות"},"Bat Yam":{latitude:32.0171,longitude:34.7454,label:"בת ים"},"Herzliya":{latitude:32.1663,longitude:34.8433,label:"הרצליה"},"Kfar Saba":{latitude:32.1743,longitude:34.907,label:"כפר סבא"},"Modiin":{latitude:31.8996,longitude:35.0097,label:"מודיעין"},"Nazareth":{latitude:32.6996,longitude:35.3035,label:"נצרת"},"Hadera":{latitude:32.434,longitude:34.9197,label:"חדרה"},"Eilat":{latitude:29.5577,longitude:34.9519,label:"אילת"}};
@@ -315,7 +315,7 @@ function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}")
 function exportEvents(){const o={};for(const[k,v]of dayEvents.entries())o[k]=normalizeDay(v);return o;}
 function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
 function clearDerived(){for(const [k,v]of dayEvents.entries()){const keep=normalizeDay(v).markers.filter(m=>!m.source);keep.length?dayEvents.set(k,{markers:keep}):dayEvents.delete(k)}}
-async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await db.collection("users").doc(currentUid).set({events,prefs:getPrefs(),updatedAt:Date.now()},{merge:true})}
+async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await db.collection("users").doc(currentUid).set({events,prefs:getPrefs(),markerNotes:getMarkerNotesStore(),noteHistory:getNoteHistory(),updatedAt:Date.now()},{merge:true})}
 function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
 function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
 function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
@@ -330,7 +330,74 @@ function getPersistedMarkerNote(dateKey,marker){
   return String(store[markerNoteKey(dateKey,marker)]||"").trim();
 }
 
-async function loadRemoteEvents(uid){const snap=await db.collection("users").doc(uid).get();if(!snap.exists)return;const data=snap.data();if(data.events)dayEvents=new Map(Object.entries(data.events));if(data.prefs){const localPrefs=getPrefs();const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};localStorage.setItem(PREFS_KEY,JSON.stringify(mergedPrefs));}}
+function mergeEventsMaps(localMap,remoteMap){
+  const merged=new Map();
+  const localEntries=localMap instanceof Map?localMap.entries():[];
+  const remoteEntries=remoteMap instanceof Map?remoteMap.entries():[];
+  for(const [key,val] of localEntries) merged.set(key,normalizeDay(val));
+  for(const [key,val] of remoteEntries){
+    const localDay=normalizeDay(merged.get(key));
+    const remoteDay=normalizeDay(val);
+    const bucket=[];
+    for(const marker of [...localDay.markers,...remoteDay.markers]){
+      if(!marker) continue;
+      const normalized={...marker};
+      const duplicate=bucket.find(item=>item.type===normalized.type&&item.label===normalized.label&&item.ona===normalized.ona&&item.source===normalized.source);
+      if(!duplicate){
+        bucket.push(normalized);
+        continue;
+      }
+      if(normalized.note&&!duplicate.note) duplicate.note=normalized.note;
+    }
+    if(bucket.length) merged.set(key,{markers:bucket});
+  }
+  return merged;
+}
+async function loadRemoteEvents(uid){
+  const snap=await db.collection("users").doc(uid).get();
+  if(!snap.exists) return;
+  const data=snap.data()||{};
+  const remoteEvents=data.events?new Map(Object.entries(data.events)):new Map();
+  dayEvents=mergeEventsMaps(dayEvents,remoteEvents);
+  if(data.prefs){
+    const localPrefs=getPrefs();
+    const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};
+    localStorage.setItem(PREFS_KEY,JSON.stringify(mergedPrefs));
+  }
+  if(data.markerNotes&&typeof data.markerNotes==="object"){
+    setMarkerNotesStore({...getMarkerNotesStore(),...data.markerNotes});
+  }
+  if(data.noteHistory&&typeof data.noteHistory==="object"){
+    const localHistory=getNoteHistory();
+    const mergedHistory={...localHistory};
+    for(const [key,val] of Object.entries(data.noteHistory)){
+      const localArr=Array.isArray(localHistory[key])?localHistory[key]:[];
+      const remoteArr=Array.isArray(val)?val:[];
+      mergedHistory[key]=[...localArr,...remoteArr].slice(-30);
+    }
+    setNoteHistory(mergedHistory);
+  }
+}
+
+function attachRealtimeSync(uid){
+  if(remoteSyncUnsubscribe){
+    remoteSyncUnsubscribe();
+    remoteSyncUnsubscribe=null;
+  }
+  if(!uid) return;
+  remoteSyncUnsubscribe=db.collection("users").doc(uid).onSnapshot(async snap=>{
+    if(!snap.exists) return;
+    const previous=JSON.stringify(exportEvents());
+    await loadRemoteEvents(uid);
+    recalcDerived();
+    const changed=previous!==JSON.stringify(exportEvents());
+    if(changed){
+      await render();
+      await scheduleUpcomingAndroidReminders();
+      showToast("בוצע סנכרון מהענן");
+    }
+  },()=>{});
+}
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
@@ -579,11 +646,11 @@ function firstFutureHefsekReminderEpoch(prefs,now=new Date()){
   const [h,m]=(prefs.reminderTime||"15:00").split(":").map(Number);
   if(!Number.isFinite(h)||!Number.isFinite(m)) return null;
   const nowMs=now.getTime();
-  const hefsekKeys=[...dayEvents.entries()]
-    .filter(([_,v])=>normalizeDay(v).markers.some(marker=>marker.type==="hefsek"))
+  const hefsekReadyKeys=[...dayEvents.entries()]
+    .filter(([_,v])=>normalizeDay(v).markers.some(marker=>marker.type==="hefsekReady"))
     .map(([k])=>k)
     .sort();
-  for(const key of hefsekKeys){
+  for(const key of hefsekReadyKeys){
     const day=parseDateKey(key);
     if(!day) continue;
     const when=new Date(day.getFullYear(),day.getMonth(),day.getDate(),h,m,0,0).getTime();
@@ -617,7 +684,7 @@ async function scheduleUpcomingAndroidReminders(){
   if(!allowed) return;
   const hefsekEpoch=firstFutureHefsekReminderEpoch(prefs,new Date());
   if(hefsekEpoch){
-    scheduleAndroidAlarmAt(hefsekEpoch,"תזכורת לוח","היום צריך לבצע הפסק טהרה",REMINDER_NOTIFICATION_IDS.hefsek);
+    scheduleAndroidAlarmAt(hefsekEpoch,"תזכורת לוח","היום ניתן לעשות הפסק טהרה",REMINDER_NOTIFICATION_IDS.hefsek);
   }
   const manualEpochs=nextManualReminderEpochs(prefs,new Date());
   if(manualEpochs[0]){
@@ -681,7 +748,7 @@ async function fireHefsekReminder(dateKey){
   if(log[dateKey]===time) return;
   const sound=prefs.reminderSound||"bell";
   playReminderSound(sound);
-  const msg="היום צריך לבצע הפסק טהרה";
+  const msg="היום ניתן לעשות הפסק טהרה";
   const title="תזכורת לוח";
   const delivered=await showSystemNotification(title,msg,sound);
   const scheduledOnAndroid=scheduleAndroidAlarmAt(Date.now()+2000,title,msg);
@@ -716,7 +783,7 @@ function startReminderWatcher(){
     const now=new Date();
     const nowKey=ymd(startOfDay(now));
     const hhmm=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
-    if(prefs.reminderEnabled && hasMarkerOnDate(nowKey,"hefsek") && hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(nowKey);
+    if(prefs.reminderEnabled && hasMarkerOnDate(nowKey,"hefsekReady") && hhmm>=(prefs.reminderTime||"15:00")) await fireHefsekReminder(nowKey);
     if(prefs.manualReminderEnabled){
       const manualTime=prefs.manualReminderTime||"20:00";
       if(hhmm>=manualTime){
@@ -972,7 +1039,7 @@ async function doGoogleSignIn(){
   }
 }
 
-auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;const name=user?.displayName||user?.email||"";authState.textContent=user?`מחובר: ${name}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
+auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;attachRealtimeSync(currentUid);const name=user?.displayName||user?.email||"";authState.textContent=user?`מחובר: ${name}`:"לא מחובר";if(user){await loadRemoteEvents(user.uid);await persistAll();}recalcDerived();await render();});
 
 el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);closeMonthPicker();render()};
 el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);closeMonthPicker();render()};
@@ -986,7 +1053,12 @@ el("onaCancel").onclick=()=>el("onaOverlay").classList.add("hidden"); el("onaOve
 el("openTimeline").onclick=openTimeline; el("timelineClose").onclick=closeTimeline; el("timelineOverlay").onclick=e=>{if(e.target===el("timelineOverlay"))closeTimeline()};
 el("timelineFilter").onchange=renderTimelineList;
 el("noteClose").onclick=closeNoteEditor; el("cancelNoteBtn").onclick=closeNoteEditor; el("saveNoteBtn").onclick=saveNote; el("deleteNoteBtn").onclick=clearNote; el("noteOverlay").onclick=e=>{if(e.target===el("noteOverlay"))closeNoteEditor()};
-const openDrawer=()=>{el("drawer").classList.remove("hidden");el("drawerBackdrop").classList.remove("hidden")}; const closeDrawer=()=>{el("drawer").classList.add("hidden");el("drawerBackdrop").classList.add("hidden")};
+const openDrawer=()=>{
+  el("drawer").classList.remove("hidden");
+  el("drawerBackdrop").classList.remove("hidden");
+  const groups=[...document.querySelectorAll(".menu-group")];
+  groups.forEach((group,index)=>{group.open=index===0;});
+}; const closeDrawer=()=>{el("drawer").classList.add("hidden");el("drawerBackdrop").classList.add("hidden")};
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
