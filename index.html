@@ -61,16 +61,16 @@
     .calendar{padding:18px 12px 12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
     .dow{margin-bottom:10px}.dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
-    .cell{height:120px;padding:6px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:.2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px}
-    .cell:hover{transform:translateY(-2px)}
+    .cell{height:120px;padding:6px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s,filter .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px}
+    .cell:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 18px rgba(102,44,110,.2);border-color:#be8ecf;filter:saturate(1.08)}
     .muted{opacity:.45}
     .today{outline:2px solid var(--accent)}
     .today .greg,.today .hebrew{font-weight:900;color:#9a205f}
-    .phase-period{background:var(--pink)}
-    .phase-wait{background:#ffffff}
-    .phase-clean{background:#b2efbc}
-    .phase-mikveh{background:#a8e4f5}
-    .phase-prisha{background:var(--warn)}
+    .phase-period{background:linear-gradient(160deg,#ffe4f0 0%,#ffd1e5 55%,#f8bbd7 100%)}
+    .phase-wait{background:linear-gradient(160deg,#ffffff 0%,#f7f4ff 60%,#efe8fb 100%)}
+    .phase-clean{background:linear-gradient(160deg,#d7f8df 0%,#bff1cb 55%,#9be6af 100%)}
+    .phase-mikveh{background:linear-gradient(160deg,#d8f6ff 0%,#b9ebfb 55%,#98dbf2 100%)}
+    .phase-prisha{background:linear-gradient(160deg,#fff8cc 0%,#fff0b1 58%,#ffe285 100%)}
     .date-line{display:flex;align-items:center;justify-content:space-between;gap:6px;white-space:nowrap}
     .greg{font-size:.95rem;font-weight:900;margin-bottom:0;line-height:1.1;display:flex;align-items:center;gap:4px;white-space:nowrap}
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
@@ -1045,30 +1045,71 @@ function openTimeline(){
 }
 const closeTimeline=()=>el("timelineOverlay").classList.add("hidden");
 
+function clearManualMarkersForDay(dateKey,types=[]){
+  const day=normalizeDay(dayEvents.get(dateKey));
+  const removable=day.markers.filter(m=>!m.source&&(types.length?types.includes(m.type):true));
+  if(!removable.length) return false;
+  const noteStore=getMarkerNotesStore();
+  for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
+  setMarkerNotesStore(noteStore);
+  day.markers=day.markers.filter(m=>!removable.includes(m));
+  if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
+  else dayEvents.delete(dateKey);
+  return true;
+}
+
 function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`תאריך: ${dateKey}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
   renderDayNotesList(dateKey,"modalDayNotes");
-  el("btnEventA").onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`);return;}closeModal();addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await commitAndSync();};
-  el("btnEventB").onclick=()=>openOnaPicker(d,"period");
-  el("btnEventC").onclick=()=>openOnaPicker(d,"ketem");
+  const day=normalizeDay(dayEvents.get(dateKey));
+  const hasManualType=type=>day.markers.some(m=>!m.source&&m.type===type);
+  el("btnEventA").textContent=hasManualType("hefsek")?"בטל הפסק":"הפסק טהרה";
+  el("btnEventB").textContent=hasManualType("period")?"בטל מחזור":"תחילת מחזור";
+  el("btnEventC").textContent=hasManualType("ketem")?"בטל כתם":"כתם";
+  el("btnEventA").onclick=async()=>{
+    if(hasManualType("hefsek")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["hefsek"]);
+      recalcDerived();
+      await commitAndSync();
+      return;
+    }
+    if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`);return;}
+    closeModal();
+    addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});
+    recalcDerived();
+    await commitAndSync();
+  };
+  el("btnEventB").onclick=async()=>{
+    if(hasManualType("period")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["period"]);
+      recalcDerived();
+      await commitAndSync();
+      return;
+    }
+    openOnaPicker(d,"period");
+  };
+  el("btnEventC").onclick=async()=>{
+    if(hasManualType("ketem")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["ketem"]);
+      recalcDerived();
+      await commitAndSync();
+      return;
+    }
+    openOnaPicker(d,"ketem");
+  };
   el("btnClear").onclick=async()=>{
-    const day=normalizeDay(dayEvents.get(dateKey));
-    const removable=day.markers.filter(m=>!m.source);
-    if(!removable.length){
+    const cleared=clearManualMarkersForDay(dateKey);
+    if(!cleared){
       closeModal();
       showToast("אין פעולה ידנית לבטל ביום הזה");
       return;
     }
-    const removedTypes=[...new Set(removable.map(m=>m.type))];
-    const noteStore=getMarkerNotesStore();
-    for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
-    setMarkerNotesStore(noteStore);
-    day.markers=day.markers.filter(m=>!removable.includes(m));
-    if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
-    else dayEvents.delete(dateKey);
     closeModal();
     recalcDerived();
     await commitAndSync();
-    if(removedTypes.length>1) showToast("כל הסימונים הידניים של היום נוקו");
+    showToast("כל הסימונים הידניים של היום נוקו");
   };
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
