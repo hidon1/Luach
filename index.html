@@ -408,6 +408,24 @@ function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenaz
 function canSetHefsek(d){const starts=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period"||m.type==="ketem").map(()=>new Date(k))).sort((a,b)=>a-b);const last=starts.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
 function getPrishaOnotForMode(baseOna,mode){return mode==="full"?["night","day"]:[baseOna];}
 function addPrishaMarkers(date,onot,label,source){for(const ona of onot){addMarker(ymd(date),{type:"prisha",label:markerLabel(label,ona),ona,source});}}
+function getHebrewDateParts(date){
+  const parts=new Intl.DateTimeFormat("en-u-ca-hebrew",{day:"numeric",month:"long",year:"numeric"}).formatToParts(date);
+  return {
+    day:Number(parts.find(p=>p.type==="day")?.value||0),
+    month:parts.find(p=>p.type==="month")?.value||"",
+    year:parts.find(p=>p.type==="year")?.value||""
+  };
+}
+function getVesetHachodeshDate(periodDate){
+  const source=getHebrewDateParts(periodDate);
+  if(!source.day||!source.month) return null;
+  for(let offset=20;offset<=70;offset++){
+    const probe=addDays(periodDate,offset);
+    const candidate=getHebrewDateParts(probe);
+    if((candidate.month!==source.month||candidate.year!==source.year)&&candidate.day===source.day) return probe;
+  }
+  return null;
+}
 function calculateGapKavuahByPeriod(periods){
   const byPeriod=new Array(periods.length).fill(null);
   if(periods.length<4) return byPeriod;
@@ -444,6 +462,8 @@ function recalcDerived(){
     const next=periods[i+1];
     const isBeforeNextPeriod=date=>!next||date<next.date;
     const activeGap=activeGapByPeriod[i];
+    const vesetHachodeshDate=getVesetHachodeshDate(p.date);
+    if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"וסת החודש","auto-veset-hachodesh");
     if(activeGap){
       const kavuahDate=addDays(p.date,activeGap-1);
       if(isBeforeNextPeriod(kavuahDate)) addPrishaMarkers(kavuahDate,getPrishaOnotForMode(p.ona,day30Mode),`קביעת וסת ${activeGap} יום`,`auto-kavuah-gap-${activeGap}`);
@@ -973,16 +993,7 @@ function renderMonthCells(targetGrid,y,m){
     const badgesWrap=document.createElement("div");badgesWrap.className="badges";
     cell.append(dateLine,badgesWrap,sunset);
     const markers=normalizeDay(dayEvents.get(key)).markers;
-    const shouldShowHalves=markers.some(ev=>ev.ona||ev.type==="mikveh");
-    let halfNight,halfDay;
-    if(shouldShowHalves){
-      const halves=document.createElement("div");halves.className="day-halves";
-      halfNight=document.createElement("div");halfNight.className="half half-night half-empty";halfNight.innerHTML=onaIconHtml("night");
-      halfDay=document.createElement("div");halfDay.className="half half-day half-empty";halfDay.innerHTML="☀️";
-      halves.append(halfNight,halfDay);
-      cell.insertBefore(halves,sunset);
-    }
-    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);const noteText=getPersistedMarkerNote(key,ev);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(noteText){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=noteText||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);if(!shouldShowHalves)continue;if(ev.ona==="night"){halfNight.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");}if(ev.ona==="day"){halfDay.classList.remove("half-empty");halfDay.innerHTML=onaIconHtml("day");}if(!ev.ona&&ev.type==="prisha"){halfNight.classList.remove("half-empty");halfDay.classList.remove("half-empty");halfNight.innerHTML=onaIconHtml("night");halfDay.innerHTML=onaIconHtml("day");}if(ev.type==="mikveh"){halfNight.classList.remove("half-empty");halfNight.classList.add("mikveh-night");halfNight.innerHTML=onaIconHtml("night");}}
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);const noteText=getPersistedMarkerNote(key,ev);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(noteText){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=noteText||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
