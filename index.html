@@ -1039,12 +1039,40 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
   el("btnClear").onclick=async()=>{closeModal();dayEvents.delete(ymd(d));recalcDerived();await commitAndSync();};
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
+const MIN_DAYS_BETWEEN_PERIOD_STARTS=20;
+function getLastPeriodStartBefore(date){
+  const target=startOfDay(date);
+  const periodStarts=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period").map(()=>startOfDay(new Date(k))))
+    .filter(d=>d<target)
+    .sort((a,b)=>a-b);
+  return periodStarts.at(-1)||null;
+}
 function openOnaPicker(date,type="period"){
   const isKetem=type==="ketem";
   el("onaTitle").textContent=isKetem?"בחירת עונה לכתם":"בחירת עונה לתחילת מחזור";
   el("onaSub").textContent=isKetem?"":"אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.";
   el("onaOverlay").classList.remove("hidden");
-  const apply=async ona=>{el("onaOverlay").classList.add("hidden");closeModal();addMarker(ymd(date),{type,label:markerLabel(isKetem?"כתם":"תחילת מחזור",ona),ona},{replaceType:true});recalcDerived();await commitAndSync();};
+  const apply=async ona=>{
+    let markerType=type;
+    let markerTitle=isKetem?"כתם":"תחילת מחזור";
+    if(type==="period"){
+      const lastPeriodStart=getLastPeriodStartBefore(date);
+      if(lastPeriodStart){
+        const daysFromLastPeriod=Math.round((startOfDay(date)-lastPeriodStart)/86400000);
+        if(daysFromLastPeriod<MIN_DAYS_BETWEEN_PERIOD_STARTS){
+          markerType="ketem";
+          markerTitle="כתם";
+          alert(`לא ניתן לסמן תחילת מחזור בפער של פחות מ-${MIN_DAYS_BETWEEN_PERIOD_STARTS} יום מתחילת המחזור הקודמת. האירוע נשמר ככתם.`);
+        }
+      }
+    }
+    el("onaOverlay").classList.add("hidden");
+    closeModal();
+    addMarker(ymd(date),{type:markerType,label:markerLabel(markerTitle,ona),ona},{replaceType:true});
+    recalcDerived();
+    await commitAndSync();
+  };
   el("chooseDay").onclick=()=>apply("day");
   el("chooseNight").onclick=()=>apply("night")
 }
