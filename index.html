@@ -1052,8 +1052,7 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
   el("btnEventC").onclick=()=>openOnaPicker(d,"ketem");
   el("btnClear").onclick=async()=>{
     const day=normalizeDay(dayEvents.get(dateKey));
-    const removableTypes=new Set(["period","ketem","hefsek"]);
-    const removable=day.markers.filter(m=>!m.source&&removableTypes.has(m.type));
+    const removable=day.markers.filter(m=>!m.source);
     if(!removable.length){
       closeModal();
       showToast("אין פעולה ידנית לבטל ביום הזה");
@@ -1069,11 +1068,32 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
     closeModal();
     recalcDerived();
     await commitAndSync();
-    if(removedTypes.includes("period")||removedTypes.includes("ketem")) showToast("בוטלה תחילת מחזור/כתם וכל ההשפעות עודכנו");
+    if(removedTypes.length>1) showToast("כל הסימונים הידניים של היום נוקו");
   };
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
 const MIN_DAYS_BETWEEN_PERIOD_STARTS=20;
+function getLatestManualMarkerDate(markerType,targetDate){
+  const target=startOfDay(targetDate);
+  const matches=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>!m.source&&m.type===markerType)
+      .map(()=>startOfDay(new Date(k))))
+    .filter(d=>d<=target)
+    .sort((a,b)=>a-b);
+  return matches.at(-1)||null;
+}
+function ketemBlockReason(date){
+  const dateKey=ymd(date);
+  if(hasMarkerOnDate(dateKey,"ketem")) return "כבר סומן כתם ביום זה. ניתן לסמן כתם פעם אחת ביום בלבד.";
+  const lastKetem=getLatestManualMarkerDate("ketem",date);
+  if(!lastKetem) return "";
+  const nextAllowed=addDays(lastKetem,minhagDays()-1);
+  if(startOfDay(date)<nextAllowed){
+    return `לא ניתן לסמן כתם נוסף עד ${ymd(nextAllowed)} (היום שבו ניתן לבצע הפסק טהרה).`;
+  }
+  return "";
+}
 function getLastPeriodStartBefore(date){
   const target=startOfDay(date);
   const periodStarts=[...dayEvents.entries()]
@@ -1099,6 +1119,13 @@ function openOnaPicker(date,type="period"){
           markerTitle="כתם";
           alert(`לא ניתן לסמן תחילת מחזור בפער של פחות מ-${MIN_DAYS_BETWEEN_PERIOD_STARTS} יום מתחילת המחזור הקודמת. האירוע נשמר ככתם.`);
         }
+      }
+    }
+    if(markerType==="ketem"){
+      const blockedReason=ketemBlockReason(date);
+      if(blockedReason){
+        alert(blockedReason);
+        return;
       }
     }
     el("onaOverlay").classList.add("hidden");
