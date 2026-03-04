@@ -1036,7 +1036,26 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
   el("btnEventA").onclick=async()=>{if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`);return;}closeModal();addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});recalcDerived();await commitAndSync();};
   el("btnEventB").onclick=()=>openOnaPicker(d,"period");
   el("btnEventC").onclick=()=>openOnaPicker(d,"ketem");
-  el("btnClear").onclick=async()=>{closeModal();dayEvents.delete(ymd(d));recalcDerived();await commitAndSync();};
+  el("btnClear").onclick=async()=>{
+    const day=normalizeDay(dayEvents.get(dateKey));
+    const removableTypes=new Set(["period","ketem","hefsek"]);
+    const removable=day.markers.filter(m=>!m.source&&removableTypes.has(m.type));
+    if(!removable.length){
+      closeModal();
+      showToast("אין פעולה ידנית לבטל ביום הזה");
+      return;
+    }
+    const lastManual=removable.at(-1);
+    const noteStore=getMarkerNotesStore();
+    delete noteStore[markerNoteKey(dateKey,lastManual)];
+    setMarkerNotesStore(noteStore);
+    day.markers=day.markers.filter(m=>m!==lastManual);
+    if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
+    else dayEvents.delete(dateKey);
+    closeModal();
+    recalcDerived();
+    await commitAndSync();
+  };
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
 const MIN_DAYS_BETWEEN_PERIOD_STARTS=20;
