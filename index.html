@@ -1045,11 +1045,10 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
       showToast("אין פעולה ידנית לבטל ביום הזה");
       return;
     }
-    const lastManual=removable.at(-1);
     const noteStore=getMarkerNotesStore();
-    delete noteStore[markerNoteKey(dateKey,lastManual)];
+    for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
     setMarkerNotesStore(noteStore);
-    day.markers=day.markers.filter(m=>m!==lastManual);
+    day.markers=day.markers.filter(m=>!removable.includes(m));
     if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
     else dayEvents.delete(dateKey);
     closeModal();
