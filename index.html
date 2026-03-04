@@ -447,6 +447,16 @@ function calculateGapKavuahByPeriod(periods){
   }
   return byPeriod;
 }
+function calculateMonthlyHebrewKavuahByPeriod(periods){
+  const byPeriod=new Array(periods.length).fill(false);
+  if(periods.length<3) return byPeriod;
+  const hebrewDays=periods.map(p=>getHebrewDateParts(p.date).day||null);
+  for(let i=2;i<periods.length;i++){
+    const day=hebrewDays[i];
+    if(day&&day===hebrewDays[i-1]&&day===hebrewDays[i-2]) byPeriod[i]=true;
+  }
+  return byPeriod;
+}
 function recalcDerived(){
   clearDerived();
   const periods=[],stains=[],hefseks=[];
@@ -456,18 +466,22 @@ function recalcDerived(){
   const prefs=getPrefs();
   const day30Mode=prefs.day30Mode||"ona",day31Mode=prefs.day31Mode||"ona";
   const activeGapByPeriod=calculateGapKavuahByPeriod(periods);
+  const monthlyHebrewKavuahByPeriod=calculateMonthlyHebrewKavuahByPeriod(periods);
   for(let i=0;i<periods.length;i++){
     const p=periods[i];
     const d30=addDays(p.date,29);
     const next=periods[i+1];
     const isBeforeNextPeriod=date=>!next||date<next.date;
     const activeGap=activeGapByPeriod[i];
+    const hasMonthlyHebrewKavuah=monthlyHebrewKavuahByPeriod[i];
     const vesetHachodeshDate=getVesetHachodeshDate(p.date);
-    if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"וסת החודש","auto-veset-hachodesh");
-    if(activeGap){
+    if(hasMonthlyHebrewKavuah){
+      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"קביעת וסת חודשי","auto-kavuah-hebrew-date");
+    }else if(activeGap){
       const kavuahDate=addDays(p.date,activeGap-1);
       if(isBeforeNextPeriod(kavuahDate)) addPrishaMarkers(kavuahDate,getPrishaOnotForMode(p.ona,day30Mode),`קביעת וסת ${activeGap} יום`,`auto-kavuah-gap-${activeGap}`);
     }else{
+      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"וסת החודש","auto-veset-hachodesh");
       if(isBeforeNextPeriod(d30)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
       if(prefs.orzarua!==false){
         const ozDate=p.ona==="day"?d30:addDays(d30,-1);
@@ -1045,6 +1059,7 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
       showToast("אין פעולה ידנית לבטל ביום הזה");
       return;
     }
+    const removedTypes=[...new Set(removable.map(m=>m.type))];
     const noteStore=getMarkerNotesStore();
     for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
     setMarkerNotesStore(noteStore);
@@ -1054,6 +1069,7 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
     closeModal();
     recalcDerived();
     await commitAndSync();
+    if(removedTypes.includes("period")||removedTypes.includes("ketem")) showToast("בוטלה תחילת מחזור/כתם וכל ההשפעות עודכנו");
   };
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
