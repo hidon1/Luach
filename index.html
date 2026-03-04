@@ -357,12 +357,12 @@ function mergeEventsMaps(localMap,remoteMap){
   }
   return merged;
 }
-async function loadRemoteEvents(uid){
+async function loadRemoteEvents(uid,{strategy="merge"}={}){
   const snap=await db.collection("users").doc(uid).get();
   if(!snap.exists) return;
   const data=snap.data()||{};
   const remoteEvents=data.events?new Map(Object.entries(data.events)):new Map();
-  dayEvents=mergeEventsMaps(dayEvents,remoteEvents);
+  dayEvents=strategy==="replace"?remoteEvents:mergeEventsMaps(dayEvents,remoteEvents);
   if(data.prefs){
     const localPrefs=getPrefs();
     const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};
@@ -392,7 +392,7 @@ function attachRealtimeSync(uid){
   remoteSyncUnsubscribe=db.collection("users").doc(uid).onSnapshot(async snap=>{
     if(!snap.exists) return;
     const previous=JSON.stringify(exportEvents());
-    await loadRemoteEvents(uid);
+    await loadRemoteEvents(uid,{strategy:"replace"});
     recalcDerived();
     const changed=previous!==JSON.stringify(exportEvents());
     if(changed){
