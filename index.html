@@ -6,419 +6,153 @@
   <title>לוח</title>
   <link rel="icon" type="image/png" href="logo.png" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@600;700;900&family=Heebo:wght@400;500;700;900&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,900;1,9..144,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@500;700;800&family=David+Libre:wght@500;700&display=swap');
     :root {
-      --bg:#f0e6fa;
-      --bg-2:#e8d4f5;
-      --bg-3:#fde8f4;
-      --card:#ffffffee;
-      --text:#1e1535;
-      --muted:#6b5a8a;
-      --line:#ddc8ee;
-      --accent:#b03080;
-      --accent-2:#7c2fd4;
-      --shadow:0 8px 32px rgba(140,50,110,.18), 0 2px 8px rgba(140,50,110,.08);
-      --shadow-card:0 4px 24px rgba(120,40,100,.12), 0 1px 4px rgba(120,40,100,.07);
-      --pink:#ffd0e2;
-      --green:#c2f0d2;
-      --warn:#fff5b0;
-      --radius:20px;
-      --radius-sm:14px;
-      --glow:0 0 0 3px rgba(176,48,128,.18);
+      --bg:#eedff8;
+      --bg-2:#f5d0ee;
+      --card:#ffffffde;
+      --text:#2a2042;
+      --muted:#6f628f;
+      --line:#e8d8eb;
+      --accent:#c64d88;
+      --shadow:0 10px 30px rgba(160,74,126,.15);
+      --pink:#ffc0d4;
+      --green:#beefd0;
+      --warn:#fff3a8;
     }
-    body.dark{
-      --bg:#160f22;--bg-2:#1f1430;--bg-3:#2a1828;
-      --card:#261a38ee;--text:#f0e4ff;--muted:#c4a8df;--line:#3e2a54;
-      --accent:#e06aae;--accent-2:#a060ee;
-      --shadow:0 12px 40px rgba(0,0,0,.5);--shadow-card:0 4px 20px rgba(0,0,0,.3);
-      --pink:#4a2840;--green:#1e3d2a;--warn:#3d3516;
-    }
+    body.dark{--bg:#1e1527;--bg-2:#2d1c36;--card:#2c2036e6;--text:#f6eaff;--muted:#ceb5da;--line:#4d395b;--accent:#e67db1;--shadow:0 12px 30px rgba(0,0,0,.35);--pink:#473040;--green:#30483a;--warn:#4b432d}
     *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:"Heebo","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;
-      font-weight:500;
-      letter-spacing:.01em;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      text-rendering:geometricPrecision;
-      color:var(--text);
-      background:var(--bg);
-      min-height:100vh;
-      position:relative;
-      overflow-x:hidden;
-    }
-
-    /* Mesh gradient background */
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:-2;
-      background:
-        radial-gradient(ellipse 70% 60% at 15% 10%, rgba(200,100,220,.22) 0%, transparent 70%),
-        radial-gradient(ellipse 55% 50% at 85% 5%, rgba(240,150,200,.18) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 70% at 90% 90%, rgba(160,60,200,.15) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 5% 85%, rgba(220,100,180,.12) 0%, transparent 65%),
-        linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
-    }
-    /* Subtle animated grain/stripe */
-    body::after{
-      content:"";
-      position:fixed;
-      inset:-200px;
-      pointer-events:none;
-      background:repeating-linear-gradient(
-        118deg,
-        transparent 0 28px,
-        rgba(180,60,140,.055) 28px 30px,
-        transparent 30px 58px
-      );
-      animation:bgMove 18s linear infinite;
-      opacity:.7;
-      z-index:-1;
-      will-change:transform;
-    }
+    body{margin:0;font-family:"Assistant","Noto Sans Hebrew","Segoe UI","Arial",sans-serif;font-weight:750;letter-spacing:.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;color:var(--text);background:linear-gradient(160deg,var(--bg),var(--bg-2));min-height:100vh;position:relative;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:-140px;pointer-events:none;background:repeating-linear-gradient(120deg,transparent 0 22px,rgba(210,80,160,.13) 22px 24px,transparent 24px 46px);animation:bgMove 14s linear infinite;opacity:1;z-index:-1;will-change:transform}
     .hidden{display:none!important}
     .topbar{position:relative;z-index:30;padding:6px 16px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:transparent;border-bottom:none}
     .brand{display:flex;align-items:flex-start;justify-content:center;gap:16px;justify-self:center;grid-column:1/-1;padding:0 8px;width:fit-content;max-width:100%;margin-inline:auto;margin-top:28px}
     .logo{width:min(684px,68vw);height:auto;max-height:214px;max-width:100%;object-fit:contain;object-position:center top;background:transparent;border:none;box-shadow:none;display:block;pointer-events:none;margin-top:-8px}
     .brand-title-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-    .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"Noto Serif Hebrew","Assistant",serif;font-weight:900;line-height:1;letter-spacing:.01em;color:#8035a0;text-shadow:0 2px 14px rgba(120,40,160,.25),0 1px 0 rgba(255,255,255,.5)}
+    .brand-title{margin:0;font-size:clamp(2.15rem,4.8vw,3.35rem);font-family:"David Libre","Assistant","Noto Sans Hebrew",serif;font-weight:700;line-height:1;letter-spacing:.01em;color:#8d6a9c;text-shadow:0 2px 10px rgba(87,49,110,.2)}
     .brand-subtitle{margin:0;font-size:1.05rem;font-weight:900;color:#5f1648;text-shadow:0 2px 10px rgba(255,255,255,.45)}
-
-    /* Menu button - glassmorphism style */
-    .menu-btn{
-      justify-self:end;position:fixed;right:16px;top:10px;z-index:60;
-      font-size:1.45rem;padding:11px 17px;border-radius:18px;
-      background:rgba(255,255,255,0.75);
-      backdrop-filter:blur(16px) saturate(180%);
-      -webkit-backdrop-filter:blur(16px) saturate(180%);
-      color:#2d1d49;border:1px solid rgba(255,255,255,0.9);
-      box-shadow:0 4px 20px rgba(100,40,150,.2), inset 0 1px 0 rgba(255,255,255,.8);
-      font-weight:900;transition:all .25s cubic-bezier(.34,1.56,.64,1);
-    }
-    .menu-btn:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 10px 28px rgba(100,40,150,.28),inset 0 1px 0 rgba(255,255,255,.8)}
-
-    /* Today panel - glass card */
-    .today-panel{
-      justify-self:start;position:fixed;left:16px;top:52px;z-index:58;
-      min-width:210px;max-width:224px;padding:14px 12px;border-radius:22px;
-      background:rgba(255,255,255,0.72);
-      backdrop-filter:blur(20px) saturate(160%);
-      -webkit-backdrop-filter:blur(20px) saturate(160%);
-      border:1px solid rgba(255,255,255,0.85);
-      box-shadow:0 8px 32px rgba(100,40,140,.15), inset 0 1px 0 rgba(255,255,255,.7);
-      cursor:pointer;
-      transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
-    }
-    .today-panel:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(80,20,120,.22), inset 0 1px 0 rgba(255,255,255,.7)}
-
-    .today-head{display:flex;justify-content:space-between;font-weight:800;align-items:center}
-    .clock{
-      font-size:1.05rem;font-weight:900;color:#fff;
-      background:linear-gradient(135deg,#7023a0,var(--accent));
-      padding:5px 11px;border-radius:999px;letter-spacing:.06em;
-      box-shadow:0 4px 14px rgba(110,30,130,.35);
-      animation:pulseClock 2.5s ease-in-out infinite;
-    }
-    @keyframes pulseClock{
-      0%,100%{box-shadow:0 4px 14px rgba(110,30,130,.35)}
-      50%{box-shadow:0 4px 22px rgba(110,30,130,.6), 0 0 0 5px rgba(176,48,128,.12)}
-    }
-    .small{font-size:.82rem;color:var(--muted);font-weight:700}
+    .menu-btn{justify-self:end;position:fixed;right:16px;top:10px;z-index:60;font-size:1.45rem;padding:11px 17px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f7f4ff);color:#2d1d49;border:1px solid #d7c7eb;box-shadow:0 6px 18px rgba(70,36,105,.18);font-weight:900}
+    .menu-btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(70,36,105,.22)}
+    .today-panel{justify-self:start;position:fixed;left:16px;top:52px;z-index:58;min-width:204px;max-width:218px;padding:12px 10px;border-radius:20px;background:linear-gradient(180deg,#fff,#f0fff6);border:1px solid #cdeedb;box-shadow:var(--shadow);cursor:pointer;transition:.2s}
+    .today-panel:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,83,61,.2)}
+    .today-head{display:flex;justify-content:space-between;font-weight:800}.clock{font-size:1.1rem;font-weight:900;color:#fff;background:linear-gradient(145deg,#6a2a58,var(--accent));padding:6px 12px;border-radius:999px;letter-spacing:.04em;box-shadow:0 5px 14px rgba(110,44,90,.28)}.small{font-size:.82rem;color:#4d406f;font-weight:700}
     .chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-    .chip{padding:4px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);background:rgba(255,255,255,.8);backdrop-filter:blur(8px);font-weight:700}
-    .container{max-width:1100px;margin:8px auto 0;padding:0 14px 30px;display:grid;gap:14px;position:relative;z-index:40}
-
-    /* Cards - glassmorphism */
-    .card{
-      background:rgba(255,255,255,0.6);
-      backdrop-filter:blur(18px) saturate(150%);
-      -webkit-backdrop-filter:blur(18px) saturate(150%);
-      border:1px solid rgba(255,255,255,0.75);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow-card);
-      animation:cardIn .55s cubic-bezier(.22,1,.36,1) both;
-    }
-    body.dark .card{
-      background:rgba(38,26,60,0.75);
-      border:1px solid rgba(255,255,255,0.08);
-    }
-    @keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:14px}.month-scroll-hint{display:none}
-    .monthTitle{
-      font-weight:900;min-width:280px;text-align:center;padding:14px 22px;
-      border-radius:var(--radius-sm);
-      background:linear-gradient(135deg,#9c2a7a 0%,#6020b0 60%,#4e1a8a 100%);
-      border:1px solid rgba(255,255,255,.18);
-      color:#fff;
-      box-shadow:0 6px 0 #4a1060,0 12px 32px rgba(100,20,140,.35),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(0,0,0,.1);
-      text-shadow:0 2px 8px rgba(30,8,50,.5);
-      cursor:pointer;position:relative;
-      font-family:"Noto Serif Hebrew",serif;
-      letter-spacing:.02em;
-      transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
-      overflow:hidden;
-    }
-    /* shimmer sweep */
-    .monthTitle::after{
-      content:"";position:absolute;inset:0;border-radius:inherit;
-      background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);
-      background-size:200% 100%;
-      animation:shimmer 3.5s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .monthTitle:hover{transform:translateY(-2px);box-shadow:0 8px 0 #4a1060,0 18px 38px rgba(100,20,140,.4),inset 0 1px 0 rgba(255,255,255,.25)}
-
-    .month-picker-backdrop{position:fixed;inset:0;z-index:9998;background:rgba(20,8,40,.25);backdrop-filter:blur(2px)}
-    .month-picker{position:fixed;left:50%;transform:translateX(-50%);width:min(360px,92vw);max-height:60vh;overflow-y:auto;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(200,160,240,.5);border-radius:16px;box-shadow:0 20px 60px rgba(80,20,140,.4);padding:8px;display:grid;gap:6px;z-index:9999;}
-    .month-picker-item{width:100%;text-align:right;border:1px solid rgba(200,160,240,.4);border-radius:10px;padding:9px 10px;background:rgba(255,255,255,.6);color:#3a1757;font-weight:800;transition:.15s}
-    .month-picker-item:hover{background:rgba(240,200,255,.7);transform:translateX(-2px)}
-    .month-picker-item.active{background:linear-gradient(135deg,#6020b0,#4e1a8a);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(80,20,160,.3)}
-
-    .btn{
-      border:1px solid rgba(210,180,240,.5);
-      background:rgba(255,255,255,0.7);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      border-radius:var(--radius-sm);
-      padding:9px 14px;font-weight:800;cursor:pointer;color:#23193a;
-      transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, background .2s;
-      box-shadow:0 2px 8px rgba(100,40,140,.1), inset 0 1px 0 rgba(255,255,255,.8);
-    }
-    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(100,40,140,.2), inset 0 1px 0 rgba(255,255,255,.8)}
+    .chip{padding:4px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);background:#fff}
+    .container{max-width:1100px;margin:8px auto 0;padding:0 14px 30px;display:grid;gap:12px;position:relative;z-index:40}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.month-scroll-hint{display:none}
+    .monthTitle{font-weight:900;min-width:280px;text-align:center;padding:13px 18px;border-radius:18px;background:linear-gradient(140deg,#f6c7ff,#8f327f 74%);border:1px solid #742869;color:#fff;box-shadow:0 6px 0 #6a1e5b,0 14px 28px rgba(109,30,103,.28),inset 0 2px 8px rgba(255,255,255,.3);text-shadow:0 2px 7px rgba(69,15,80,.45);cursor:pointer;position:relative}
+    .month-picker{position:absolute;top:100%;left:50%;transform:translate(-50%,10px);width:min(360px,92vw);max-height:300px;overflow-y:auto;background:linear-gradient(180deg,#fff,#f6ecff);border:1px solid #cba7ea;border-radius:14px;box-shadow:0 16px 30px rgba(75,27,107,.28);padding:8px;display:grid;gap:6px;z-index:55}
+    .month-picker-item{width:100%;text-align:right;border:1px solid #d8bee9;border-radius:10px;padding:9px 10px;background:#fff;color:#3a1757;font-weight:800}
+    .month-picker-item:hover{background:#f3e3ff}
+    .month-picker-item.active{background:#5d2a84;color:#fff;border-color:#5d2a84}
+    .btn{border:1px solid var(--line);background:#ffffffd9;border-radius:14px;padding:9px 12px;font-weight:800;cursor:pointer;color:#23193a;transition:.2s}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(103,48,130,.15)}
     .controls{flex-wrap:wrap}
     .month-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%;position:relative}
     .month-extra{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
-    .btn-toggle-active{background:linear-gradient(135deg,#40266a,#2a1648);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(50,20,100,.35)}
+    .btn-toggle-active{background:#311b52;color:#fff;border-color:#311b52}
     .continuous-wrap{display:none;padding:12px}
     .continuous-wrap.active{display:block}
-    .continuous-track{display:flex;flex-direction:column;gap:14px;padding:4px}
-    .continuous-month{border:1px solid rgba(210,180,240,.4);border-radius:18px;background:rgba(255,255,255,.5);backdrop-filter:blur(12px);padding:14px}
-    .continuous-month-title{font-weight:900;text-align:center;margin-bottom:10px;color:#2f1f48;font-family:"Noto Serif Hebrew",serif}
-    .btn-primary{background:linear-gradient(135deg,var(--accent),#7a1850);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(160,40,100,.35)}
-    .btn-primary:hover{box-shadow:0 8px 24px rgba(160,40,100,.45)}
-
-    .calendar{padding:20px 14px 14px}
+    .continuous-track{display:flex;flex-direction:column;gap:12px;padding:4px}
+    .continuous-month{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}
+    .continuous-month-title{font-weight:900;text-align:center;margin-bottom:10px;color:#2f1f48}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
+    .calendar{padding:18px 12px 12px}
     .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-    .dow{margin-bottom:10px}
-    .dow div{
-      text-align:center;padding:10px 6px;
-      border:1px solid rgba(200,170,230,.35);
-      border-radius:12px;
-      font-size:.88rem;color:var(--muted);font-weight:800;
-      white-space:nowrap;overflow:visible;line-height:1.2;
-      background:rgba(255,255,255,.45);
-      backdrop-filter:blur(8px);
-    }
-
-    /* Calendar cells */
-    .cell{
-      min-height:110px;padding:6px;border-radius:16px;
-      border:1px solid rgba(210,180,235,.4);
-      background:rgba(253,248,252,.6);
-      cursor:pointer;
-      transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border-color .2s;
-      position:relative;overflow:hidden;
-      display:flex;flex-direction:column;gap:2px;
-    }
-    .cell::before{
-      content:"";position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,.6) 0%,transparent 60%);
-      pointer-events:none;border-radius:inherit;
-      opacity:.6;
-    }
-    .cell:hover{
-      transform:translateY(-4px) scale(1.028);
-      box-shadow:0 16px 36px rgba(140,50,110,.2), 0 4px 10px rgba(140,50,110,.1);
-      border-color:rgba(176,48,128,.35);
-      z-index:2;
-    }
-    .muted{opacity:.42}
-    .today{
-      outline:2px solid var(--accent);
-      outline-offset:1px;
-      box-shadow:0 0 0 4px rgba(176,48,128,.12), var(--shadow-card);
-    }
-    .today .greg,.today .hebrew{font-weight:900;color:#8a1850}
-    .phase-period{background:linear-gradient(135deg,rgba(255,190,210,.75),rgba(255,160,190,.6))}
-    .phase-wait{background:rgba(255,255,255,.7)}
-    .phase-clean{background:linear-gradient(135deg,rgba(160,240,185,.7),rgba(130,220,160,.55))}
-    .phase-mikveh{background:linear-gradient(135deg,rgba(160,230,248,.75),rgba(120,200,235,.6))}
-    .phase-prisha{background:linear-gradient(135deg,rgba(255,243,150,.75),rgba(255,230,100,.6))}
+    .dow{margin-bottom:10px}.dow div{text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);font-weight:800;white-space:nowrap;overflow:visible;line-height:1.2}
+    .cell{height:120px;padding:6px;border-radius:14px;border:1px solid var(--line);background:#fdf8f0;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s,filter .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px}
+    .cell:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 18px rgba(102,44,110,.2);border-color:#be8ecf;filter:saturate(1.08)}
+    .muted{opacity:.45}
+    .today{outline:2px solid var(--accent)}
+    .today .greg,.today .hebrew{font-weight:900;color:#9a205f}
+    .phase-period{background:linear-gradient(160deg,#ffe4f0 0%,#ffd1e5 55%,#f8bbd7 100%)}
+    .phase-wait{background:linear-gradient(160deg,#ffffff 0%,#f7f4ff 60%,#efe8fb 100%)}
+    .phase-clean{background:linear-gradient(160deg,#d7f8df 0%,#bff1cb 55%,#9be6af 100%)}
+    .phase-mikveh{background:linear-gradient(160deg,#d8f6ff 0%,#b9ebfb 55%,#98dbf2 100%)}
+    .phase-prisha{background:linear-gradient(160deg,#fff8cc 0%,#fff0b1 58%,#ffe285 100%)}
     .date-line{display:flex;align-items:center;justify-content:space-between;gap:6px;white-space:nowrap}
     .greg{font-size:.95rem;font-weight:900;margin-bottom:0;line-height:1.1;display:flex;align-items:center;gap:4px;white-space:nowrap}
-    .greg-g{font-size:.67rem;color:#5c496f;font-weight:800}
+    .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
     .hebrew{font-size:.76rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
     .sunset{font-size:.7rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
-    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:2px;min-height:0;overflow:visible;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid rgba(220,190,240,.5);background:rgba(255,255,255,.55);}
+    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:3px;min-height:0;max-height:40px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
     .badges:empty{display:none}
-    .badge{
-      display:inline-flex;align-items:center;gap:1px;
-      padding:1px 5px;border-radius:999px;font-size:.6rem;
-      background:rgba(255,255,255,.85);
-      border:1px solid rgba(210,180,235,.5);
-      cursor:pointer;font-weight:900;color:#2a163f;
-      white-space:normal;word-break:break-word;overflow-wrap:anywhere;
-      line-height:1.25;flex:1 1 auto;max-width:100%;
-      transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .15s;
-      box-shadow:0 1px 3px rgba(100,40,120,.1);
-    }
-    .badge:hover{transform:scale(1.06);box-shadow:0 3px 10px rgba(100,40,120,.2)}
+    .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.66rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 1 auto}
     .badge-text{display:inline}
-    .badge-note-dot{width:5px;height:5px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22);flex-shrink:0}
-    .badge.period,.badge.ketem{background:linear-gradient(135deg,rgba(255,214,232,.9),rgba(255,175,208,.75));border-color:rgba(255,150,190,.5)}
-    .badge.hefsek{background:linear-gradient(135deg,rgba(210,255,225,.9),rgba(170,245,195,.75));border-color:rgba(120,210,155,.5)}
-    .badge.mikveh{background:linear-gradient(135deg,rgba(200,240,255,.9),rgba(160,220,245,.75));border-color:rgba(100,190,230,.5)}
-    .badge.prisha{background:linear-gradient(135deg,rgba(255,248,180,.9),rgba(255,230,100,.75));border-color:rgba(220,190,60,.5)}
-    .badge.orzarua{background:linear-gradient(135deg,rgba(255,238,215,.9),rgba(255,210,160,.75));border-color:rgba(220,170,100,.5)}
-    .badge.hefsekReady{background:linear-gradient(135deg,rgba(210,255,220,.9),rgba(170,245,185,.75));border-color:rgba(100,200,130,.5)}
+    .badge-note-dot{width:6px;height:6px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22)}
+    .badge.period,.badge.ketem{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
     .ona-icon{display:inline-flex;align-items:center;justify-content:center;font-weight:900;line-height:1;margin-inline:0;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;filter:drop-shadow(0 1px 1px rgba(60,20,70,.35));font-size:.62em;transform:translateY(-.5px)}
     .ona-icon.sun{color:#ffb300;text-shadow:0 0 6px rgba(255,189,0,.55),0 1px 2px rgba(120,66,0,.35)}
     .ona-icon.moon{color:#2a2450;text-shadow:0 0 6px rgba(128,116,193,.45),0 1px 2px rgba(20,14,45,.35)}
-    .greg,.hebrew,.sunset,.badge,.monthTitle,.btn,.dow div,.small,.switch,.timeline-item,.modal-title,.ona-title,footer,a{font-weight:800;letter-spacing:.015em}
-    .time-input{padding:10px 14px;border:1px solid rgba(210,170,240,.5);border-radius:999px;background:rgba(255,255,255,.8);backdrop-filter:blur(8px);font-weight:800;color:#24183c;min-width:140px;box-shadow:inset 0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(180,90,155,.1)}
-
-    .switch.reminder-card{display:block;background:linear-gradient(150deg,rgba(255,246,253,.9),rgba(255,232,245,.8));border:1px solid rgba(240,185,215,.5);border-radius:var(--radius-sm);padding:10px;backdrop-filter:blur(10px)}
+    .greg,.hebrew,.sunset,.badge,.monthTitle,.btn,.dow div,.small,.switch,.timeline-item,.modal-title,.ona-title,footer,a{font-weight:900;letter-spacing:.015em;-webkit-text-stroke:.2px rgba(36,16,58,.28);text-shadow:0 1px 0 rgba(255,255,255,.35)}
+    body.dark .greg,body.dark .hebrew,body.dark .sunset,body.dark .badge,body.dark .monthTitle,body.dark .btn,body.dark .dow div,body.dark .small,body.dark .switch,body.dark .timeline-item,body.dark .modal-title,body.dark .ona-title,body.dark footer,body.dark a{-webkit-text-stroke:.2px rgba(255,236,255,.18);text-shadow:0 1px 0 rgba(0,0,0,.45)}
+    .time-input{padding:10px 14px;border:1px solid #d8b4f1;border-radius:999px;background:linear-gradient(120deg,#fff,#ffeefe);font-weight:800;color:#24183c;min-width:140px;box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(182,90,155,.12)}
+    .switch.reminder-card{display:block;background:linear-gradient(150deg,#fff6fd,#ffe8f5);border:1px solid #f1bdd9;border-radius:14px;padding:10px}
     .reminder-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
     .reminder-grid .switch{margin:0}
-    .manual-reminder-card{display:grid;gap:8px;background:linear-gradient(150deg,rgba(245,251,255,.9),rgba(232,243,255,.8));border:1px solid rgba(185,215,247,.5);border-radius:var(--radius-sm);padding:10px;backdrop-filter:blur(10px)}
+    .manual-reminder-card{display:grid;gap:8px;background:linear-gradient(150deg,#f5fbff,#e8f3ff);border:1px solid #b9d7f7;border-radius:14px;padding:10px}
     .manual-reminder-grid{display:grid;grid-template-columns:1fr;gap:8px}
     .manual-reminder-grid .switch{margin:0}
-    .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(220,200,230,.4);margin-bottom:4px}
-    .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(210,190,220,.6)}
+    .day-halves{display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:10px;overflow:hidden;border:1px solid #eaddea;margin-bottom:4px}
+    .day-halves::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d7c6de}
     .half{padding:1px 2px;min-height:14px;font-size:.5rem;display:flex;gap:2px;align-items:center;justify-content:center}
     .half-night{background:rgba(142,119,161,.08)}
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
     .half-empty{opacity:.45;color:#7a6b91}
-
-    /* Drawer - glass panel */
-    .drawer-backdrop{position:fixed;inset:0;background:rgba(20,8,40,.45);backdrop-filter:blur(4px);z-index:40}
-    .drawer{
-      position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;
-      background:rgba(250,240,255,.88);
-      backdrop-filter:blur(28px) saturate(160%);
-      -webkit-backdrop-filter:blur(28px) saturate(160%);
-      border-left:1px solid rgba(200,160,240,.5);
-      padding:18px;display:grid;gap:12px;align-content:start;
-      box-shadow:-20px 0 60px rgba(100,30,160,.2);
-      overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;
-    }
-    .drawer.hidden{display:none!important}
-    body.dark .drawer{background:rgba(35,22,50,.9);border-left-color:rgba(140,80,200,.3)}
-
-    .switch{
-      display:flex;justify-content:space-between;align-items:center;
-      padding:11px 14px;border-radius:var(--radius-sm);
-      border:1px solid rgba(210,180,240,.4);
-      background:rgba(255,255,255,.65);
-      backdrop-filter:blur(8px);
-      gap:8px;
-      box-shadow:0 1px 6px rgba(130,70,200,.07),inset 0 1px 0 rgba(255,255,255,.7);
-      font-weight:800;color:#31154e;
-    }
-    .switch-feature{background:rgba(252,245,255,.75);border:1px solid rgba(200,160,235,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 14px rgba(130,70,200,.1)}
+    .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+    body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
+    .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08);font-weight:800;color:#31154e}
+    .switch-feature{background:linear-gradient(145deg,#fff,#f7ecff);border:1px solid #c9a6ea;box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(130,70,200,.12)}
     .switch-feature span{font-weight:900;color:#3c1d58}
-    .ona-modal{background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(244,231,255,.88));border:1px solid rgba(220,193,245,.6);backdrop-filter:blur(20px)}
+    .ona-modal{background:linear-gradient(160deg,#fff,#f4e7ff);border:1px solid #dcc1f5}
     .ona-title{font-size:1.08rem;font-weight:900;color:#401562;margin-bottom:6px}
     .ona-actions .btn{min-width:96px}
 
-    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:54px;height:28px;border-radius:999px;background:rgba(180,190,210,.6);position:relative;cursor:pointer;transition:background .22s ease;overflow:hidden;border:1px solid rgba(150,160,180,.3)}
-    .switch input[type="checkbox"]::after{content:"";position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .22s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 6px rgba(0,0,0,.2)}
-    .switch input[type="checkbox"]:checked{background:linear-gradient(135deg,#6040e0,#4020b0)}
+    .switch input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:56px;height:30px;border-radius:999px;background:#b8bfd3;position:relative;cursor:pointer;transition:background .2s ease;overflow:hidden}
+    .switch input[type="checkbox"]::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+    .switch input[type="checkbox"]:checked{background:#2f8cff}
     .switch input[type="checkbox"]:checked::after{transform:translateX(-26px)}
-    .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(180,130,220,.3);padding-bottom:12px;margin-bottom:2px}
-    .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em;font-family:"Noto Serif Hebrew",serif}
+    .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
+    .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
-
-    .menu-group{
-      border:1px solid rgba(215,185,242,.4);border-radius:18px;
-      background:rgba(255,255,255,.5);
-      backdrop-filter:blur(12px);
-      overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr);
-      max-height:min(46dvh,430px);
-      box-shadow:0 6px 18px rgba(120,58,170,.08),inset 0 1px 0 rgba(255,255,255,.6);
-    }
-    .menu-group summary{
-      cursor:pointer;list-style:none;padding:13px 14px;font-weight:900;color:#3a1757;
-      display:flex;justify-content:space-between;align-items:center;
-      background:rgba(255,255,255,.6);
-      border-bottom:1px solid rgba(215,185,242,.3);
-    }
+    .menu-group{border:1px solid #d9b9f2;border-radius:16px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr);max-height:min(46dvh,430px);box-shadow:0 8px 18px rgba(121,58,173,.1)}
+    .menu-group summary{cursor:pointer;list-style:none;padding:13px 14px;font-weight:900;color:#3a1757;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(120deg,#fff,#f4dcff);border-bottom:1px solid #e3caef}
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary{position:relative}
-    .menu-group summary::before{
-      content:"❯";width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;
-      border-radius:999px;
-      background:rgba(255,255,255,.8);
-      border:1px solid rgba(210,180,240,.5);
-      color:#6a2896;
-      box-shadow:0 2px 6px rgba(100,40,160,.12),inset 0 1px 0 rgba(255,255,255,.8);
-      font-size:.88rem;transform:rotate(0deg);
-      transition:transform .22s ease,background .2s ease;flex-shrink:0;
-    }
-    .menu-group[open] summary::before{transform:rotate(90deg);background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(235,210,255,.8))}
+    .menu-group summary::before{content:"❯";width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(145deg,#fff,#ecd4ff);border:1px solid #d5b1ef;color:#6a2896;box-shadow:inset 0 1px 0 #fff;font-size:.88rem;transform:rotate(0deg);transition:transform .22s ease,background .2s ease;flex-shrink:0}
+    .menu-group[open] summary::before{transform:rotate(90deg);background:linear-gradient(145deg,#fdf6ff,#ebd2ff)}
     .menu-group-content{padding:10px;display:grid;gap:8px;max-height:calc(min(46dvh,430px) - 58px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#c47edf #f4e6ff}
-    .menu-group-content::-webkit-scrollbar{width:8px}
-    .menu-group-content::-webkit-scrollbar-track{background:rgba(240,220,255,.4);border-radius:999px}
-    .menu-group-content::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#d195ef,#b766df);border-radius:999px;border:2px solid transparent;background-clip:padding-box}
-
-    /* Modal */
-    .modal-overlay{
-      position:fixed;inset:0;
-      background:rgba(30,12,55,.4);
-      backdrop-filter:blur(8px) saturate(140%);
-      -webkit-backdrop-filter:blur(8px) saturate(140%);
-      display:grid;place-items:center;align-items:center;justify-items:center;
-      z-index:60;padding:12px;
-    }
-    .modal{
-      width:min(560px,95vw);padding:18px;border-radius:24px;
-      background:rgba(255,255,255,.85);
-      backdrop-filter:blur(24px) saturate(160%);
-      -webkit-backdrop-filter:blur(24px) saturate(160%);
-      border:1px solid rgba(255,255,255,.9);
-      box-shadow:0 24px 70px rgba(70,20,120,.3), inset 0 1px 0 rgba(255,255,255,.8);
-      animation:modalIn .32s cubic-bezier(.22,1,.36,1) both;
-    }
-    @keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .menu-group-content::-webkit-scrollbar{width:10px}
+    .menu-group-content::-webkit-scrollbar-track{background:#f4e6ff;border-radius:999px}
+    .menu-group-content::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#d195ef,#b766df);border-radius:999px;border:2px solid #f4e6ff}
+    .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
+    .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    .modal-title{font-size:1.2rem;font-weight:900;color:#41125e;font-family:"Noto Serif Hebrew",serif}
-    #btnEventA{background:rgba(255,255,255,.8);color:#23193a}
-    #btnEventB{background:linear-gradient(135deg,var(--accent),#7a1850);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(160,40,100,.35)}
-    .auth-form{display:grid;gap:8px;margin-top:10px}.auth-google-row{display:grid;margin-top:10px}.btn-google{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border:1px solid rgba(200,210,240,.5);color:#23335f;font-weight:900}.btn-google .g-icon{font-size:1rem;line-height:1}.auth-status{overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
-    input,select{padding:8px;border-radius:12px;border:1px solid rgba(200,170,230,.5);background:rgba(255,255,255,.75);backdrop-filter:blur(8px)}
-    .drawer select,#day30Mode,#day31Mode,#minhagSelect,#timelineFilter{appearance:none;-webkit-appearance:none;border-radius:14px;padding:10px 40px 10px 14px;background-image:linear-gradient(120deg,rgba(255,255,255,.85),rgba(246,235,255,.8)),url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%2362338f"><path d="M5.6 7.1 10 11.5l4.4-4.4 1.4 1.4-5.8 5.8-5.8-5.8z"/></svg>');background-repeat:no-repeat,no-repeat;background-size:auto,18px;background-position:center,calc(100% - 12px) center;border:1px solid rgba(210,180,240,.5);font-weight:900;color:#34174f;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 10px rgba(130,70,200,.1)}
-    .toast{
-      position:fixed;left:16px;bottom:16px;padding:12px 16px;border-radius:14px;
-      background:rgba(40,20,60,.85);backdrop-filter:blur(16px);
-      border:1px solid rgba(200,160,255,.2);
-      color:#f4e8ff;font-weight:800;font-size:.92rem;
-      box-shadow:0 8px 28px rgba(0,0,0,.3);
-      animation:toastIn .28s cubic-bezier(.22,1,.36,1) both;
-    }
-    @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,rgba(230,255,241,.9),rgba(190,240,215,.8));backdrop-filter:blur(8px);border:1px solid rgba(120,210,160,.4);color:#14643a;font-weight:800;font-size:.9rem;box-shadow:0 4px 14px rgba(30,120,70,.12)}
-    .timeline-toolbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,.6);backdrop-filter:blur(10px);border:1px solid rgba(220,200,245,.4);margin-top:10px;font-weight:900;color:#3b1956}
+    .modal-title{font-size:1.2rem;font-weight:900;color:#41125e}
+    #btnEventA{background:#fff;color:#23193a}
+    #btnEventB{background:linear-gradient(135deg,var(--accent),#8b2060);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(180,50,120,.3)}
+    .auth-form{display:grid;gap:8px;margin-top:10px}.auth-google-row{display:grid;margin-top:10px}.btn-google{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#fff,#f4f7ff);border:1px solid #c9d5ff;color:#23335f;font-weight:900}.btn-google .g-icon{font-size:1rem;line-height:1}.auth-status{overflow-wrap:anywhere;word-break:break-word;line-height:1.35}input,select{padding:8px;border-radius:12px;border:1px solid var(--line)}
+    .drawer select,#day30Mode,#day31Mode,#minhagSelect,#timelineFilter{appearance:none;-webkit-appearance:none;border-radius:14px;padding:10px 40px 10px 14px;background-image:linear-gradient(120deg,#fff,#f6ebff),url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%2362338f"><path d="M5.6 7.1 10 11.5l4.4-4.4 1.4 1.4-5.8 5.8-5.8-5.8z"/></svg>');background-repeat:no-repeat,no-repeat;background-size:auto,18px;background-position:center,calc(100% - 12px) center;border:1px solid #d4b8f0;font-weight:900;color:#34174f;box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(130,70,200,.1)}
+    .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+    .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
+    .timeline-toolbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(145deg,#fff,#f4e9ff);border:1px solid #ddc3f5;margin-top:10px;font-weight:900;color:#3b1956}
     .timeline-list{display:grid;gap:8px;margin-top:12px;max-height:52vh;overflow:auto;padding-inline-end:4px}
-    .timeline-item{padding:10px;border-radius:12px;background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border:1px solid rgba(220,205,240,.4);display:grid;gap:4px}
+    .timeline-item{padding:10px;border-radius:12px;background:#fff;border:1px solid #ead5f5;display:grid;gap:4px}
     .timeline-item small{color:#5b2f74;font-weight:700}
-    .day-notes-box{margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(220,205,240,.4);background:rgba(255,248,255,.7);display:grid;gap:6px;backdrop-filter:blur(8px)}
+    .day-notes-box{margin-top:10px;padding:10px;border-radius:12px;border:1px solid #ead5f5;background:#fff8ff;display:grid;gap:6px}
     .day-notes-list{margin:0;padding-right:16px;display:grid;gap:4px}
     .day-notes-list li{font-size:.88rem;color:#3f2a54}
     .notes-list{margin:0;padding-right:16px;display:grid;gap:6px}
     .notes-list li{font-size:.88rem;color:#3f2a54}
     .noise-effect-label{font-size:1.08em;font-weight:900}
     .note-editor{display:grid;gap:10px;margin-top:10px}
-    .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid rgba(220,185,240,.5);padding:10px;font-family:inherit;background:rgba(255,255,255,.8);backdrop-filter:blur(8px)}
-    body.dark .today-banner{background:linear-gradient(120deg,rgba(91,48,71,.8),rgba(76,32,56,.8));color:#ffd7e8;border-color:rgba(127,73,100,.5)}
-    @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(100px)}}
+    .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
+    body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
+    @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1280px) and (min-width:721px){.brand{width:100%;max-width:100%;display:flex;justify-content:center;align-items:center;justify-self:center;margin-top:18px;padding:0}.logo{width:min(560px,74vw);height:auto;max-height:132px;object-fit:contain;object-position:center center;margin-inline:auto;margin-top:-10px}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
     @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{height:84px;padding:4px}.greg{font-size:.84rem}.greg-g{font-size:.6rem}.hebrew{font-size:.66rem}.sunset{font-size:.6rem}.badge{font-size:.6rem;padding:1px 6px}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
@@ -430,14 +164,16 @@
       .calendar{padding:8px 6px}
       .dow,.grid{gap:3px}
       .dow div{padding:7px 2px;font-size:.64rem}
-      .cell{min-height:100px;padding:4px 2px;border-radius:12px}
+      .cell{height:112px;padding:4px 2px;border-radius:10px}
       .date-line{gap:3px;justify-content:flex-start}
       .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
-      .badges{padding:2px 2px 1px;gap:2px;overflow:visible}
-      .badge{font-size:.44rem;padding:1px 3px;line-height:1.2;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto}
+      .badges{padding:2px 2px 1px;gap:2px;max-height:42px}
+      .badge{font-size:.44rem;padding:1px 3px;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
       .cell{overflow:visible}
+      .badges{max-height:none;overflow:visible}
+      .badges .badge{background:transparent;border:none;border-radius:0;padding:0 0 2px;display:block;width:100%;font-size:.5rem}
       .badge-note-dot{width:5px;height:5px}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
       .brand{gap:6px;justify-self:center;align-items:center;margin-top:2px;margin-bottom:6px;width:100%}
@@ -445,10 +181,10 @@
       .month-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px;width:100%}
       .month-nav #toggleContinuous{grid-column:1/-1;justify-self:center;font-size:.76rem;padding:6px 10px;border-radius:10px}
       .month-nav #prevMonth,.month-nav #nextMonth{font-size:.74rem;padding:7px 8px;white-space:nowrap}
-      .monthTitle{min-width:auto;width:100%;padding:7px 8px;font-size:.78rem;border-radius:12px;box-shadow:0 4px 0 #4a1060,0 10px 18px rgba(100,20,140,.3),inset 0 2px 6px rgba(255,255,255,.2)}
+      .monthTitle{min-width:auto;width:100%;padding:7px 8px;font-size:.78rem;border-radius:12px;box-shadow:0 4px 0 #6a1e5b,0 10px 18px rgba(109,30,103,.22),inset 0 2px 6px rgba(255,255,255,.28)}
       .today-panel{display:none}
       .modal-overlay{padding:8px}
-      .modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:20px}
+      .modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:18px}
       .drawer{width:min(90vw,360px)}
       .drawer,.drawer .switch,.drawer .btn,.drawer select,.drawer .small{font-size:.9rem}
       .time-input{min-width:108px;padding:7px 10px}
@@ -474,6 +210,7 @@
     <div class="month-nav">
       <button id="prevMonth" class="btn">▶ חודש קודם</button>
       <div id="monthTitle" class="monthTitle" role="button" tabindex="0" aria-label="בחירת חודש"></div>
+      <div id="monthPicker" class="month-picker hidden"></div>
       <button id="nextMonth" class="btn">חודש הבא ◀</button>
       <button id="toggleContinuous" class="btn">תצוגת גלילה רציפה</button>
     </div>
@@ -486,10 +223,8 @@
     <div id="continuousTrack" class="continuous-track"></div>
   </section>
 </main>
-<footer style="text-align:center;padding:34px 12px 32px;color:var(--muted);font-weight:700;font-size:.9rem;letter-spacing:.02em">נבנה על ידי י׳.ז׳.מ.אתרים — לפרטים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:900;text-decoration:none;border-bottom:1px solid rgba(176,48,128,.3);padding-bottom:1px;transition:border-color .2s">לחץ כאן</a>.</footer>
+<footer style="text-align:center;padding:34px 12px 28px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ.אתרים — לפרטים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">לחץ כאן</a>.</footer>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
-<div id="monthPickerBackdrop" class="month-picker-backdrop hidden"></div>
-<div id="monthPicker" class="month-picker hidden"></div>
 <aside id="drawer" class="drawer hidden">
   <div class="drawer-head"><h3>תפריט</h3><button id="closeDrawer" class="btn drawer-close">✕</button></div>
 
@@ -622,12 +357,12 @@ function mergeEventsMaps(localMap,remoteMap){
   }
   return merged;
 }
-async function loadRemoteEvents(uid){
+async function loadRemoteEvents(uid,{strategy="merge"}={}){
   const snap=await db.collection("users").doc(uid).get();
   if(!snap.exists) return;
   const data=snap.data()||{};
   const remoteEvents=data.events?new Map(Object.entries(data.events)):new Map();
-  dayEvents=mergeEventsMaps(dayEvents,remoteEvents);
+  dayEvents=strategy==="replace"?remoteEvents:mergeEventsMaps(dayEvents,remoteEvents);
   if(data.prefs){
     const localPrefs=getPrefs();
     const mergedPrefs={...localPrefs,...data.prefs,dark:localPrefs.dark??false};
@@ -657,7 +392,7 @@ function attachRealtimeSync(uid){
   remoteSyncUnsubscribe=db.collection("users").doc(uid).onSnapshot(async snap=>{
     if(!snap.exists) return;
     const previous=JSON.stringify(exportEvents());
-    await loadRemoteEvents(uid);
+    await loadRemoteEvents(uid,{strategy:"replace"});
     recalcDerived();
     const changed=previous!==JSON.stringify(exportEvents());
     if(changed){
@@ -670,108 +405,7 @@ function attachRealtimeSync(uid){
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
-
-// Returns last period start on or before d (period only — ketem does NOT restart the 4/5 day wait)
-function getLastImpurityStart(d){
-  const target=startOfDay(d);
-  const entries=[...dayEvents.entries()].flatMap(([k,v])=>
-    normalizeDay(v).markers
-      .filter(m=>m.type==="period")
-      .map(()=>startOfDay(new Date(k)))
-  ).filter(x=>x<=target).sort((a,b)=>a-b);
-  return entries.at(-1)||null;
-}
-
-// Returns the blocking period start if d is still within the mandatory wait days; null otherwise
-function getBlockingStart(d){
-  const target=startOfDay(d);
-  const start=getLastImpurityStart(d);
-  if(!start) return null;
-  // First allowed day = start + (minhagDays-1), counting start as day 1
-  const firstAllowed=addDays(start,minhagDays()-1);
-  if(target<firstAllowed) return start;
-  return null;
-}
-
-// Check if date d is in the 7 clean days (hefsek done but mikveh not yet)
-function isInShivahNekiim(d){
-  const target=startOfDay(d);
-  // Collect hefsek dates (manual markers)
-  const hefseks=[...dayEvents.entries()].flatMap(([k,v])=>
-    normalizeDay(v).markers.filter(m=>m.type==="hefsek").map(()=>startOfDay(new Date(k)))
-  ).sort((a,b)=>a-b);
-  // Collect mikveh dates (both manual and auto-derived)
-  const mikvehs=[...dayEvents.entries()].flatMap(([k,v])=>
-    normalizeDay(v).markers.filter(m=>m.type==="mikveh").map(()=>startOfDay(new Date(k)))
-  ).sort((a,b)=>a-b);
-  const lastHefsek=hefseks.filter(h=>h<=target).at(-1);
-  if(!lastHefsek) return false;
-  const nextMikveh=mikvehs.find(m=>m>lastHefsek);
-  if(nextMikveh&&target>=nextMikveh) return false;
-  return true;
-}
-
-function canSetHefsek(d){
-  const target=startOfDay(d);
-
-  // Must have a period start somewhere before
-  const last=getLastImpurityStart(d);
-  if(!last) return false;
-
-  // Must not be in mandatory waiting days
-  if(getBlockingStart(d)) return false;
-
-  // After mikveh with no new impurity = clean state, no hefsek possible
-  const allMikvehs=[...dayEvents.entries()].flatMap(([k,v])=>
-    normalizeDay(v).markers.filter(m=>m.type==="mikveh").map(()=>startOfDay(new Date(k)))
-  ).sort((a,b)=>a-b);
-  const lastMikveh=allMikvehs.filter(m=>m<=target).at(-1);
-  if(lastMikveh){
-    const impurityAfterMikveh=[...dayEvents.entries()].some(([k,v])=>{
-      const kd=startOfDay(new Date(k));
-      return kd>lastMikveh&&kd<=target&&
-        normalizeDay(v).markers.some(m=>m.type==="period"||m.type==="ketem");
-    });
-    if(!impurityAfterMikveh) return false;
-  }
-
-  // If in shivah-nekiim (hefsek done, no mikveh yet):
-  // hefsek allowed only if there's a shivah-nekiim ketem (otherwise already has hefsek)
-  // After shivah-nekiim ketem: hefsek allowed from ketem day onwards (any day)
-  if(isInShivahNekiim(d)){
-    // Check if there's a shivah-nekiim ketem on or before today
-    const snKetem=[...dayEvents.entries()].some(([k,v])=>{
-      const kd=startOfDay(new Date(k));
-      return kd<=target&&normalizeDay(v).markers.some(m=>m.type==="ketem"&&m.source==="shivah-nekiim");
-    });
-    if(!snKetem) return false; // in shivah-nekiim without a ketem — no new hefsek needed
-  }
-
-  return true;
-}
-
-function ketemBlockReason(date){
-  if(hasMarkerOnDate(ymd(date),"ketem")) return "כבר סומן כתם ביום זה.";
-  // Block during mandatory waiting days after period start
-  const blockStart=getBlockingStart(date);
-  if(blockStart){
-    const firstAllowed=addDays(blockStart,minhagDays()-1);
-    return `לא ניתן לסמן כתם בימי הספירה הראשונים. ניתן לסמן מ-${ymd(firstAllowed)}.`;
-  }
-  // Block ketem if period started but no hefsek done yet
-  const lastPeriod=getLastImpurityStart(date);
-  if(lastPeriod){
-    const target=startOfDay(date);
-    const hefsekAfterPeriod=[...dayEvents.entries()].some(([k,v])=>{
-      const kd=startOfDay(new Date(k));
-      return kd>=lastPeriod&&kd<=target&&normalizeDay(v).markers.some(m=>m.type==="hefsek");
-    });
-    if(!hefsekAfterPeriod){
-      return "לא ניתן לסמן כתם לפני הפסק טהרה.";
-    }
-  }
-  return "";
-}
+function canSetHefsek(d){const starts=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period"||m.type==="ketem").map(()=>new Date(k))).sort((a,b)=>a-b);const last=starts.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
 function getPrishaOnotForMode(baseOna,mode){return mode==="full"?["night","day"]:[baseOna];}
 function addPrishaMarkers(date,onot,label,source){for(const ona of onot){addMarker(ymd(date),{type:"prisha",label:markerLabel(label,ona),ona,source});}}
 function getHebrewDateParts(date){
@@ -826,27 +460,13 @@ function calculateMonthlyHebrewKavuahByPeriod(periods){
 function recalcDerived(){
   clearDerived();
   const periods=[],stains=[],hefseks=[];
-  for(const [k,v] of dayEvents.entries()) for(const m of normalizeDay(v).markers){
-    if(m.type==="period") periods.push({date:new Date(k),ona:m.ona||"day"});
-    if(m.type==="ketem")  stains.push({date:new Date(k),ona:m.ona||"day",source:m.source||""});
-    if(m.type==="hefsek") hefseks.push(new Date(k));
-  }
-  periods.sort((a,b)=>a.date-b.date);
-  stains.sort((a,b)=>a.date-b.date);
-  hefseks.sort((a,b)=>a-b);
+  for(const [k,v] of dayEvents.entries()) for(const m of normalizeDay(v).markers){if(m.type==="period")periods.push({date:new Date(k),ona:m.ona||"day"}); if(m.type==="ketem")stains.push({date:new Date(k),ona:m.ona||"day"}); if(m.type==="hefsek")hefseks.push(new Date(k));}
+  periods.sort((a,b)=>a.date-b.date); stains.sort((a,b)=>a.date-b.date); hefseks.sort((a,b)=>a-b);
   const hefsekKeys=new Set(hefseks.map(d=>ymd(d)));
-
-  // Ketem-in-shivah-nekiim: tagged with source:"shivah-nekiim"
-  // hefsekReady on same day only — no 4/5 day wait, no auto-hefsek
-  const shivahNekiimStainKeys=new Set(
-    stains.filter(s=>s.source==="shivah-nekiim").map(s=>ymd(s.date))
-  );
-
   const prefs=getPrefs();
   const day30Mode=prefs.day30Mode||"ona",day31Mode=prefs.day31Mode||"ona";
   const activeGapByPeriod=calculateGapKavuahByPeriod(periods);
   const monthlyHebrewKavuahByPeriod=calculateMonthlyHebrewKavuahByPeriod(periods);
-
   for(let i=0;i<periods.length;i++){
     const p=periods[i];
     const d30=addDays(p.date,29);
@@ -855,69 +475,37 @@ function recalcDerived(){
     const activeGap=activeGapByPeriod[i];
     const hasMonthlyHebrewKavuah=monthlyHebrewKavuahByPeriod[i];
     const vesetHachodeshDate=getVesetHachodeshDate(p.date);
-
     if(hasMonthlyHebrewKavuah){
-      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate))
-        addPrishaMarkers(vesetHachodeshDate,[p.ona],"קביעת וסת חודשי","auto-kavuah-hebrew-date");
-    } else if(activeGap){
+      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"קביעת וסת חודשי","auto-kavuah-hebrew-date");
+    }else if(activeGap){
       const kavuahDate=addDays(p.date,activeGap-1);
-      if(isBeforeNextPeriod(kavuahDate))
-        addPrishaMarkers(kavuahDate,[p.ona],`קביעת וסת ${activeGap} יום`,`auto-kavuah-gap-${activeGap}`);
-    } else {
-      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate))
-        addPrishaMarkers(vesetHachodeshDate,[p.ona],"וסת החודש","auto-veset-hachodesh");
-      if(isBeforeNextPeriod(d30))
-        addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");
+      if(isBeforeNextPeriod(kavuahDate)) addPrishaMarkers(kavuahDate,getPrishaOnotForMode(p.ona,day30Mode),`קביעת וסת ${activeGap} יום`,`auto-kavuah-gap-${activeGap}`);
+    }else{
+      if(vesetHachodeshDate&&isBeforeNextPeriod(vesetHachodeshDate)) addPrishaMarkers(vesetHachodeshDate,[p.ona],"וסת החודש","auto-veset-hachodesh");
+      if(isBeforeNextPeriod(d30)){addPrishaMarkers(d30,getPrishaOnotForMode(p.ona,day30Mode),"עונה בינונית","auto-30");}
       if(prefs.orzarua!==false){
         const ozDate=p.ona==="day"?d30:addDays(d30,-1);
-        if(isBeforeNextPeriod(ozDate))
-          addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
+        if(isBeforeNextPeriod(ozDate)) addMarker(ymd(ozDate),{type:"orzarua",label:markerLabel("אור זרוע",p.ona==="day"?"night":"day"),ona:p.ona==="day"?"night":"day",source:"auto-oz"});
       }
-      if(prefs.day31){
-        const d31=addDays(p.date,30);
-        if(isBeforeNextPeriod(d31))
-          addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");
-      }
+      if(prefs.day31){const d31=addDays(p.date,30);if(isBeforeNextPeriod(d31))addPrishaMarkers(d31,getPrishaOnotForMode(p.ona,day31Mode),"יום 31","auto-31");}
       if(next){
         const gap=Math.round((next.date-p.date)/86400000)+1;
         if(gap>0){
           const haflagaDate=addDays(next.date,gap-1);
-          addPrishaMarkers(haflagaDate,[next.ona],`הפלגה ${gap} יום`,`auto-haflaga-${gap}`);
+          addPrishaMarkers(haflagaDate,getPrishaOnotForMode(next.ona,day30Mode),`הפלגה ${gap} יום`,`auto-haflaga-${gap}`);
         }
       }
     }
-
-    // hefsekReady from period: only if hefsek not already there
-    const readyKey=ymd(addDays(p.date,minhagDays()-1));
-    if(!hefsekKeys.has(readyKey))
-      addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
+    const ready=addDays(p.date,minhagDays()-1);
+    const readyKey=ymd(ready);
+    if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
-
-  // hefsekReady from regular stains (not shivah-nekiim)
   for(const stain of stains){
-    if(stain.source==="shivah-nekiim") continue; // handled below
-    const readyKey=ymd(addDays(stain.date,minhagDays()-1));
-    if(!hefsekKeys.has(readyKey))
-      addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
+    const ready=addDays(stain.date,minhagDays()-1);
+    const readyKey=ymd(ready);
+    if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
-
-  // Ketem in shivah-nekiim: hefsekReady on same day of ketem only
-  // (user can press hefsek any day from then — mikveh will be 7 days after that hefsek)
-  for(const sk of shivahNekiimStainKeys){
-    // Only add if no hefsek exists yet after this ketem
-    const hefsekExists=[...dayEvents.entries()].some(([k,v])=>{
-      const kd=startOfDay(new Date(k));
-      return kd>=startOfDay(new Date(sk))&&normalizeDay(v).markers.some(m=>m.type==="hefsek");
-    });
-    if(!hefsekExists)
-      addMarker(sk,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
-  }
-
-  // Mikveh: always 7 days after a MANUAL hefsek
-  // No auto-hefsek exists anymore — every hefsek in the store is manual
-  for(const h of hefseks){
-    addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});
-  }
+  for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
 }
 function getPhaseMap(y,m){
   const map={}; const first=new Date(y,m,1),start=addDays(first,-first.getDay());
@@ -1305,19 +893,11 @@ function applyMode(){
   closeMonthPicker();
 }
 
-function closeMonthPicker(){
-  monthPicker.classList.add("hidden");
-  monthPicker.innerHTML="";
-  el("monthPickerBackdrop").classList.add("hidden");
-}
+function closeMonthPicker(){monthPicker.classList.add("hidden");monthPicker.innerHTML=""}
 function openMonthPicker(){
   if(continuousMode) return;
   monthPicker.innerHTML="";
   const y=view.getFullYear();
-  // Position below the monthTitle button
-  const rect=monthTitle.getBoundingClientRect();
-  const top=Math.min(rect.bottom+8, window.innerHeight-320);
-  monthPicker.style.top=top+"px";
   hebrewMonthNames.forEach((name,index)=>{
     const btn=document.createElement("button");
     btn.type="button";
@@ -1326,10 +906,7 @@ function openMonthPicker(){
     btn.onclick=()=>{view=new Date(y,index,1);closeMonthPicker();render();};
     monthPicker.appendChild(btn);
   });
-  el("monthPickerBackdrop").classList.remove("hidden");
   monthPicker.classList.remove("hidden");
-  // Scroll active item into view
-  setTimeout(()=>{monthPicker.querySelector(".active")?.scrollIntoView({block:"center",behavior:"smooth"});},50);
 }
 
 function getDayNotes(dateKey){
@@ -1468,90 +1045,96 @@ function openTimeline(){
 }
 const closeTimeline=()=>el("timelineOverlay").classList.add("hidden");
 
-function openModal(d){
-  const dateKey=ymd(d);
-  el("modalDateTitle").textContent=`תאריך: ${dateKey}`;
-  el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;
-  el("modalOverlay").classList.remove("hidden");
+function clearManualMarkersForDay(dateKey,types=[]){
+  const day=normalizeDay(dayEvents.get(dateKey));
+  const removable=day.markers.filter(m=>!m.source&&(types.length?types.includes(m.type):true));
+  if(!removable.length) return false;
+  const noteStore=getMarkerNotesStore();
+  for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
+  setMarkerNotesStore(noteStore);
+  day.markers=day.markers.filter(m=>!removable.includes(m));
+  if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
+  else dayEvents.delete(dateKey);
+  return true;
+}
+
+function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`תאריך: ${dateKey}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
   renderDayNotesList(dateKey,"modalDayNotes");
-
-  const btnA=el("btnEventA"); // הפסק טהרה
-  const btnC=el("btnEventC"); // כתם
-
-  // Determine halachic blocking
-  const blockStart=getBlockingStart(d);
-  const inNidahWait=!!blockStart;
-  const hefsekOk=canSetHefsek(d);
-
-  // Style hefsek button
-  if(!hefsekOk){
-    btnA.disabled=true;
-    btnA.style.opacity="0.38";
-    btnA.style.cursor="not-allowed";
-    btnA.title=inNidahWait
-      ? `לא ניתן לסמן הפסק טהרה לפני היום ה-${minhagDays()} מתחילת הטומאה`
-      : "אין תחילת מחזור או כתם קודם לסמן הפסק טהרה";
-  } else {
-    btnA.disabled=false;
-    btnA.style.opacity="";
-    btnA.style.cursor="";
-    btnA.title="";
-  }
-
-  // Style ketem button — disabled during nidah wait days
-  const ketemBlocked=!!ketemBlockReason(d);
-  if(inNidahWait&&ketemBlocked){
-    btnC.disabled=true;
-    btnC.style.opacity="0.38";
-    btnC.style.cursor="not-allowed";
-    btnC.title=`לא ניתן לסמן כתם בימי הספירה הראשונים (${minhagDays()} ימים מתחילת הטומאה)`;
-  } else {
-    btnC.disabled=false;
-    btnC.style.opacity="";
-    btnC.style.cursor="";
-    btnC.title="";
-  }
-
-  btnA.onclick=async()=>{
-    if(!hefsekOk){
-      alert(inNidahWait
-        ? `אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`
-        : "אין תחילת מחזור או כתם קודם.");
+  const day=normalizeDay(dayEvents.get(dateKey));
+  const hasManualType=type=>day.markers.some(m=>!m.source&&m.type===type);
+  el("btnEventA").textContent=hasManualType("hefsek")?"בטל הפסק":"הפסק טהרה";
+  el("btnEventB").textContent=hasManualType("period")?"בטל מחזור":"תחילת מחזור";
+  el("btnEventC").textContent=hasManualType("ketem")?"בטל כתם":"כתם";
+  el("btnEventA").onclick=async()=>{
+    if(hasManualType("hefsek")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["hefsek"]);
+      recalcDerived();
+      await commitAndSync();
       return;
     }
+    if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`);return;}
     closeModal();
     addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});
     recalcDerived();
     await commitAndSync();
   };
-  el("btnEventB").onclick=()=>openOnaPicker(d,"period");
-  el("btnEventC").onclick=()=>{
-    if(btnC.disabled) return;
+  el("btnEventB").onclick=async()=>{
+    if(hasManualType("period")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["period"]);
+      recalcDerived();
+      await commitAndSync();
+      return;
+    }
+    openOnaPicker(d,"period");
+  };
+  el("btnEventC").onclick=async()=>{
+    if(hasManualType("ketem")){
+      closeModal();
+      clearManualMarkersForDay(dateKey,["ketem"]);
+      recalcDerived();
+      await commitAndSync();
+      return;
+    }
     openOnaPicker(d,"ketem");
   };
   el("btnClear").onclick=async()=>{
-    const day=normalizeDay(dayEvents.get(dateKey));
-    const removable=day.markers.filter(m=>!m.source);
-    if(!removable.length){
+    const cleared=clearManualMarkersForDay(dateKey);
+    if(!cleared){
       closeModal();
       showToast("אין פעולה ידנית לבטל ביום הזה");
       return;
     }
-    const removedTypes=[...new Set(removable.map(m=>m.type))];
-    const noteStore=getMarkerNotesStore();
-    for(const marker of removable) delete noteStore[markerNoteKey(dateKey,marker)];
-    setMarkerNotesStore(noteStore);
-    day.markers=day.markers.filter(m=>!removable.includes(m));
-    if(day.markers.length) dayEvents.set(dateKey,{markers:day.markers});
-    else dayEvents.delete(dateKey);
     closeModal();
     recalcDerived();
     await commitAndSync();
-    if(removedTypes.length>1) showToast("כל הסימונים הידניים של היום נוקו");
+    showToast("כל הסימונים הידניים של היום נוקו");
   };
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
 const MIN_DAYS_BETWEEN_PERIOD_STARTS=20;
+function getLatestManualMarkerDate(markerType,targetDate){
+  const target=startOfDay(targetDate);
+  const matches=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>!m.source&&m.type===markerType)
+      .map(()=>startOfDay(new Date(k))))
+    .filter(d=>d<=target)
+    .sort((a,b)=>a-b);
+  return matches.at(-1)||null;
+}
+function ketemBlockReason(date){
+  const dateKey=ymd(date);
+  if(hasMarkerOnDate(dateKey,"ketem")) return "כבר סומן כתם ביום זה. ניתן לסמן כתם פעם אחת ביום בלבד.";
+  const lastKetem=getLatestManualMarkerDate("ketem",date);
+  if(!lastKetem) return "";
+  const nextAllowed=addDays(lastKetem,minhagDays()-1);
+  if(startOfDay(date)<nextAllowed){
+    return `לא ניתן לסמן כתם נוסף עד ${ymd(nextAllowed)} (היום שבו ניתן לבצע הפסק טהרה).`;
+  }
+  return "";
+}
 function getLastPeriodStartBefore(date){
   const target=startOfDay(date);
   const periodStarts=[...dayEvents.entries()]
@@ -1568,9 +1151,7 @@ function openOnaPicker(date,type="period"){
   const apply=async ona=>{
     let markerType=type;
     let markerTitle=isKetem?"כתם":"תחילת מחזור";
-
     if(type==="period"){
-      // Block period within 20 days of last period
       const lastPeriodStart=getLastPeriodStartBefore(date);
       if(lastPeriodStart){
         const daysFromLastPeriod=Math.round((startOfDay(date)-lastPeriodStart)/86400000);
@@ -1580,39 +1161,14 @@ function openOnaPicker(date,type="period"){
           alert(`לא ניתן לסמן תחילת מחזור בפער של פחות מ-${MIN_DAYS_BETWEEN_PERIOD_STARTS} יום מתחילת המחזור הקודמת. האירוע נשמר ככתם.`);
         }
       }
-      // Block period during mandatory nidah waiting days
-      if(markerType==="period"){
-        const blockStart=getBlockingStart(date);
-        if(blockStart){
-          const firstAllowed=addDays(blockStart,minhagDays()-1);
-          el("onaOverlay").classList.add("hidden");
-          alert(`לא ניתן לסמן תחילת מחזור בימי ספירת ${minhagDays()} הימים הראשונים. ניתן לסמן מ-${ymd(firstAllowed)}.`);
-          return;
-        }
-      }
     }
-
     if(markerType==="ketem"){
-      // Ketem during shivah nekiim: mark ketem, show hefsekReady — hefsek can be done any day from now
-      if(isInShivahNekiim(date)){
-        el("onaOverlay").classList.add("hidden");
-        closeModal();
-        const dateKey=ymd(date);
-        addMarker(dateKey,{type:"ketem",label:"כתם בשבעה נקיים",ona,source:"shivah-nekiim"});
-        recalcDerived();
-        await commitAndSync();
-        showToast("כתם בשבעה נקיים — ניתן לעשות הפסק טהרה מהיום");
-        return;
-      }
-      // Regular ketem block check
       const blockedReason=ketemBlockReason(date);
       if(blockedReason){
-        el("onaOverlay").classList.add("hidden");
         alert(blockedReason);
         return;
       }
     }
-
     el("onaOverlay").classList.add("hidden");
     closeModal();
     addMarker(ymd(date),{type:markerType,label:markerLabel(markerTitle,ona),ona},{replaceType:true});
@@ -1650,8 +1206,6 @@ auth.onAuthStateChanged(async user=>{currentUid=user?.uid||null;attachRealtimeSy
 
 el("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);closeMonthPicker();render()};
 el("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);closeMonthPicker();render()};
-monthTitle.onclick=e=>{e.stopPropagation();if(monthPicker.classList.contains("hidden"))openMonthPicker();else closeMonthPicker();};
-el("monthPickerBackdrop").onclick=()=>closeMonthPicker();
 monthTitle.onclick=e=>{e.stopPropagation();if(monthPicker.classList.contains("hidden"))openMonthPicker();else closeMonthPicker();};
 monthTitle.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();monthTitle.click();}};
 document.addEventListener("click",e=>{if(!monthPicker.classList.contains("hidden")&&!monthPicker.contains(e.target)&&e.target!==monthTitle)closeMonthPicker();});
