@@ -167,11 +167,15 @@
       .cell{height:132px;padding:4px 2px;border-radius:10px}
       .date-line{gap:3px;justify-content:flex-start}
       .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
-      .badges{padding:2px 2px 1px;gap:2px;max-height:82px}
-      .badge{font-size:.44rem;padding:1px 3px;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto}
+      .badges{display:block;padding:0;gap:0;max-height:none;border:none;background:transparent;overflow:visible;white-space:normal}
+      .badge{display:inline;font-size:.4rem;padding:0;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:none;border:none;border-radius:0;box-shadow:none}
+      .badge::after{content:" · ";color:var(--muted)}
+      .badge:last-child::after{content:""}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
-      .badges .badge{background:#ffffffd9;border:1px solid var(--line);border-radius:999px;padding:1px 4px;display:inline-flex;width:auto;font-size:.48rem}
+      .badges .badge{display:inline;font-size:.4rem}
+      .badge-text{display:inline}
+      .ona-icon{font-size:.64em}
       .badge-note-dot{width:5px;height:5px}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
       .brand{gap:6px;justify-self:center;align-items:center;margin-top:2px;margin-bottom:6px;width:100%}
