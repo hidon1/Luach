@@ -319,7 +319,16 @@ function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}")
 function exportEvents(){const o={};for(const[k,v]of dayEvents.entries())o[k]=normalizeDay(v);return o;}
 function addMarker(dateKey,marker,{replaceType=false}={}){const day=normalizeDay(dayEvents.get(dateKey));if(replaceType)day.markers=day.markers.filter(m=>m.type!==marker.type);if(!day.markers.some(m=>m.type===marker.type&&m.ona===marker.ona&&m.source===marker.source))day.markers.push(marker);dayEvents.set(dateKey,day)}
 function clearDerived(){for(const [k,v]of dayEvents.entries()){const keep=normalizeDay(v).markers.filter(m=>!m.source);keep.length?dayEvents.set(k,{markers:keep}):dayEvents.delete(k)}}
-async function persistAll(){const events=exportEvents();localStorage.setItem(STORAGE_KEY,JSON.stringify(events));if(currentUid)await db.collection("users").doc(currentUid).set({events,prefs:getPrefs(),markerNotes:getMarkerNotesStore(),noteHistory:getNoteHistory(),updatedAt:Date.now()},{merge:true})}
+async function persistAll(){
+  const events=exportEvents();
+  const prefs=getPrefs();
+  const markerNotes=getMarkerNotesStore();
+  const noteHistory=getNoteHistory();
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(events));
+  if(currentUid){
+    await db.collection("users").doc(currentUid).set({events,prefs,markerNotes,noteHistory,updatedAt:Date.now()});
+  }
+}
 function setPrefs(next){localStorage.setItem(PREFS_KEY,JSON.stringify({...getPrefs(),...next}));persistAll();}
 function loadSunsetCache(){try{return JSON.parse(localStorage.getItem(SUNSET_CITY_CACHE_KEY)||"{}");}catch{return {};}}
 function saveSunsetCache(){localStorage.setItem(SUNSET_CITY_CACHE_KEY,JSON.stringify(sunsetCache));}
@@ -369,17 +378,28 @@ async function loadRemoteEvents(uid,{strategy="merge"}={}){
     localStorage.setItem(PREFS_KEY,JSON.stringify(mergedPrefs));
   }
   if(data.markerNotes&&typeof data.markerNotes==="object"){
-    setMarkerNotesStore({...getMarkerNotesStore(),...data.markerNotes});
+    const nextMarkerNotes=strategy==="replace"?data.markerNotes:{...getMarkerNotesStore(),...data.markerNotes};
+    setMarkerNotesStore(nextMarkerNotes);
+  }else if(strategy==="replace"){
+    setMarkerNotesStore({});
   }
   if(data.noteHistory&&typeof data.noteHistory==="object"){
-    const localHistory=getNoteHistory();
-    const mergedHistory={...localHistory};
-    for(const [key,val] of Object.entries(data.noteHistory)){
-      const localArr=Array.isArray(localHistory[key])?localHistory[key]:[];
-      const remoteArr=Array.isArray(val)?val:[];
-      mergedHistory[key]=[...localArr,...remoteArr].slice(-30);
+    if(strategy==="replace"){
+      const trimmed={};
+      for(const [key,val] of Object.entries(data.noteHistory)) trimmed[key]=Array.isArray(val)?val.slice(-30):[];
+      setNoteHistory(trimmed);
+    }else{
+      const localHistory=getNoteHistory();
+      const mergedHistory={...localHistory};
+      for(const [key,val] of Object.entries(data.noteHistory)){
+        const localArr=Array.isArray(localHistory[key])?localHistory[key]:[];
+        const remoteArr=Array.isArray(val)?val:[];
+        mergedHistory[key]=[...localArr,...remoteArr].slice(-30);
+      }
+      setNoteHistory(mergedHistory);
     }
-    setNoteHistory(mergedHistory);
+  }else if(strategy==="replace"){
+    setNoteHistory({});
   }
 }
 
