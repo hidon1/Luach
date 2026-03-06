@@ -140,7 +140,7 @@
     .toast{position:fixed;left:16px;bottom:16px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
     .today-banner{margin-top:8px;padding:8px 10px;border-radius:12px;background:linear-gradient(120deg,#e6fff1,#bff0d7);border:1px solid #79cfa2;color:#14643a;font-weight:800;font-size:.9rem;box-shadow:var(--shadow)}
     .timeline-toolbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(145deg,#fff,#f4e9ff);border:1px solid #ddc3f5;margin-top:10px;font-weight:900;color:#3b1956}
-    .timeline-list{display:grid;gap:8px;margin-top:12px;max-height:52vh;overflow:auto;padding-inline-end:4px}
+    .timeline-list{display:grid;gap:8px;margin-top:12px;max-height:none;overflow:visible;padding-inline-end:4px}
     .timeline-item{padding:10px;border-radius:12px;background:#fff;border:1px solid #ead5f5;display:grid;gap:4px}
     .timeline-item small{color:#5b2f74;font-weight:700}
     .day-notes-box{margin-top:10px;padding:10px;border-radius:12px;border:1px solid #ead5f5;background:#fff8ff;display:grid;gap:6px}
@@ -184,7 +184,7 @@
       .monthTitle{min-width:auto;width:100%;padding:7px 8px;font-size:.78rem;border-radius:12px;box-shadow:0 4px 0 #6a1e5b,0 10px 18px rgba(109,30,103,.22),inset 0 2px 6px rgba(255,255,255,.28)}
       .today-panel{display:none}
       .modal-overlay{padding:8px}
-      .modal{width:min(94vw,460px);max-height:88vh;overflow:auto;border-radius:18px}
+      .modal{width:min(94vw,460px);max-height:none;overflow:visible;border-radius:18px}
       .drawer{width:min(90vw,360px)}
       .drawer,.drawer .switch,.drawer .btn,.drawer select,.drawer .small{font-size:.9rem}
       .time-input{min-width:108px;padding:7px 10px}
@@ -313,6 +313,42 @@ function getHebrewDateDisplay(d){const parts=new Intl.DateTimeFormat("he-u-ca-he
 const markerIcon=o=>o==="day"?"☀":"☾"; const markerLabel=(b,o)=>o?`${b} ${markerIcon(o)}`:b;
 const markerPlainLabel=l=>(l||"").replace(/[☀☾]/g,"").trim();
 const onaIconHtml=o=>`<span class="ona-icon ${o==="day"?"sun":"moon"}">${o==="day"?"☀":"☾"}</span>`;
+const onotDisplayHtml=onot=>{
+  if(!onot?.length) return "";
+  const uniq=[...new Set(onot.filter(Boolean))];
+  const order={day:0,night:1};
+  return uniq
+    .sort((a,b)=>(order[a]??99)-(order[b]??99))
+    .map(onaIconHtml)
+    .join("");
+};
+function collapseMarkersForDisplay(markers,dateKey=""){
+  const groups=new Map();
+  for(const marker of markers||[]){
+    if(!marker) continue;
+    const baseLabel=markerPlainLabel(marker.label);
+    const key=[marker.type||"other",baseLabel,marker.source||"manual"].join("__");
+    let group=groups.get(key);
+    if(!group){
+      group={markerRef:marker,plainLabel:baseLabel,onot:[],notes:[]};
+      groups.set(key,group);
+    }
+    if(marker.ona) group.onot.push(marker.ona);
+    if(dateKey){
+      const note=getPersistedMarkerNote(dateKey,marker);
+      if(note) group.notes.push(note);
+    }
+  }
+  return [...groups.values()].map(group=>{
+    const uniqNotes=[...new Set(group.notes.filter(Boolean))];
+    return {
+      markerRef:group.markerRef,
+      plainLabel:group.plainLabel,
+      onot:[...new Set(group.onot)],
+      note:uniqNotes.join(" | "),
+    };
+  });
+}
 const normalizeDay=v=>!v?{markers:[]}:Array.isArray(v.markers)?v:v.type?{markers:[v]}:{markers:[]};
 function loadLocalEvents(){try{return new Map(Object.entries(JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")));}catch{return new Map();}}
 function getPrefs(){try{return JSON.parse(localStorage.getItem(PREFS_KEY)||"{}");}catch{return {};}}
@@ -879,8 +915,13 @@ async function renderTodayCard(){
   const sunset=await resolveSunset(today); const prefs=getPrefs(); el("todaySunset").textContent=`שקיעה לפי ${prefs.sunsetMode==="city"?(CITY_COORDS[prefs.sunsetCity||"Jerusalem"]?.label||"עיר"):"מיקום"}: ${sunset}`;
   const dateKey=ymd(today);
   const chips=el("todayChips"); chips.innerHTML="";
-  const todayMarkers=normalizeDay(dayEvents.get(dateKey)).markers;
-  for(const m of todayMarkers){const c=document.createElement("span");c.className=`chip`;c.textContent=m.label;chips.appendChild(c)}
+  const todayMarkers=collapseMarkersForDisplay(normalizeDay(dayEvents.get(dateKey)).markers,dateKey);
+  for(const m of todayMarkers){
+    const c=document.createElement("span");
+    c.className="chip";
+    c.innerHTML=`<span>${m.plainLabel}</span>${onotDisplayHtml(m.onot)}`;
+    chips.appendChild(c);
+  }
   const banner=el("todayBanner");
   banner.classList.add("hidden");
   banner.onclick=null;
@@ -931,7 +972,7 @@ function openMonthPicker(){
 
 function getDayNotes(dateKey){
   const day=normalizeDay(dayEvents.get(dateKey));
-  return day.markers.map(m=>({label:m.label,note:getPersistedMarkerNote(dateKey,m)}));
+  return collapseMarkersForDisplay(day.markers,dateKey).map(m=>({label:m.plainLabel,note:m.note,onot:m.onot}));
 }
 function renderDayNotesList(dateKey,targetId="dayNotesList"){
   const list=el(targetId);
@@ -944,7 +985,8 @@ function renderDayNotesList(dateKey,targetId="dayNotesList"){
   }
   for(const item of notes){
     const li=document.createElement("li");
-    li.textContent=item.note?`${markerPlainLabel(item.label)}: ${item.note}`:markerPlainLabel(item.label);
+    const noteText=item.note?`: ${item.note}`:"";
+    li.innerHTML=`<span>${item.label}</span>${onotDisplayHtml(item.onot)}${noteText}`;
     list.appendChild(li);
   }
 }
@@ -1026,8 +1068,8 @@ function renderMonthCells(targetGrid,y,m){
     const sunset=document.createElement("div");sunset.className="sunset";sunset.textContent="...";resolveSunset(d).then(t=>sunset.textContent=`שקיעה: ${t}`);
     const badgesWrap=document.createElement("div");badgesWrap.className="badges";
     cell.append(dateLine,badgesWrap,sunset);
-    const markers=normalizeDay(dayEvents.get(key)).markers;
-    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.type}`;const plainLabel=markerPlainLabel(ev.label);const noteText=getPersistedMarkerNote(key,ev);b.innerHTML=ev.ona?`<span class="badge-text">${plainLabel}</span>${onaIconHtml(ev.ona)}`:`<span class="badge-text">${plainLabel}</span>`;if(noteText){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=noteText||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev)};badgesWrap.appendChild(b);}
+    const markers=collapseMarkersForDisplay(normalizeDay(dayEvents.get(key)).markers,key);
+    for(const ev of markers){const b=document.createElement("div");b.className=`badge ${ev.markerRef.type}`;b.innerHTML=`<span class="badge-text">${ev.plainLabel}</span>${onotDisplayHtml(ev.onot)}`;if(ev.note){const dot=document.createElement("span");dot.className="badge-note-dot";b.appendChild(dot);}b.title=ev.note||"לחצי להוספת הערה";b.onclick=(e)=>{e.stopPropagation();openMarkerNoteEditor(key,ev.markerRef)};badgesWrap.appendChild(b);}
     cell.onclick=()=>openModal(d); targetGrid.appendChild(cell);
   }
 }
@@ -1046,8 +1088,11 @@ function renderTimelineList(){
   const filter=el("timelineFilter")?.value||"all";
   list.innerHTML="";
   const items=[];
-  for(const [dateKey,val] of dayEvents.entries()) for(const m of normalizeDay(val).markers){
-    items.push({dateKey,label:m.label,type:m.type==="period"?"period":m.type==="prisha"?"prisha":"other",note:getPersistedMarkerNote(dateKey,m)});
+  for(const [dateKey,val] of dayEvents.entries()){
+    const markers=collapseMarkersForDisplay(normalizeDay(val).markers,dateKey);
+    for(const m of markers){
+      items.push({dateKey,label:m.plainLabel,type:m.markerRef.type==="period"?"period":m.markerRef.type==="prisha"?"prisha":"other",note:m.note,onot:m.onot});
+    }
   }
   const filtered=items.filter(it=>filter==="all"?true:it.type===filter);
   filtered.sort((a,b)=>a.dateKey<b.dateKey?1:-1);
@@ -1055,7 +1100,7 @@ function renderTimelineList(){
   for(const it of filtered){
     const row=document.createElement("div");
     row.className="timeline-item";
-    row.innerHTML=`<strong>${it.label}</strong><small>${it.dateKey}</small>${it.note?`<small>הערה: ${it.note}</small>`:""}`;
+    row.innerHTML=`<strong>${it.label} ${onotDisplayHtml(it.onot)}</strong><small>${it.dateKey}</small>${it.note?`<small>הערה: ${it.note}</small>`:""}`;
     list.appendChild(row);
   }
 }
