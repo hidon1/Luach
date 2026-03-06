@@ -76,7 +76,7 @@
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
     .hebrew{font-size:.76rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
     .sunset{font-size:.7rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
-    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:3px;min-height:0;max-height:40px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
+    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:3px;min-height:0;flex:1 1 auto;max-height:56px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
     .badges:empty{display:none}
     .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.66rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 1 auto}
     .badge-text{display:inline}
@@ -154,7 +154,7 @@
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
     @keyframes bgMove{from{transform:translateX(0)}to{transform:translateX(90px)}}
     @media(max-width:1280px) and (min-width:721px){.brand{width:100%;max-width:100%;display:flex;justify-content:center;align-items:center;justify-self:center;margin-top:18px;padding:0}.logo{width:min(560px,74vw);height:auto;max-height:132px;object-fit:contain;object-position:center center;margin-inline:auto;margin-top:-10px}.topbar{padding:8px 12px 0}.container{margin:10px auto 0}.brand-subtitle{font-size:.95rem}}
-    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{height:84px;padding:4px}.greg{font-size:.84rem}.greg-g{font-size:.6rem}.hebrew{font-size:.66rem}.sunset{font-size:.6rem}.badge{font-size:.6rem;padding:1px 6px}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
+    @media(max-width:1024px) and (min-width:721px){.calendar,.controls{padding:10px}.dow,.grid{gap:6px}.dow div{padding:8px 4px;font-size:.8rem}.cell{height:96px;padding:4px}.greg{font-size:.84rem}.greg-g{font-size:.6rem}.hebrew{font-size:.66rem}.sunset{font-size:.6rem}.badges{max-height:44px}.badge{font-size:.6rem;padding:1px 6px}.drawer{width:min(420px,94vw)}.menu-btn{right:12px}.today-panel{left:12px;top:50px}.logo{max-height:120px}}
     @media(max-width:900px){.topbar{grid-template-columns:1fr auto;}.today-panel{min-width:176px;max-width:190px}.brand{justify-self:center}.controls{flex-wrap:wrap}.monthTitle{min-width:220px}}
     @media(max-width:720px){
       body{overflow-x:hidden}
@@ -164,16 +164,14 @@
       .calendar{padding:8px 6px}
       .dow,.grid{gap:3px}
       .dow div{padding:7px 2px;font-size:.64rem}
-      .cell{height:112px;padding:4px 2px;border-radius:10px}
+      .cell{height:132px;padding:4px 2px;border-radius:10px}
       .date-line{gap:3px;justify-content:flex-start}
       .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
-      .badges{padding:2px 2px 1px;gap:2px;max-height:42px}
+      .badges{padding:2px 2px 1px;gap:2px;max-height:82px}
       .badge{font-size:.44rem;padding:1px 3px;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto}
       .half{font-size:.48rem;min-height:14px}
       .day-halves{display:none}
-      .cell{overflow:visible}
-      .badges{max-height:none;overflow:visible}
-      .badges .badge{background:transparent;border:none;border-radius:0;padding:0 0 2px;display:block;width:100%;font-size:.5rem}
+      .badges .badge{background:#ffffffd9;border:1px solid var(--line);border-radius:999px;padding:1px 4px;display:inline-flex;width:auto;font-size:.48rem}
       .badge-note-dot{width:5px;height:5px}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
       .brand{gap:6px;justify-self:center;align-items:center;margin-top:2px;margin-bottom:6px;width:100%}
@@ -1122,6 +1120,17 @@ function clearManualMarkersForDay(dateKey,types=[]){
   else dayEvents.delete(dateKey);
   return true;
 }
+function clearAllMarkersForDay(dateKey){
+  const day=normalizeDay(dayEvents.get(dateKey));
+  if(!day.markers.length){
+    dayEvents.delete(dateKey);
+    return;
+  }
+  const noteStore=getMarkerNotesStore();
+  for(const marker of day.markers) delete noteStore[markerNoteKey(dateKey,marker)];
+  setMarkerNotesStore(noteStore);
+  dayEvents.delete(dateKey);
+}
 
 function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`תאריך: ${dateKey}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
   renderDayNotesList(dateKey,"modalDayNotes");
@@ -1236,7 +1245,9 @@ function openOnaPicker(date,type="period"){
     }
     el("onaOverlay").classList.add("hidden");
     closeModal();
-    addMarker(ymd(date),{type:markerType,label:markerLabel(markerTitle,ona),ona},{replaceType:true});
+    const dateKey=ymd(date);
+    if(markerType==="period") clearAllMarkersForDay(dateKey);
+    addMarker(dateKey,{type:markerType,label:markerLabel(markerTitle,ona),ona},{replaceType:true});
     recalcDerived();
     await commitAndSync();
   };
