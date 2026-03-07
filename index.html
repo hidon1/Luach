@@ -1141,6 +1141,18 @@ function clearAllMarkersForDay(dateKey){
   setMarkerNotesStore(noteStore);
   dayEvents.delete(dateKey);
 }
+function keepOnlyPeriodMarkersForDay(dateKey){
+  const day=normalizeDay(dayEvents.get(dateKey));
+  const periodMarkers=day.markers.filter(marker=>marker.type==="period");
+  if(!periodMarkers.length) return false;
+  const removedMarkers=day.markers.filter(marker=>marker.type!=="period");
+  if(!removedMarkers.length) return false;
+  const noteStore=getMarkerNotesStore();
+  for(const marker of removedMarkers) delete noteStore[markerNoteKey(dateKey,marker)];
+  setMarkerNotesStore(noteStore);
+  dayEvents.set(dateKey,{markers:periodMarkers});
+  return true;
+}
 
 function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`תאריך: ${dateKey}`;el("modalDateSub").textContent=`עברי: ${getHebrewDateDisplay(d)}`;el("modalOverlay").classList.remove("hidden");
   renderDayNotesList(dateKey,"modalDayNotes");
@@ -1259,6 +1271,7 @@ function openOnaPicker(date,type="period"){
     if(markerType==="period") clearAllMarkersForDay(dateKey);
     addMarker(dateKey,{type:markerType,label:markerLabel(markerTitle,ona),ona},{replaceType:true});
     recalcDerived();
+    if(markerType==="period") keepOnlyPeriodMarkersForDay(dateKey);
     await commitAndSync();
   };
   el("chooseDay").onclick=()=>apply("day");
