@@ -159,21 +159,27 @@
     @media(max-width:720px){
       body{overflow-x:hidden}
       .topbar{padding:6px 8px 0}
-      .container{padding:0 8px 18px;margin:2px auto 0;max-width:100vw;gap:8px}
-      .controls{padding:8px 6px}
-      .calendar{padding:8px 6px}
-      .dow,.grid{gap:3px}
-      .dow div{padding:7px 2px;font-size:.64rem}
-      .cell{height:132px;padding:4px 2px;border-radius:10px}
-      .date-line{gap:3px;justify-content:flex-start}
-      .greg{font-size:.63rem}.greg-g{display:none}.hebrew{font-size:.46rem;color:#452260}.sunset{font-size:.5rem}.noise-effect-label{font-size:1em}
-      .badges{display:block;padding:0;gap:0;max-height:none;border:none;background:transparent;overflow:visible;white-space:normal}
-      .badge{display:inline;font-size:.4rem;padding:0;line-height:1.2;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:none;border:none;border-radius:0;box-shadow:none}
+      .container{padding:0 6px 14px;margin:2px auto 0;max-width:100vw;gap:6px}
+      .controls{padding:7px 4px}
+      .calendar{padding:6px 4px}
+      .dow,.grid{gap:2px}
+      .dow div{padding:6px 1px;font-size:.58rem}
+      .cell{height:112px;padding:3px 1px;border-radius:9px}
+      .continuous-wrap{padding:6px 4px;overflow-x:hidden}
+      .continuous-track{gap:6px;padding:0}
+      .continuous-month{padding:6px 4px;border-radius:12px;overflow:hidden}
+      .continuous-month-title{margin-bottom:6px;font-size:.74rem;line-height:1.1}
+      .continuous-month .grid{gap:2px}
+      .continuous-month .cell{height:102px;padding:2px 1px}
+      .date-line{gap:2px;justify-content:flex-start}
+      .greg{font-size:.56rem}.greg-g{display:none}.hebrew{font-size:.42rem;color:#452260}.sunset{font-size:.46rem}.noise-effect-label{font-size:.92em}
+      .badges{display:block;padding:0;gap:0;max-height:none;border:none;background:transparent;overflow:visible;white-space:normal;line-height:1.05}
+      .badge{display:inline;font-size:.36rem;padding:0;line-height:1.05;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:none;border:none;border-radius:0;box-shadow:none}
       .badge::after{content:" · ";color:var(--muted)}
       .badge:last-child::after{content:""}
-      .half{font-size:.48rem;min-height:14px}
+      .half{font-size:.42rem;min-height:12px}
       .day-halves{display:none}
-      .badges .badge{display:inline;font-size:.4rem}
+      .badges .badge{display:inline;font-size:.36rem}
       .badge-text{display:inline}
       .ona-icon{font-size:.64em}
       .badge-note-dot{width:5px;height:5px}
