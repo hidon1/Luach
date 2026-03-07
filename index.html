@@ -101,8 +101,10 @@
     .half-night.mikveh-night{background:#b98ce4;color:#fff;font-weight:800}
     .half-day{background:rgba(255,202,94,.12)}
     .half-empty{opacity:.45;color:#7a6b91}
-    .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+    .drawer-backdrop{position:fixed;inset:0;background:#0006;z-index:40;opacity:0;pointer-events:none;transition:opacity .28s linear}
+    .drawer-backdrop.is-open{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:41;background:linear-gradient(180deg,#fef0ff,#ead8ff);border-left:2px solid var(--accent);padding:18px;display:grid;gap:12px;align-content:start;box-shadow:-16px 0 40px rgba(120,40,200,.2);overflow-y:auto;overscroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;transform:translateX(103%);opacity:.98;transition:transform .28s linear,opacity .28s linear;will-change:transform}
+    .drawer.is-open{transform:translateX(0);opacity:1}
     body.dark .drawer{background:linear-gradient(180deg,#31253a,#281d30)}
     .switch{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:14px;border:1px solid #d4b8f0;background:linear-gradient(145deg,#ffffff,#f3e8ff);gap:8px;box-shadow:0 2px 8px rgba(130,70,200,.08);font-weight:800;color:#31154e}
     .switch-feature{background:linear-gradient(145deg,#fff,#f7ecff);border:1px solid #c9a6ea;box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(130,70,200,.12)}
@@ -148,7 +150,9 @@
     .day-notes-list li{font-size:.88rem;color:#3f2a54}
     .notes-list{margin:0;padding-right:16px;display:grid;gap:6px}
     .notes-list li{font-size:.88rem;color:#3f2a54}
-    .noise-effect-label{font-size:1.08em;font-weight:900}
+    .noise-effect-label{position:relative;display:inline-flex;align-items:center;gap:6px;font-size:.88em;font-weight:900;padding:5px 11px;border-radius:999px;border:1px solid transparent;background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from 135deg,#ff5fa2,#ffc857,#80ed99,#56cfe1,#9b5de5,#ff5fa2) border-box;color:#4a0f67;box-shadow:0 2px 10px rgba(155,93,229,.2)}
+    .noise-effect-label::after{content:"";position:absolute;top:-4px;left:-2px;width:10px;height:10px;border-radius:50%;background:conic-gradient(#ff5fa2,#ffc857,#80ed99,#56cfe1,#9b5de5,#ff5fa2);box-shadow:0 0 0 2px #fff}
+    .noise-effect-note-line{display:block;font-size:.78em;margin-top:6px;color:#52236d}
     .note-editor{display:grid;gap:10px;margin-top:10px}
     .note-editor textarea{width:100%;min-height:110px;resize:vertical;border-radius:14px;border:1px solid #ddb7ec;padding:10px;font-family:inherit;background:#fff}
     body.dark .today-banner{background:linear-gradient(120deg,#5b3047,#4c2038);color:#ffd7e8;border-color:#7f4964}
@@ -172,7 +176,7 @@
       .continuous-month .grid{gap:2px}
       .continuous-month .cell{height:102px;padding:2px 1px}
       .date-line{gap:2px;justify-content:flex-start}
-      .greg{font-size:.56rem}.greg-g{display:none}.hebrew{font-size:.42rem;color:#452260}.sunset{font-size:.44rem;line-height:1;margin-top:auto}.noise-effect-label{font-size:.92em}
+      .greg{font-size:.56rem}.greg-g{display:none}.hebrew{font-size:.42rem;color:#452260}.sunset{font-size:.44rem;line-height:1;margin-top:auto}.noise-effect-label{font-size:.76em;padding:4px 9px}.noise-effect-note-line{font-size:.7em;margin-top:5px}
       .badges{display:block;padding:0;gap:0;max-height:24px;border:none;background:transparent;overflow-x:hidden;overflow-y:auto;white-space:normal;line-height:1;scrollbar-width:thin}
       .badge{display:inline;font-size:.33rem;padding:0;line-height:1;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:none;border:none;border-radius:0;box-shadow:none;letter-spacing:0;-webkit-text-stroke:0;text-shadow:none}
       .badge::after{content:"·";color:var(--muted)}
@@ -1009,7 +1013,7 @@ function openMarkerNoteEditor(dateKey,marker){
   const noteDate=new Date(`${dateKey}T00:00:00`);
   const hebrewDate=Number.isNaN(noteDate.getTime())?"":getHebrewDateDisplay(noteDate);
   const isNoiseEffect=target.type==="prisha";
-  el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 אפקט הרעש</span> · הערה עבור ${target.label}`:`הערה עבור ${target.label}`;
+  el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 ניתן לעשות</span><span class="noise-effect-note-line">הערה עבור ${target.label}</span>`:`הערה עבור ${target.label}`;
   el("noteSub").textContent=`תאריך לועזי: ${dateKey}${hebrewDate?` | תאריך עברי: ${hebrewDate}`:""}`;
   target.note=getPersistedMarkerNote(dateKey,target);
   el("noteInput").value=target.note||"";
@@ -1316,11 +1320,25 @@ el("openTimeline").onclick=openTimeline; el("timelineClose").onclick=closeTimeli
 el("timelineFilter").onchange=renderTimelineList;
 el("noteClose").onclick=closeNoteEditor; el("cancelNoteBtn").onclick=closeNoteEditor; el("saveNoteBtn").onclick=saveNote; el("deleteNoteBtn").onclick=clearNote; el("noteOverlay").onclick=e=>{if(e.target===el("noteOverlay"))closeNoteEditor()};
 const openDrawer=()=>{
-  el("drawer").classList.remove("hidden");
-  el("drawerBackdrop").classList.remove("hidden");
+  const drawerEl=el("drawer"),backdropEl=el("drawerBackdrop");
+  drawerEl.classList.remove("hidden");
+  backdropEl.classList.remove("hidden");
+  requestAnimationFrame(()=>{
+    drawerEl.classList.add("is-open");
+    backdropEl.classList.add("is-open");
+  });
   const groups=[...document.querySelectorAll(".menu-group")];
   groups.forEach((group,index)=>{group.open=index===0;});
-}; const closeDrawer=()=>{el("drawer").classList.add("hidden");el("drawerBackdrop").classList.add("hidden")};
+};
+const closeDrawer=()=>{
+  const drawerEl=el("drawer"),backdropEl=el("drawerBackdrop");
+  drawerEl.classList.remove("is-open");
+  backdropEl.classList.remove("is-open");
+  setTimeout(()=>{
+    drawerEl.classList.add("hidden");
+    backdropEl.classList.add("hidden");
+  },280);
+};
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 
