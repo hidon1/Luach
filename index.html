@@ -473,7 +473,25 @@ function attachRealtimeSync(uid){
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
-function canSetHefsek(d){const starts=[...dayEvents.entries()].flatMap(([k,v])=>normalizeDay(v).markers.filter(m=>m.type==="period"||m.type==="ketem").map(()=>new Date(k))).sort((a,b)=>a-b);const last=starts.filter(p=>p<=d).at(-1);if(!last)return false;return startOfDay(d)>=addDays(last,minhagDays()-1)}
+function canSetHefsek(d){
+  const target=startOfDay(d);
+  const starts=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>m.type==="period"||m.type==="ketem")
+      .map(()=>startOfDay(new Date(k))))
+    .sort((a,b)=>a-b);
+  const lastStart=starts.filter(p=>p<=target).at(-1);
+  if(!lastStart) return false;
+
+  const hasHefsekAfterLastStart=[...dayEvents.entries()].some(([k,v])=>{
+    const day=startOfDay(new Date(k));
+    if(day<lastStart||day>target) return false;
+    return normalizeDay(v).markers.some(m=>m.type==="hefsek");
+  });
+  if(hasHefsekAfterLastStart) return false;
+
+  return target>=addDays(lastStart,minhagDays()-1);
+}
 function getPrishaOnotForMode(baseOna,mode){return mode==="full"?["night","day"]:[baseOna];}
 function addPrishaMarkers(date,onot,label,source){for(const ona of onot){addMarker(ymd(date),{type:"prisha",label:markerLabel(label,ona),ona,source});}}
 function getHebrewDateParts(date){
@@ -1173,7 +1191,8 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
       await commitAndSync();
       return;
     }
-    if(!canSetHefsek(d)){alert(`אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`);return;}
+    const hefsekReason=hefsekBlockReason(d);
+    if(hefsekReason){alert(hefsekReason);return;}
     closeModal();
     addMarker(ymd(d),{type:"hefsek",label:"הפסק טהרה"},{replaceType:true});
     recalcDerived();
@@ -1214,6 +1233,27 @@ function openModal(d){const dateKey=ymd(d);el("modalDateTitle").textContent=`ת�
 }
 const closeModal=()=>el("modalOverlay").classList.add("hidden");
 const MIN_DAYS_BETWEEN_PERIOD_STARTS=20;
+function hefsekBlockReason(date){
+  if(canSetHefsek(date)) return "";
+  const target=startOfDay(date);
+  const starts=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>m.type==="period"||m.type==="ketem")
+      .map(()=>startOfDay(new Date(k))))
+    .sort((a,b)=>a-b);
+  const lastStart=starts.filter(p=>p<=target).at(-1);
+  if(!lastStart) return "אפשר לסמן הפסק טהרה רק אחרי תחילת מחזור או כתם.";
+
+  const hasHefsekAfterLastStart=[...dayEvents.entries()].some(([k,v])=>{
+    const day=startOfDay(new Date(k));
+    if(day<lastStart||day>target) return false;
+    return normalizeDay(v).markers.some(m=>m.type==="hefsek");
+  });
+  if(hasHefsekAfterLastStart) return "ביום ירוק אין צורך בהפסק טהרה. ניתן לסמן הפסק רק אחרי כתם או תחילת מחזור.";
+
+  return `אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`;
+}
+
 function getLatestManualMarkerDate(markerType,targetDate){
   const target=startOfDay(targetDate);
   const matches=[...dayEvents.entries()]
