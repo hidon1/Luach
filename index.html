@@ -168,7 +168,7 @@
       .calendar{padding:6px 4px}
       .dow,.grid{gap:2px}
       .dow div{padding:6px 1px;font-size:.58rem}
-      .cell{height:108px;padding:3px 1px;border-radius:9px}
+      .cell{height:114px;padding:3px 1px;border-radius:9px}
       .continuous-wrap{padding:6px 4px;overflow-x:hidden}
       .continuous-track{gap:6px;padding:0}
       .continuous-month{padding:6px 4px;border-radius:12px;overflow:hidden}
@@ -177,12 +177,15 @@
       .continuous-month .cell{height:102px;padding:2px 1px}
       .date-line{gap:2px;justify-content:flex-start}
       .greg{font-size:.56rem}.greg-g{display:none}.hebrew{font-size:.42rem;color:#452260}.sunset{font-size:.44rem;line-height:1;margin-top:auto}.noise-effect-label{font-size:.76em;padding:4px 9px}.noise-effect-note-line{font-size:.7em;margin-top:5px}
-      .badges{display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:2px 0;max-height:48px;border:none;background:transparent;overflow-x:hidden;overflow-y:auto;white-space:normal;line-height:1.05;scrollbar-width:thin;scrollbar-color:#b79cc7 transparent}
-      .badge{display:flex;align-items:center;justify-content:flex-start;gap:3px;font-size:.33rem;padding:2px 4px;line-height:1.02;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:rgba(255,255,255,.84);border:1px solid #eadff1;border-radius:5px;box-shadow:none;letter-spacing:0;-webkit-text-stroke:0;text-shadow:none}
+      .badges{display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:2px 1px 2px 0;max-height:58px;border:none;background:transparent;overflow-x:hidden;overflow-y:auto;white-space:normal;line-height:1.05;scrollbar-width:thin;scrollbar-color:rgba(146,94,184,.92) transparent}
+      .badges::-webkit-scrollbar{width:2px}
+      .badges::-webkit-scrollbar-track{background:transparent}
+      .badges::-webkit-scrollbar-thumb{background:rgba(146,94,184,.92);border-radius:999px}
+      .badge{display:flex;align-items:center;justify-content:flex-start;gap:3px;font-size:.3rem;padding:2px 4px;line-height:1.02;max-width:100%;white-space:normal;word-break:break-word;overflow-wrap:anywhere;flex:0 0 auto;background:rgba(255,255,255,.84);border:1px solid #eadff1;border-radius:5px;box-shadow:none;letter-spacing:0;-webkit-text-stroke:0;text-shadow:none;font-weight:600}
       .half{font-size:.42rem;min-height:12px}
       .day-halves{display:none}
-      .badges .badge{display:flex;font-size:.33rem}
-      .badge-text{display:inline;letter-spacing:0;-webkit-text-stroke:0;text-shadow:none}
+      .badges .badge{display:flex;font-size:.3rem}
+      .badge-text{display:inline;letter-spacing:0;-webkit-text-stroke:0;text-shadow:none;font-weight:600}
       .ona-icon{font-size:.64em}
       .badge-note-dot{width:5px;height:5px;min-width:5px;min-height:5px;border-radius:50%;background:#ff2f55;box-shadow:0 0 0 1px rgba(255,47,85,.2)}
       .menu-btn{padding:8px 10px;font-size:.92rem;border-radius:12px;right:8px;top:34px}
