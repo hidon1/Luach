@@ -495,6 +495,22 @@ function isWithinCleanDaysWindow(date){
   });
   return !periodAfterHefsek;
 }
+const KETEM_CLEAN_DAYS_HEFSEK_GRACE_DAYS=4;
+function getKetemDuringCleanDaysAnchor(date){
+  const target=startOfDay(date);
+  const ketemDates=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>!m.source&&m.type==="ketem")
+      .map(()=>startOfDay(new Date(k))))
+    .filter(d=>d<=target)
+    .sort((a,b)=>b-a);
+  for(const ketemDate of ketemDates){
+    if(!isWithinCleanDaysWindow(ketemDate)) continue;
+    if(target>addDays(ketemDate,KETEM_CLEAN_DAYS_HEFSEK_GRACE_DAYS)) continue;
+    return ketemDate;
+  }
+  return null;
+}
 function isKetemDuringCleanDays(date){
   const target=startOfDay(date);
   const dateKey=ymd(target);
@@ -504,7 +520,7 @@ function isKetemDuringCleanDays(date){
 }
 function canSetHefsek(d){
   const target=startOfDay(d);
-  if(isKetemDuringCleanDays(target)) return true;
+  if(getKetemDuringCleanDaysAnchor(target)) return true;
   const starts=[...dayEvents.entries()]
     .flatMap(([k,v])=>normalizeDay(v).markers
       .filter(m=>m.type==="period"||m.type==="ketem")
@@ -519,7 +535,7 @@ function canSetHefsek(d){
     return normalizeDay(v).markers.some(m=>m.type==="hefsek");
   });
   if(hasHefsekAfterLastStart){
-    return isKetemDuringCleanDays(target);
+    return Boolean(getKetemDuringCleanDaysAnchor(target));
   }
 
   return target>=addDays(lastStart,minhagDays()-1);
@@ -619,7 +635,14 @@ function recalcDerived(){
     if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
   for(const stain of stains){
-    const ready=isWithinCleanDaysWindow(stain.date)?startOfDay(stain.date):addDays(stain.date,minhagDays()-1);
+    if(isWithinCleanDaysWindow(stain.date)){
+      for(let offset=0;offset<=KETEM_CLEAN_DAYS_HEFSEK_GRACE_DAYS;offset++){
+        const readyKey=ymd(addDays(stain.date,offset));
+        if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
+      }
+      continue;
+    }
+    const ready=addDays(stain.date,minhagDays()-1);
     const readyKey=ymd(ready);
     if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
@@ -1298,8 +1321,9 @@ function hefsekBlockReason(date){
     return normalizeDay(v).markers.some(m=>m.type==="hefsek");
   });
   if(hasHefsekAfterLastStart){
-    if(isKetemDuringCleanDays(target)) return "";
-    return "ביום ירוק אין צורך בהפסק טהרה. ניתן לסמן הפסק רק אחרי כתם או תחילת מחזור.";
+    const ketemAnchor=getKetemDuringCleanDaysAnchor(target);
+    if(ketemAnchor) return "";
+    return "ביום ירוק אין צורך בהפסק טהרה. אם סומן כתם בתוך שבעה נקיים, אפשר לסמן הפסק באותו יום או עד ארבעה ימים אחריו.";
   }
 
   return `אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`;
