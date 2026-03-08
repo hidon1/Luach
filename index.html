@@ -120,16 +120,19 @@
     .drawer-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:2px}
     .drawer-head h3{margin:0;font-size:1.3rem;color:#4a1070;font-weight:900;letter-spacing:.02em}
     .drawer-close{margin-inline-start:auto;font-size:.85rem;padding:6px 9px;min-width:unset}
-    .menu-group{border:1px solid #d9b9f2;border-radius:16px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr);max-height:min(46dvh,430px);box-shadow:0 8px 18px rgba(121,58,173,.1)}
+    .menu-group{border:1px solid #d9b9f2;border-radius:16px;background:linear-gradient(140deg,#fff,#f5eaff);overflow:hidden;display:block;box-shadow:0 8px 18px rgba(121,58,173,.1)}
     .menu-group summary{cursor:pointer;list-style:none;padding:13px 14px;font-weight:900;color:#3a1757;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(120deg,#fff,#f4dcff);border-bottom:1px solid #e3caef}
     .menu-group summary::-webkit-details-marker{display:none}
     .menu-group summary{position:relative}
     .menu-group summary::before{content:"❯";width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(145deg,#fff,#ecd4ff);border:1px solid #d5b1ef;color:#6a2896;box-shadow:inset 0 1px 0 #fff;font-size:.88rem;transform:rotate(0deg);transition:transform .22s ease,background .2s ease;flex-shrink:0}
     .menu-group[open] summary::before{transform:rotate(90deg);background:linear-gradient(145deg,#fdf6ff,#ebd2ff)}
-    .menu-group-content{padding:10px;display:grid;gap:8px;max-height:calc(min(46dvh,430px) - 58px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#c47edf #f4e6ff}
+    .menu-group-content{padding:10px;display:grid;gap:8px;max-height:none;overflow:visible}
     .menu-group-content::-webkit-scrollbar{width:10px}
     .menu-group-content::-webkit-scrollbar-track{background:#f4e6ff;border-radius:999px}
     .menu-group-content::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#d195ef,#b766df);border-radius:999px;border:2px solid #f4e6ff}
+    .general-halacha{display:grid;gap:8px;padding:4px 2px}
+    .halacha-item{background:#fff;border:1px solid #e7d1f5;border-radius:12px;padding:10px 12px;line-height:1.45;color:#351a52}
+    .halacha-item strong{color:#5f218b}
     .modal-overlay{position:fixed;inset:0;background:rgba(48,22,73,.35);backdrop-filter:blur(4px);display:grid;place-items:center;align-items:center;justify-items:center;z-index:60;padding:12px}
     .modal{width:min(560px,95vw);padding:16px;border-radius:22px;background:linear-gradient(180deg,#fff,#fef5ff);border:1px solid #edc9f4;box-shadow:0 20px 60px rgba(80,26,109,.25)}
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
@@ -291,6 +294,17 @@
 
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small auth-status">לא מחובר</div>
+
+  <details class="menu-group">
+    <summary>הלכות כלליות</summary>
+    <div class="menu-group-content general-halacha">
+      <div class="halacha-item"><strong>תחילת מחזור והפסק טהרה:</strong> בדרך כלל האישה נאסרת מיום תחילת המחזור למשך כ-4–5 ימים (לפי המנהג שנבחר), ורק לאחר מכן ניתן לבצע הפסק טהרה.</div>
+      <div class="halacha-item"><strong>שבעה נקיים וטבילה:</strong> לאחר הפסק טהרה תקין מתחילים לספור שבעה נקיים, ובסיומם מגיע זמן הטבילה.</div>
+      <div class="halacha-item"><strong>כתם:</strong> כתם עשוי להשפיע לפי נסיבותיו (גודל, צבע, מקור ועוד). באפליקציה אפשר לסמן כתם, אך בכל שאלה מעשית חשוב להתייעץ עם רב מוסמך.</div>
+      <div class="halacha-item"><strong>ימי פרישה:</strong> עונה בינונית, יום 31, הפלגה ווסת החודש מחושבים אוטומטית לפי הנתונים שסומנו ביומן.</div>
+      <div class="halacha-item"><strong>חשוב:</strong> המידע כאן הוא כללי ואינו פסיקה הלכתית. להכרעה למעשה יש לשאול רב.</div>
+    </div>
+  </details>
 </aside>
 <div id="modalOverlay" class="modal-overlay hidden"><div class="modal card"><div class="modal-head"><div><div id="modalDateTitle"></div><div id="modalDateSub" class="small"></div></div><button id="modalClose" class="btn">✕</button></div><div class="modal-actions"><button id="btnEventA" class="btn">הפסק טהרה</button><button id="btnEventB" class="btn">תחילת מחזור</button><button id="btnEventC" class="btn">כתם</button><button id="btnClear" class="btn">נקה</button></div><div class="day-notes-box"><div class="small">כל עדכוני היום:</div><ul id="modalDayNotes" class="day-notes-list"></ul></div></div></div>
 <div id="onaOverlay" class="modal-overlay hidden"><div class="modal card ona-modal" style="max-width:360px"><div id="onaTitle" class="ona-title">בחירת עונה לתחילת מחזור</div><div id="onaSub" class="small">אפשר לבחור עונת ראייה בלבד או לסמן עונה אחרת במידת הצורך.</div><div class="modal-actions ona-actions"><button id="chooseDay" class="btn btn-primary"><span class="ona-icon sun">☀</span>יום</button><button id="chooseNight" class="btn"><span class="ona-icon moon">☾</span>לילה</button><button id="onaCancel" class="btn">ביטול</button></div></div></div>
@@ -608,7 +622,7 @@ function recalcDerived(){
     const p=periods[i];
     const d30=addDays(p.date,29);
     const next=periods[i+1];
-    const isBeforeNextPeriod=date=>!next||date<next.date;
+    const isBeforeNextPeriod=date=>!next||date<=addDays(next.date,1);
     const activeGap=activeGapByPeriod[i];
     const hasMonthlyHebrewKavuah=monthlyHebrewKavuahByPeriod[i];
     const vesetHachodeshDate=getVesetHachodeshDate(p.date);
@@ -639,8 +653,11 @@ function recalcDerived(){
   }
   for(const stain of stains){
     if(isWithinCleanDaysWindow(stain.date)){
-      for(let offset=0;offset<=KETEM_CLEAN_DAYS_HEFSEK_GRACE_DAYS;offset++){
-        const readyKey=ymd(addDays(stain.date,offset));
+      const stainDay=startOfDay(stain.date);
+      const graceEnd=addDays(stainDay,KETEM_CLEAN_DAYS_HEFSEK_GRACE_DAYS);
+      const alreadyHasHefsek=hefseks.some(h=>h>=stainDay&&h<=graceEnd);
+      if(!alreadyHasHefsek){
+        const readyKey=ymd(stainDay);
         if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
       }
       continue;
