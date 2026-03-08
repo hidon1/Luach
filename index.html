@@ -472,24 +472,22 @@ function attachRealtimeSync(uid){
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
-function isKetemDuringCleanDays(date){
+function getLatestManualHefsekBefore(date){
   const target=startOfDay(date);
-  const dateKey=ymd(target);
-  const day=normalizeDay(dayEvents.get(dateKey));
-  if(!day.markers.some(m=>!m.source&&m.type==="ketem")) return false;
-
   const hefseks=[...dayEvents.entries()]
     .flatMap(([k,v])=>normalizeDay(v).markers
       .filter(m=>!m.source&&m.type==="hefsek")
       .map(()=>startOfDay(new Date(k))))
     .filter(d=>d<=target)
     .sort((a,b)=>a-b);
-  const lastHefsek=hefseks.at(-1);
+  return hefseks.at(-1)||null;
+}
+function isWithinCleanDaysWindow(date){
+  const target=startOfDay(date);
+  const lastHefsek=getLatestManualHefsekBefore(target);
   if(!lastHefsek) return false;
-
   const mikvehDate=addDays(lastHefsek,7);
   if(target<lastHefsek||target>mikvehDate) return false;
-
   const periodAfterHefsek=[...dayEvents.entries()].some(([k,v])=>{
     const dayDate=startOfDay(new Date(k));
     if(dayDate<=lastHefsek||dayDate>target) return false;
@@ -497,8 +495,16 @@ function isKetemDuringCleanDays(date){
   });
   return !periodAfterHefsek;
 }
+function isKetemDuringCleanDays(date){
+  const target=startOfDay(date);
+  const dateKey=ymd(target);
+  const day=normalizeDay(dayEvents.get(dateKey));
+  if(!day.markers.some(m=>!m.source&&m.type==="ketem")) return false;
+  return isWithinCleanDaysWindow(target);
+}
 function canSetHefsek(d){
   const target=startOfDay(d);
+  if(isKetemDuringCleanDays(target)) return true;
   const starts=[...dayEvents.entries()]
     .flatMap(([k,v])=>normalizeDay(v).markers
       .filter(m=>m.type==="period"||m.type==="ketem")
@@ -613,11 +619,16 @@ function recalcDerived(){
     if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
   for(const stain of stains){
-    const ready=addDays(stain.date,minhagDays()-1);
+    const ready=isWithinCleanDaysWindow(stain.date)?startOfDay(stain.date):addDays(stain.date,minhagDays()-1);
     const readyKey=ymd(ready);
     if(!hefsekKeys.has(readyKey)) addMarker(readyKey,{type:"hefsekReady",label:"ניתן לעשות הפסק טהרה",source:"auto-ready"});
   }
-  for(const h of hefseks){addMarker(ymd(addDays(h,7)),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});}
+  const startsSorted=[...periods.map(p=>startOfDay(p.date)),...stains.map(s=>startOfDay(s.date))].sort((a,b)=>a-b);
+  for(const h of hefseks){
+    const mikvehDay=addDays(h,7);
+    const hasRestartBeforeMikveh=startsSorted.some(start=>start>h&&start<=mikvehDay);
+    if(!hasRestartBeforeMikveh) addMarker(ymd(mikvehDay),{type:"mikveh",label:"טבילה",source:"auto-mikveh"});
+  }
 }
 function getPhaseMap(y,m){
   const map={}; const first=new Date(y,m,1),start=addDays(first,-first.getDay());
