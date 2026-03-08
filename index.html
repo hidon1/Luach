@@ -76,9 +76,9 @@
     .greg-g{font-size:.67rem;color:#5c496f;font-weight:900}
     .hebrew{font-size:.76rem;color:#2a1742;margin-bottom:0;font-weight:900;line-height:1.1;white-space:nowrap}
     .sunset{font-size:.7rem;color:#6f1f4b;margin-top:auto;font-weight:800;line-height:1.1}
-    .badges{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;gap:3px;min-height:0;flex:1 1 auto;max-height:56px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
+    .badges{display:flex;flex-direction:column;align-items:stretch;align-content:stretch;gap:3px;min-height:0;flex:1 1 auto;max-height:56px;overflow-x:hidden;overflow-y:auto;white-space:normal;padding:2px 3px;border-radius:8px;border:1px solid #ecdff0;background:rgba(255,255,255,.68);scrollbar-width:thin}
     .badges:empty{display:none}
-    .badge{display:inline-flex;align-items:center;gap:1px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.66rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none;line-height:1.2;flex:0 1 auto}
+    .badge{display:flex;align-items:center;justify-content:flex-start;gap:3px;margin-top:0;padding:1px 5px;border-radius:999px;font-size:.66rem;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:900;color:#2a163f;letter-spacing:.005em;white-space:normal;overflow-wrap:anywhere;word-break:break-word;text-overflow:clip;max-width:100%;line-height:1.2;flex:0 0 auto}
     .badge-text{display:inline}
     .badge-note-dot{width:6px;height:6px;border-radius:50%;background:#ff4f8a;box-shadow:0 0 0 2px rgba(255,79,138,.22)}
     .badge.period,.badge.ketem{background:#ffd6e8}.badge.hefsek{background:#e5ffe9}.badge.mikveh{background:#c7efff}.badge.prisha{background:#fff2b8}.badge.orzarua{background:#ffeedf}.badge.hefsekReady{background:#dcffe8}
@@ -433,7 +433,7 @@ async function loadRemoteEvents(uid,{strategy="merge"}={}){
   if(data.noteHistory&&typeof data.noteHistory==="object"){
     if(strategy==="replace"){
       const trimmed={};
-      for(const [key,val] of Object.entries(data.noteHistory)) trimmed[key]=Array.isArray(val)?val.slice(-30):[];
+      for(const [key,val] of Object.entries(data.noteHistory)) trimmed[key]=dedupeHistoryEntries(Array.isArray(val)?val:[]);
       setNoteHistory(trimmed);
     }else{
       const localHistory=getNoteHistory();
@@ -441,7 +441,7 @@ async function loadRemoteEvents(uid,{strategy="merge"}={}){
       for(const [key,val] of Object.entries(data.noteHistory)){
         const localArr=Array.isArray(localHistory[key])?localHistory[key]:[];
         const remoteArr=Array.isArray(val)?val:[];
-        mergedHistory[key]=[...localArr,...remoteArr].slice(-30);
+        mergedHistory[key]=dedupeHistoryEntries([...localArr,...remoteArr]);
       }
       setNoteHistory(mergedHistory);
     }
@@ -472,6 +472,31 @@ function attachRealtimeSync(uid){
 function showToast(msg){toast.textContent=msg;toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),1600)}
 
 function minhagDays(){const m=getPrefs().minhag||"sephardi";return m==="ashkenazi"?5:4}
+function isKetemDuringCleanDays(date){
+  const target=startOfDay(date);
+  const dateKey=ymd(target);
+  const day=normalizeDay(dayEvents.get(dateKey));
+  if(!day.markers.some(m=>!m.source&&m.type==="ketem")) return false;
+
+  const hefseks=[...dayEvents.entries()]
+    .flatMap(([k,v])=>normalizeDay(v).markers
+      .filter(m=>!m.source&&m.type==="hefsek")
+      .map(()=>startOfDay(new Date(k))))
+    .filter(d=>d<=target)
+    .sort((a,b)=>a-b);
+  const lastHefsek=hefseks.at(-1);
+  if(!lastHefsek) return false;
+
+  const mikvehDate=addDays(lastHefsek,7);
+  if(target<lastHefsek||target>mikvehDate) return false;
+
+  const periodAfterHefsek=[...dayEvents.entries()].some(([k,v])=>{
+    const dayDate=startOfDay(new Date(k));
+    if(dayDate<=lastHefsek||dayDate>target) return false;
+    return normalizeDay(v).markers.some(m=>!m.source&&m.type==="period");
+  });
+  return !periodAfterHefsek;
+}
 function canSetHefsek(d){
   const target=startOfDay(d);
   const starts=[...dayEvents.entries()]
@@ -487,7 +512,9 @@ function canSetHefsek(d){
     if(day<lastStart||day>target) return false;
     return normalizeDay(v).markers.some(m=>m.type==="hefsek");
   });
-  if(hasHefsekAfterLastStart) return false;
+  if(hasHefsekAfterLastStart){
+    return isKetemDuringCleanDays(target);
+  }
 
   return target>=addDays(lastStart,minhagDays()-1);
 }
@@ -1021,6 +1048,18 @@ function renderDayNotesList(dateKey,targetId="dayNotesList"){
 }
 function getNoteHistory(){try{return JSON.parse(localStorage.getItem(NOTE_HISTORY_KEY)||"{}");}catch{return {};}}
 function setNoteHistory(next){localStorage.setItem(NOTE_HISTORY_KEY,JSON.stringify(next));}
+function dedupeHistoryEntries(entries){
+  const out=[];
+  const seen=new Set();
+  for(const item of entries||[]){
+    if(!item||!item.text) continue;
+    const key=`${item.time||""}__${item.text}`;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out.slice(-30);
+}
 let activeNoteEditor=null;
 function openMarkerNoteEditor(dateKey,marker){
   const day=normalizeDay(dayEvents.get(dateKey));
@@ -1029,8 +1068,7 @@ function openMarkerNoteEditor(dateKey,marker){
   activeNoteEditor={dateKey,markerRef:target};
   const noteDate=new Date(`${dateKey}T00:00:00`);
   const hebrewDate=Number.isNaN(noteDate.getTime())?"":getHebrewDateDisplay(noteDate);
-  const isNoiseEffect=target.type==="prisha";
-  el("noteTitle").innerHTML=isNoiseEffect?`<span class="noise-effect-label">🔔 ניתן לעשות</span><span class="noise-effect-note-line">הערה עבור ${target.label}</span>`:`הערה עבור ${target.label}`;
+  el("noteTitle").textContent=`הערה עבור ${target.label}`;
   el("noteSub").textContent=`תאריך לועזי: ${dateKey}${hebrewDate?` | תאריך עברי: ${hebrewDate}`:""}`;
   target.note=getPersistedMarkerNote(dateKey,target);
   el("noteInput").value=target.note||"";
@@ -1064,9 +1102,9 @@ async function saveNote(){
   if(!markerRef.note) delete markerRef.note;
   const hist=getNoteHistory();
   const key=`${dateKey}__${markerRef.label}`;
-  const arr=hist[key]||[];
-  if(text) arr.push({text,time:new Date().toLocaleString("he-IL")});
-  hist[key]=arr.slice(-30);
+  const arr=Array.isArray(hist[key])?hist[key]:[];
+  if(text&&arr.at(-1)?.text!==text) arr.push({text,time:new Date().toLocaleString("he-IL")});
+  hist[key]=dedupeHistoryEntries(arr);
   setNoteHistory(hist);
   closeNoteEditor();
   await commitAndSync();
@@ -1248,7 +1286,10 @@ function hefsekBlockReason(date){
     if(day<lastStart||day>target) return false;
     return normalizeDay(v).markers.some(m=>m.type==="hefsek");
   });
-  if(hasHefsekAfterLastStart) return "ביום ירוק אין צורך בהפסק טהרה. ניתן לסמן הפסק רק אחרי כתם או תחילת מחזור.";
+  if(hasHefsekAfterLastStart){
+    if(isKetemDuringCleanDays(target)) return "";
+    return "ביום ירוק אין צורך בהפסק טהרה. ניתן לסמן הפסק רק אחרי כתם או תחילת מחזור.";
+  }
 
   return `אפשר לסמן הפסק טהרה מהיום ה-${minhagDays()} מתחילת המחזור או הכתם.`;
 }
