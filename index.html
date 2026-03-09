@@ -54,10 +54,6 @@
     .btn-toggle-active{background:#311b52;color:#fff;border-color:#311b52}
     .continuous-wrap{display:none;padding:12px}
     .continuous-wrap.active{display:block}
-    .guide-cta{padding:18px 16px;display:grid;gap:10px;text-align:center;background:linear-gradient(145deg,#fff7ff,#f8ecff);border:1px solid #dfc8f4}
-    .guide-cta h2{margin:0;color:#511a73;font-size:clamp(1.4rem,2.4vw,2rem)}
-    .guide-cta p{margin:0;color:#503764;font-weight:700}
-    .guide-cta .btn{justify-self:center;padding:11px 22px;font-size:1rem}
     .continuous-track{display:flex;flex-direction:column;gap:12px;padding:4px}
     .continuous-month{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}
     .continuous-month-title{font-weight:900;text-align:center;margin-bottom:10px;color:#2f1f48}
@@ -142,7 +138,7 @@
     .modal-head{display:flex;justify-content:space-between;align-items:flex-start}
     .modal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .modal-title{font-size:1.2rem;font-weight:900;color:#41125e}
-    .guide-modal{max-width:900px;padding:18px 16px}
+    .guide-modal{max-width:900px;padding:18px 16px;max-height:min(88vh,860px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
     .guide-modal .small{line-height:1.5}
     .guide-sections{display:grid;gap:10px;margin-top:8px}
     .guide-section{padding:12px;border-radius:14px;border:1px solid #e5d5f3;background:linear-gradient(180deg,#fff,#fff8ff)}
@@ -210,11 +206,10 @@
       .month-nav #prevMonth,.month-nav #nextMonth{font-size:.74rem;padding:7px 8px;white-space:nowrap}
       .monthTitle{min-width:auto;width:100%;padding:7px 8px;font-size:.78rem;border-radius:12px;box-shadow:0 4px 0 #6a1e5b,0 10px 18px rgba(109,30,103,.22),inset 0 2px 6px rgba(255,255,255,.28)}
       .today-banner{padding:10px 12px;min-height:44px;font-size:.78rem;line-height:1.2}
-      .guide-cta{padding:14px 10px}
-      .guide-cta h2{font-size:1.2rem}
       .today-panel{display:none}
       .modal-overlay{padding:8px}
       .modal{width:min(94vw,460px);max-height:none;overflow:visible;border-radius:18px}
+      .guide-modal{width:min(96vw,640px);max-height:88vh;overflow-y:auto}
       .drawer{width:min(90vw,360px)}
       .drawer,.drawer .switch,.drawer .btn,.drawer select,.drawer .small{font-size:.9rem}
       .time-input{min-width:108px;padding:7px 10px}
@@ -253,11 +248,6 @@
     <div id="continuousTrack" class="continuous-track"></div>
   </section>
 
-  <section class="guide-cta card">
-    <h2>מדריך הלכתי וכללי שימוש באתר</h2>
-    <p>ריכזנו עבורך במקום אחד הסבר ברור על ספרדים/אשכנזים, הפלגה, ימי פרישה, עונת אור זרוע, וכל ההגדרות באתר.</p>
-    <button id="openGuide" class="btn btn-primary">פתיחת המדריך המלא</button>
-  </section>
 </main>
 <footer style="text-align:center;padding:34px 12px 28px;color:var(--muted);font-weight:700">נבנה על ידי י׳.ז׳.מ.אתרים — לפרטים: <a href="https://hidon1.github.io/a/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">לחץ כאן</a>.</footer>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
@@ -314,32 +304,14 @@
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small auth-status">לא מחובר</div>
 
-  <button id="openGeneralHalacha" class="btn">הלכות כלליות</button>
+  <button id="openGuide" class="btn btn-primary">הגדרות והדרכה הלכתית</button>
 </aside>
-<div id="generalHalachaOverlay" class="modal-overlay hidden">
-  <div class="modal card guide-modal">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">הלכות כלליות</div>
-        <div class="small">המידע להכוונה כללית בלבד — להכרעה מעשית יש לשאול רב מוסמך.</div>
-      </div>
-      <button id="generalHalachaClose" class="btn">✕</button>
-    </div>
-    <div class="general-halacha">
-      <div class="halacha-item"><strong>תחילת מחזור והפסק טהרה:</strong> בדרך כלל האישה נאסרת מיום תחילת המחזור למשך כ-4–5 ימים (לפי המנהג שנבחר), ורק לאחר מכן ניתן לבצע הפסק טהרה.</div>
-      <div class="halacha-item"><strong>שבעה נקיים וטבילה:</strong> לאחר הפסק טהרה תקין מתחילים לספור שבעה נקיים, ובסיומם מגיע זמן הטבילה.</div>
-      <div class="halacha-item"><strong>כתם:</strong> כתם עשוי להשפיע לפי נסיבותיו (גודל, צבע, מקור ועוד). באפליקציה אפשר לסמן כתם, אך בכל שאלה מעשית חשוב להתייעץ עם רב מוסמך.</div>
-      <div class="halacha-item"><strong>ימי פרישה:</strong> עונה בינונית, יום 31, הפלגה ווסת החודש מחושבים אוטומטית לפי הנתונים שסומנו ביומן.</div>
-      <div class="halacha-item"><strong>חשוב:</strong> המידע כאן הוא כללי ואינו פסיקה הלכתית. להכרעה למעשה יש לשאול רב.</div>
-    </div>
-  </div>
-</div>
 <div id="guideOverlay" class="modal-overlay hidden">
   <div class="modal card guide-modal">
     <div class="modal-head">
       <div>
-        <div class="modal-title">מדריך הלכתי וכללי שימוש</div>
-        <div class="small">המידע להכוונה ולסדר כללי בלבד — להכרעה מעשית יש לשאול רב מוסמך.</div>
+        <div class="modal-title">מרכז הגדרות והדרכה הלכתית</div>
+        <div class="small">מרכז אחד מסודר: הגדרות המערכת, כללי שימוש והכוונה הלכתית כללית. להכרעה מעשית יש לשאול רב מוסמך.</div>
       </div>
       <button id="guideClose" class="btn">✕</button>
     </div>
@@ -383,6 +355,18 @@
           <li>ניתן להגדיר שקיעה לפי מיקום נוכחי או עיר קבועה, ולבחור האם יום מתחלף בשקיעה או ב־00:00.</li>
           <li>יש תזכורות חכמות ותזכורת ידנית (כולל שעה, תדירות וצליל).</li>
           <li>מצב כהה, סנכרון משתמש, והגדרות מנהג נשמרים בהעדפות.</li>
+        </ul>
+      </section>
+
+
+      <section class="guide-section">
+        <h4>הגדרות המערכת במקום אחד</h4>
+        <ul>
+          <li><strong>מנהגים:</strong> בחירת ספרדים/אשכנזים, אופן עונה בינונית (30), יום 31 והצגת "אור זרוע" — לפי ההוראה שקיבלתם.</li>
+          <li><strong>תזכורות:</strong> תזכורות להפסק טהרה ולימי פרישה, כולל בחירת שעה וצליל נעים וברור.</li>
+          <li><strong>תזכורת ידנית:</strong> אפשר לקבוע תזכורת אישית (להיום בלבד או יומית), כולל מספר פעמים והתרעה מתאימה.</li>
+          <li><strong>שקיעה ותצוגה:</strong> בחירה בין מיקום נוכחי לעיר קבועה, והגדרת מעבר יום לפי שקיעה או לפי חצות לועזית.</li>
+          <li><strong>תצוגת המערכת:</strong> ציר זמן לעדכונים, מצב כהה והתחברות/סנכרון לשמירת הנתונים בצורה נוחה.</li>
         </ul>
       </section>
 
@@ -1319,8 +1303,6 @@ function openTimeline(){
 const closeTimeline=()=>el("timelineOverlay").classList.add("hidden");
 function openGuide(){el("guideOverlay").classList.remove("hidden");}
 const closeGuide=()=>el("guideOverlay").classList.add("hidden");
-function openGeneralHalacha(){el("generalHalachaOverlay").classList.remove("hidden");}
-const closeGeneralHalacha=()=>el("generalHalachaOverlay").classList.add("hidden");
 
 function clearManualMarkersForDay(dateKey,types=[]){
   const day=normalizeDay(dayEvents.get(dateKey));
@@ -1584,8 +1566,7 @@ const closeDrawer=()=>{
 };
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
-el("openGuide").onclick=openGuide; el("guideClose").onclick=closeGuide; el("guideOverlay").onclick=e=>{if(e.target===el("guideOverlay"))closeGuide()};
-el("openGeneralHalacha").onclick=openGeneralHalacha; el("generalHalachaClose").onclick=closeGeneralHalacha; el("generalHalachaOverlay").onclick=e=>{if(e.target===el("generalHalachaOverlay"))closeGeneralHalacha()};
+el("openGuide").onclick=()=>{openGuide();closeDrawer()}; el("guideClose").onclick=closeGuide; el("guideOverlay").onclick=e=>{if(e.target===el("guideOverlay"))closeGuide()};
 
 const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),reminderSound=el("reminderSound"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),manualReminderSound=el("manualReminderSound"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),dayChangeMode=el("dayChangeMode"),orzaruaToggle=el("orzaruaToggle");
 const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; reminderSound.value=prefs.reminderSound||"bell"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); manualReminderSound.value=prefs.manualReminderSound||"chime"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; dayChangeMode.value=prefs.dayChangeMode||"sunset"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
