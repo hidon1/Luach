@@ -314,17 +314,26 @@
   <button id="openAuthFromMenu" class="btn btn-primary">התחברות / הרשמה</button>
   <div id="authState" class="small auth-status">לא מחובר</div>
 
-  <details class="menu-group">
-    <summary>הלכות כלליות</summary>
-    <div class="menu-group-content general-halacha">
+  <button id="openGeneralHalacha" class="btn">הלכות כלליות</button>
+</aside>
+<div id="generalHalachaOverlay" class="modal-overlay hidden">
+  <div class="modal card guide-modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">הלכות כלליות</div>
+        <div class="small">המידע להכוונה כללית בלבד — להכרעה מעשית יש לשאול רב מוסמך.</div>
+      </div>
+      <button id="generalHalachaClose" class="btn">✕</button>
+    </div>
+    <div class="general-halacha">
       <div class="halacha-item"><strong>תחילת מחזור והפסק טהרה:</strong> בדרך כלל האישה נאסרת מיום תחילת המחזור למשך כ-4–5 ימים (לפי המנהג שנבחר), ורק לאחר מכן ניתן לבצע הפסק טהרה.</div>
       <div class="halacha-item"><strong>שבעה נקיים וטבילה:</strong> לאחר הפסק טהרה תקין מתחילים לספור שבעה נקיים, ובסיומם מגיע זמן הטבילה.</div>
       <div class="halacha-item"><strong>כתם:</strong> כתם עשוי להשפיע לפי נסיבותיו (גודל, צבע, מקור ועוד). באפליקציה אפשר לסמן כתם, אך בכל שאלה מעשית חשוב להתייעץ עם רב מוסמך.</div>
       <div class="halacha-item"><strong>ימי פרישה:</strong> עונה בינונית, יום 31, הפלגה ווסת החודש מחושבים אוטומטית לפי הנתונים שסומנו ביומן.</div>
       <div class="halacha-item"><strong>חשוב:</strong> המידע כאן הוא כללי ואינו פסיקה הלכתית. להכרעה למעשה יש לשאול רב.</div>
     </div>
-  </details>
-</aside>
+  </div>
+</div>
 <div id="guideOverlay" class="modal-overlay hidden">
   <div class="modal card guide-modal">
     <div class="modal-head">
@@ -700,7 +709,7 @@ function recalcDerived(){
     const p=periods[i];
     const d30=addDays(p.date,29);
     const next=periods[i+1];
-    const isBeforeNextPeriod=date=>!next||date<=addDays(next.date,1);
+    const isBeforeNextPeriod=date=>!next||date<next.date;
     const activeGap=activeGapByPeriod[i];
     const hasMonthlyHebrewKavuah=monthlyHebrewKavuahByPeriod[i];
     const vesetHachodeshDate=getVesetHachodeshDate(p.date);
@@ -1310,6 +1319,8 @@ function openTimeline(){
 const closeTimeline=()=>el("timelineOverlay").classList.add("hidden");
 function openGuide(){el("guideOverlay").classList.remove("hidden");}
 const closeGuide=()=>el("guideOverlay").classList.add("hidden");
+function openGeneralHalacha(){el("generalHalachaOverlay").classList.remove("hidden");}
+const closeGeneralHalacha=()=>el("generalHalachaOverlay").classList.add("hidden");
 
 function clearManualMarkersForDay(dateKey,types=[]){
   const day=normalizeDay(dayEvents.get(dateKey));
@@ -1574,6 +1585,7 @@ const closeDrawer=()=>{
 el("menuBtn").onclick=openDrawer; el("closeDrawer").onclick=closeDrawer; el("drawerBackdrop").onclick=closeDrawer;
 el("openAuthFromMenu").onclick=()=>{openAuth();closeDrawer()}; el("authClose").onclick=closeAuth;
 el("openGuide").onclick=openGuide; el("guideClose").onclick=closeGuide; el("guideOverlay").onclick=e=>{if(e.target===el("guideOverlay"))closeGuide()};
+el("openGeneralHalacha").onclick=openGeneralHalacha; el("generalHalachaClose").onclick=closeGeneralHalacha; el("generalHalachaOverlay").onclick=e=>{if(e.target===el("generalHalachaOverlay"))closeGeneralHalacha()};
 
 const darkToggle=el("darkToggle"),day31Toggle=el("day31Toggle"),day30Mode=el("day30Mode"),day31Mode=el("day31Mode"),minhagSelect=el("minhagSelect"),reminderToggle=el("reminderToggle"),meetingToggle=el("meetingToggle"),reminderTime=el("reminderTime"),reminderSound=el("reminderSound"),manualReminderEnabled=el("manualReminderEnabled"),manualReminderTime=el("manualReminderTime"),manualReminderMode=el("manualReminderMode"),manualReminderCount=el("manualReminderCount"),manualReminderSound=el("manualReminderSound"),sunsetMode=el("sunsetMode"),sunsetCity=el("sunsetCity"),dayChangeMode=el("dayChangeMode"),orzaruaToggle=el("orzaruaToggle");
 const prefs=getPrefs(); darkToggle.checked=!!prefs.dark; day31Toggle.checked=!!prefs.day31; day30Mode.value=prefs.day30Mode||"ona"; day31Mode.value=prefs.day31Mode||"ona"; minhagSelect.value=prefs.minhag||"sephardi"; reminderToggle.checked=!!prefs.reminderEnabled; meetingToggle.checked=!!prefs.meetingReminders; reminderTime.value=prefs.reminderTime||"15:00"; reminderSound.value=prefs.reminderSound||"bell"; manualReminderEnabled.checked=!!prefs.manualReminderEnabled; manualReminderTime.value=prefs.manualReminderTime||"20:00"; manualReminderMode.value=prefs.manualReminderMode||"today"; manualReminderCount.value=String(prefs.manualReminderCount||1); manualReminderSound.value=prefs.manualReminderSound||"chime"; sunsetMode.value=prefs.sunsetMode||"location"; sunsetCity.value=prefs.sunsetCity||"Jerusalem"; dayChangeMode.value=prefs.dayChangeMode||"sunset"; orzaruaToggle.checked=prefs.orzarua!==false; if(prefs.dark)document.body.classList.add("dark");
